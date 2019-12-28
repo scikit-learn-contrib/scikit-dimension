@@ -3,6 +3,7 @@ from scipy.optimize import minimize
 from scipy.special import i0,i1,digamma
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
+from _commonfuncs import randsphere, binom_coeff, get_nn
 
 class DANCo(BaseEstimator):
     
