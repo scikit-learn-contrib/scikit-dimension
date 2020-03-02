@@ -1,6 +1,27 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import gammainc
+from functools import lru_cache
+
+@lru_cache()
+def indnComb(NN, n):
+    if (n == 1):
+        return(np.arange(NN).reshape((-1,1)))
+    prev = indnComb(NN, n-1)
+    lastind = prev[:,-1]
+    ind_cf1 = np.repeat(lastind, NN)
+    ind_cf2 = np.tile(np.arange(NN), len(lastind))
+    #ind_cf2 = np.arange(NN)
+    #for i in range(len(lastind)-1):
+    #    ind_cf2 = np.concatenate((ind_cf2,np.arange(NN)))
+    new_ind = np.where(ind_cf1 < ind_cf2)[0]
+    new_ind1 = ((new_ind - 1) // NN) 
+    new_ind2 = new_ind % NN
+    new_ind2[new_ind2 == 0] = NN
+    return np.hstack((prev[new_ind1,:], np.arange(NN)[new_ind2].reshape((-1,1))))
+
+def lens(vectors):
+    return np.sqrt(np.sum(vectors**2,axis=1))
 
 def randsphere(n_points,ndim,radius,center = []):
     if center == []:
