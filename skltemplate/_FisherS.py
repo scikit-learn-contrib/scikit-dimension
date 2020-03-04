@@ -12,7 +12,7 @@ from scipy.special import gammainc
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
 import scipy.io
-from ._commonfuncs import randsphere
+from _commonfuncs import randsphere
 
 
 class FisherS(BaseEstimator):
@@ -52,7 +52,6 @@ class FisherS(BaseEstimator):
         self.ProducePlots = ProducePlots
         self.ncomp = ncomp
         self.limit_maxdim = limit_maxdim
-
         
     def fit(self,X):
         """A reference implementation of a fitting function.
@@ -66,6 +65,7 @@ class FisherS(BaseEstimator):
         self : object
             Returns self.
         """
+        
         X = check_array(X, accept_sparse=False)
         
         self.n_alpha,self.n_single,self.p_alpha,self.alphas,self.separable_fraction,self.Xp = self._SeparabilityAnalysis(X)
@@ -138,7 +138,9 @@ class FisherS(BaseEstimator):
 
         return X    
 
-    def _probability_inseparable_sphere(self,n):
+    
+    @staticmethod
+    def _probability_inseparable_sphere(alphas,n):
         ''' 
         %probability_inseparable_sphere calculate theoretical probability for point
         %to be inseparable for dimension n
@@ -149,7 +151,7 @@ class FisherS(BaseEstimator):
         %
         %Outputs:
         %   p is c-by-d matrix of probabilities.'''
-        p = np.power((1-np.power(self.alphas,2)),(n-1)/2)/(self.alphas*np.sqrt(2*np.pi*n))
+        p = np.power((1-np.power(alphas,2)),(n-1)/2)/(alphas*np.sqrt(2*np.pi*n))
         return p
 
     def _checkSeparability(self,xy):
@@ -182,19 +184,21 @@ class FisherS(BaseEstimator):
 
         #Number of points per 1 loop. 20k assumes approx 3.2GB
         nP = 2000
-
+        
+        alphas = self.alphas
         #Normalize alphas
-        if len(self.alphas[:,0])>1:
-            self.alphas = self.alphas.T
+        if len(alphas[:,0])>1:
+            alphas = alphas.T
         addedone = 0
         if max(self.alphas[0,:])<1:
-            self.alphas = np.array([np.append(self.alphas,1)])
+            alphas = np.array([np.append(alphas,1)])
             addedone = 1
 
-        self.alphas = np.concatenate([[float('-inf')],self.alphas[0,:], [float('inf')]])
-
+        alphas = np.concatenate([[float('-inf')],alphas[0,:], [float('inf')]])
+        
+        
         n = len(data)
-        counts = np.zeros((n, len(self.alphas)))
+        counts = np.zeros((n, len(alphas)))
         leng = np.zeros((n, 1))
         for k in range(0,n,nP):
             #print('Chunk +{}'.format(k))
@@ -206,7 +210,7 @@ class FisherS(BaseEstimator):
             leng[k:e] = np.diag(xy)[:,None]
             xy = xy - np.diag(leng[k:e].squeeze())
             xy = xy / leng[k:e]
-            counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, self.alphas)
+            counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, alphas)
             # Calculate nondiagonal part
             for kk in range(0,n,nP):
                 #Ignore diagonal part
@@ -218,7 +222,7 @@ class FisherS(BaseEstimator):
 
                 xy = data[k:e, :] @ data[kk:ee, :].T
                 xy = xy / leng[k:e]
-                counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, self.alphas)
+                counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, alphas)
 
         #Calculate cumulative sum
         counts = np.cumsum(counts[:,::-1],axis=1)[:,::-1]
@@ -237,89 +241,49 @@ class FisherS(BaseEstimator):
         return separ_fraction, py
 
 
-def dimension_uniform_sphere(self,py):
-    '''
-    %Gives an estimation of the dimension of uniformly sampled n-sphere
-    %corresponding to the average probability of being inseparable and a margin
-    %value 
-    %
-    %Inputs:
-    %   py - average fraction of data points which are INseparable.
-    %   alphas - set of values (margins), must be in the range (0;1)
-    % It is assumed that the length of py and alpha vectors must be of the
-    % same.
-    %
-    %Outputs:
-    %   n - effective dimension profile as a function of alpha
-    %   n_single_estimate - a single estimate for the effective dimension 
-    %   alfa_single_estimate is alpha for n_single_estimate.
-    '''
-    
-    if len(py)!=len(self.alphas[0,:]):
-        raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
-    
-    if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
-        raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
+    def _dimension_uniform_sphere(self,py):
+        '''
+        %Gives an estimation of the dimension of uniformly sampled n-sphere
+        %corresponding to the average probability of being inseparable and a margin
+        %value 
+        %
+        %Inputs:
+        %   py - average fraction of data points which are INseparable.
+        %   alphas - set of values (margins), must be in the range (0;1)
+        % It is assumed that the length of py and alpha vectors must be of the
+        % same.
+        %
+        %Outputs:
+        %   n - effective dimension profile as a function of alpha
+        %   n_single_estimate - a single estimate for the effective dimension 
+        %   alfa_single_estimate is alpha for n_single_estimate.
+        '''
+        
+        if len(py)!=len(self.alphas[0,:]):
+            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
 
-    #Calculate dimension for each alpha
-    n = np.zeros((len(self.alphas[0,:])))
-    for i in range(len(self.alphas[0,:])):
-        if py[i] == 0:
-            #All points are separable. Nothing to do and not interesting
-            n[i]=np.nan
-        else:
-            p  = py[i]
-            a2 = self.alphas[0,i]**2
-            w = np.log(1-a2)
-            n[i] = np.real(lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
- 
-    n[n==np.inf] = float('nan')
-    #Find indices of alphas which are not completely separable 
-    inds = np.where(~np.isnan(n))[0]
-    if len(inds) == 0:
-        warnings.warn('All points are fully separable for any of the chosen alphas')
-        return n,np.array([np.nan]),np.nan
-    
-    #Find the maximal value of such alpha
-    alpha_max = max(self.alphas[0,inds])
-    #The reference alpha is the closest to 90 of maximal partially separable alpha
-    alpha_ref = alpha_max*0.9
-    k = np.where(abs(self.alphas[0,inds]-alpha_ref)==min(abs(self.alphas[0,:]-alpha_ref)))[0]
-    #Get corresponding values
-    alfa_single_estimate = self.alphas[0,inds[k]]
-    n_single_estimate = n[inds[k]]
-    
-    return n,n_single_estimate,alfa_single_estimate
+        if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
+            raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
 
+        #Calculate dimension for each alpha
+        n = np.zeros((len(self.alphas[0,:])))
+        for i in range(len(self.alphas[0,:])):
+            if py[i] == 0:
+                #All points are separable. Nothing to do and not interesting
+                n[i]=np.nan
+            else:
+                p  = py[i]
+                a2 = self.alphas[0,i]**2
+                w = np.log(1-a2)
+                n[i] = np.real(lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
 
-def dimension_uniform_ball_robust(self,py):
-    '''modification to return selected index and handle the case where all values are 0'''
-    if len(py)!=len(self.alphas[0,:]):
-        raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
+        n[n==np.inf] = float('nan')
+        #Find indices of alphas which are not completely separable 
+        inds = np.where(~np.isnan(n))[0]
+        if len(inds) == 0:
+            warnings.warn('All points are fully separable for any of the chosen alphas')
+            return n,np.array([np.nan]),np.nan
 
-    if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
-        raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
-
-    #Calculate dimension for each alpha
-    n = np.zeros((len(self.alphas[0,:])))
-    for i in range(len(self.alphas[0,:])):
-        if py[i] == 0:
-            #All points are separable. Nothing to do and not interesting
-            n[i]=np.nan
-        else:
-            p  = py[i]
-            a2 = self.alphas[0,i]**2
-            w = np.log(1-a2)
-            n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
-
-    n[n==np.inf] = float('nan')
-    #Find indices of alphas which are not completely separable 
-    inds = np.where(~np.isnan(n))[0]
-    if inds.size==0:
-        n_single_estimate = np.nan
-        alfa_single_estimate = np.nan
-        return n,n_single_estimate,alfa_single_estimate
-    else:
         #Find the maximal value of such alpha
         alpha_max = max(self.alphas[0,inds])
         #The reference alpha is the closest to 90 of maximal partially separable alpha
@@ -329,7 +293,47 @@ def dimension_uniform_ball_robust(self,py):
         alfa_single_estimate = self.alphas[0,inds[k]]
         n_single_estimate = n[inds[k]]
 
-        return n,n_single_estimate,alfa_single_estimate,inds[k]
+        return n,n_single_estimate,alfa_single_estimate
+
+
+    def _dimension_uniform_sphere_robust(self,py):
+        '''modification to return selected index and handle the case where all values are 0'''
+        if len(py)!=len(self.alphas[0,:]):
+            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
+
+        if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
+            raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
+
+        #Calculate dimension for each alpha
+        n = np.zeros((len(self.alphas[0,:])))
+        for i in range(len(self.alphas[0,:])):
+            if py[i] == 0:
+                #All points are separable. Nothing to do and not interesting
+                n[i]=np.nan
+            else:
+                p  = py[i]
+                a2 = self.alphas[0,i]**2
+                w = np.log(1-a2)
+                n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
+
+        n[n==np.inf] = float('nan')
+        #Find indices of alphas which are not completely separable 
+        inds = np.where(~np.isnan(n))[0]
+        if inds.size==0:
+            n_single_estimate = np.nan
+            alfa_single_estimate = np.nan
+            return n,n_single_estimate,alfa_single_estimate
+        else:
+            #Find the maximal value of such alpha
+            alpha_max = max(self.alphas[0,inds])
+            #The reference alpha is the closest to 90 of maximal partially separable alpha
+            alpha_ref = alpha_max*0.9
+            k = np.where(abs(self.alphas[0,inds]-alpha_ref)==min(abs(self.alphas[0,:]-alpha_ref)))[0]
+            #Get corresponding values
+            alfa_single_estimate = self.alphas[0,inds[k]]
+            n_single_estimate = n[inds[k]]
+
+            return n,n_single_estimate,alfa_single_estimate,inds[k]
 
 
     def point_inseparability_to_pointID(self,idx='all_inseparable', force_definite_dim=False, verbose=True):
@@ -427,11 +431,11 @@ def dimension_uniform_ball_robust(self,py):
         # Preprocess data
         Xp = self._preprocessing(X,1,1,1)
         # Check separability
-        separable_fraction,p_alpha = self._checkSeparabilityMultipleAlpha(Xp)    
-        # Calculate mean of fraction of separable points for each alpha.
+        separable_fraction,p_alpha = self._checkSeparabilityMultipleAlpha(Xp)  
+        # Calculate mean fraction of separable points for each alpha.
         py_mean = np.mean(p_alpha,axis=1)    
         n_alpha,n_single,alpha_single = self._dimension_uniform_sphere(py_mean)
-
+        
         alpha_ind_selected = np.where(n_single==n_alpha)[0]
 
         if self.limit_maxdim:
@@ -479,5 +483,4 @@ def dimension_uniform_ball_robust(self,py):
             plt.title('Theor.curves for n=%i:%i'%(n_min,n_max))
             plt.show()
 
-
-        return n_alpha,n_single,p_alpha,alphas,separable_fraction,Xp
+        return n_alpha,n_single,p_alpha,self.alphas,separable_fraction,Xp

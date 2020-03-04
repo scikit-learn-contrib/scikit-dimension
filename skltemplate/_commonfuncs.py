@@ -1,9 +1,29 @@
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import gammainc
-from functools import lru_cache
 
-@lru_cache()
+
+def efficient_indnComb(n,k):
+    '''
+    memory-efficient indnComb:
+    uniformly takes 5000 samples from itertools.combinations(n,k)
+    '''
+    ncomb=binom_coeff(n,k)
+    pop=itertools.combinations(range(n),k)
+    targets = set(random.sample(range(ncomb), 5000))
+    return np.array(list(itertools.compress(pop, map(targets.__contains__, itertools.count()))))
+
+def indComb(NN):
+    pt1 = np.tile(range(NN), NN)
+    pt2 = np.repeat(range(NN), NN)
+
+    un = pt1 > pt2
+
+    pt1 = pt1[un]
+    pt2 = pt2[un]
+
+    return pt1,pt2,np.hstack((pt2[:,None],pt1[:,None]))
+
 def indnComb(NN, n):
     if (n == 1):
         return(np.arange(NN).reshape((-1,1)))
