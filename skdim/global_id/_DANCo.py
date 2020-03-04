@@ -49,6 +49,13 @@ class DANCo(BaseEstimator):
         The KL divergence between data and reference data for the estimated dimension (if ver == 'DANCo').
     calibration_data : dict
         Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
+        
+    ----------
+    References
+    
+    Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
+
+    Rozza, A et al. (2012) Novel high intrinsic dimensionality estimators. Machine learning 89, 37-65. 
     """
     def __init__(self,k=10,D=100,calibration_data=None,ver='DANCo',fractal=True,verbose=False):
         self.k = k

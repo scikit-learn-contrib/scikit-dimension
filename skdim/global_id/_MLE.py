@@ -7,7 +7,11 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(BaseEstimator):    
-    """ Intrinsic dimension estimation with the Maximum Likelihood method
+    """ Intrinsic dimension estimation with the Maximum Likelihood method. The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. The estimator in the paper is obtained using default parameters and dnoise = dnoiseGaussH.
+
+    With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = 'iteration', five iterations is used to determine m.
+
+    maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. 
     
     ----------
     Parameters
@@ -30,8 +34,17 @@ class MLE(BaseEstimator):
     ---------
     Returns
     
-    dimension_
+    dimension_ : float
         The estimated intrinsic dimension
+      
+    ---------  
+    References
+    
+    Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.
+
+    Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.
+
+    Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press. 
     
     """
     def __init__(self, k, dnoise = None, sigma = 0, n = None,

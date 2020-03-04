@@ -14,12 +14,24 @@ class CorrInt(BaseEstimator):
     """ A template estimator to be used as a reference implementation.
     For more information regarding how to build your own estimator, read more
     in the :ref:`User Guide <user_guide>`.
-    Parameters
+    
+    Attributes
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    k1 : int
+        First neighborhood size considered
+    k2 : int
+        Last neighborhood size considered
+    DM : bool, default=False
+        Is the input a precomputed distance matrix (dense)
+        
+    Returns
+    ----------
+    
+    dimension_ : float
+        The estimated intrinsic dimension
+    
     """
-    def __init__(self,k1 = 10, k2 = 20, DM = None):
+    def __init__(self,k1 = 10, k2 = 20, DM = False):
         self.k1 = k1
         self.k2 = k2
         self.DM = DM
@@ -48,10 +60,10 @@ class CorrInt(BaseEstimator):
 
         dists, _ = get_nn(X,self.k2)
 
-        if self.DM is None:
+        if self.DM is False:
             chunked_distmat = pairwise_distances_chunked(X)
         else:
-            chunked_distmat = DM
+            chunked_distmat = X
 
         r1 = np.median(dists[:, self.k1-1])
         r2 = np.median(dists[:, -1])
