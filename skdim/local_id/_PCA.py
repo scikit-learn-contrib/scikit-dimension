@@ -66,9 +66,6 @@ class lPCA(BaseEstimator):
 
 
     def _pcaLocalDimEst(self, X):
-        if self.maxdim is None:
-            self.maxdim = X.shape[1]
-
         pca = PCA().fit(X)
         explained_var = pca.explained_variance_    
 
@@ -106,3 +103,34 @@ class lPCA(BaseEstimator):
                                     np.where((np.cumsum(explained_var)/sum(explained_var))>self.betaFan)[0])))
         try: return de, gaps[de-1]
         except: return de, gaps[-1]
+        
+        
+        
+        
+##### dev in progress
+from sklearn.cluster import KMeans
+def pcaOtpmPointwiseDimEst(data, N, alpha = 0.05):
+    km = KMeans(n_clusters=N)
+    km.fit(data)
+    pt = km.cluster_centers_
+    pt_bm = km.labels_
+    pt_sm = np.repeat(np.nan, len(pt_bm))
+
+    for k in range(len(data)):
+        pt_sm[k] = np.argmin(lens(pt[[i for i in range(N) if i!=pt_bm[k]],:] - data[k,:]))
+        if (pt_sm[k] >= pt_bm[k]):
+            pt_sm[k] += 1
+
+    de_c = np.repeat(np.nan, N)
+    nbr_nb_c = np.repeat(np.nan, N)
+    for k in range(N):
+        nb = np.unique(np.concatenate((pt_sm[pt_bm == k], pt_bm[pt_sm == k]))).astype(int)
+        nbr_nb_c[k] = len(nb)
+        loc_dat = pt[nb,:] - pt[k,:]
+        if len(loc_dat) == 1:
+            continue
+        de_c[k] = lPCA().fit(loc_dat).dimension_ #pcaLocalDimEst(loc_dat, ver = "FO", alphaFO = alpha)
+
+    de = de_c[pt_bm]
+    nbr_nb = nbr_nb_c[pt_bm]
+    return de, nbr_nb
