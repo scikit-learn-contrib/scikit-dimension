@@ -7,13 +7,32 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(BaseEstimator):    
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-    Parameters
+    """ Intrinsic dimension estimation with the Maximum Likelihood method
+    
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    Parameters
+    
+    k : int
+        Number of neighbors used for each dimension estimation.
+    dnoise : function
+        Vector valued function giving the transition density.
+    sigma : float, default=0
+        Estimated standard deviation for the noise.
+    n : int, default='None'
+        Dimension of the noise (at least data.shape[1])
+    integral.approximation : str, default='Haro'
+        Can take values 'Haro', 'guaranteed.convergence', 'iteration'
+    neighborhood.based : bool, default='True'
+        means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
+    K : int, default=5
+        Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
+        
+    ---------
+    Returns
+    
+    dimension_
+        The estimated intrinsic dimension
+    
     """
     def __init__(self, k, dnoise = None, sigma = 0, n = None,
                     integral_approximation = 'Haro', unbiased = False,

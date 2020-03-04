@@ -43,9 +43,6 @@ class TwoNN(BaseEstimator):
     
     -----------
     Parameters:
-    
-    X : 2d array-like
-        2d data matrix. Samples on rows and features on columns.
     return_xy : bool (default=False)
         Whether to return also the coordinate vectors used for the linear fit.
     discard_fraction : float between 0 and 1
@@ -80,7 +77,7 @@ class TwoNN(BaseEstimator):
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
+            A data set for which the intrinsic dimension is estimated.
 
         Returns
         -------

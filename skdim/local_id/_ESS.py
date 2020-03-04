@@ -17,25 +17,22 @@ class ESS(BaseEstimator):
     Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.
     
     -----------
-    Parameters:
+    Attributes
     
-    X : 2d array-like
-        2d data matrix. Samples on rows and features on columns.
+   ver : str, 'a' or 'b'
+       See Johnsson et al. (2015).
+    d : int, default=1
+        For ver ='a', any value of d is possible,  for ver ='b', only d = 1 is supported.
     -----------
-    Returns:
+    Returns
     
-    d : int
-        Intrinsic dimension of the dataset according to TWO-NN.
-    x : 1d array (optional)
-        Array with the -log(mu) values.
-    y : 1d array (optional)
-        Array with the -log(F(mu_{sigma(i)})) values.
+    dimension_ : int
+        Intrinsic dimension of the dataset
+    ess_ : float
+        The Expected Simplex Skewness value.
         
     -----------
     References:
-    
-    [1] E. Facco, M. d’Errico, A. Rodriguez & A. Laio
-        Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
     """
     
     

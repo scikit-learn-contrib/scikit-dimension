@@ -7,7 +7,8 @@ class KNN(BaseEstimator):
     """ A template estimator to be used as a reference implementation.
     For more information regarding how to build your own estimator, read more
     in the :ref:`User Guide <user_guide>`.
-    Parameters
+    
+    Attributes
     ----------
     demo_param : str, default='demo_param'
         A parameter used for demonstation of how to pass and store paramters.

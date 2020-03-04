@@ -8,17 +8,35 @@ from sklearn.utils.validation import check_array
 
 
 class lPCA(BaseEstimator):    
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
+    """ Intrinsic dimension estimation using local PCA.
+    Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
+    Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.
+    All versions assume that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball.
+
     Parameters
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    ver : str 	
+        Version. Possible values: 'FO', 'fan', 'maxgap'.
+    alphaRatio : float
+        Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain (1-alphaRatio) percent of the variance.
+    alphaFO: float
+        Only for ver = 'FO'. An eigenvalue is considered significant if it is larger than alpha times the largest eigenvalue.
+    alphaFan : float
+        Only for ver = 'Fan'. The alpha parameter (large gap threshold).
+    betaFan : float
+        Only for ver = 'Fan'. The beta parameter (total covariance threshold).
+    PFan : float
+        Only for ver = 'Fan'. Total covariance in non-noise.
+    verbose : bool, default=False
+    
+    References
+    ----------
+    Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.
+    
+    Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050. 
     """
     def __init__(self, ver = 'FO', alphaRatio = .05, alphaFO = .05, alphaFan = 10, betaFan = .8,
-                 PFan = .95, maxdim = None,
-                 verbose = True):
+                 PFan = .95, verbose = True):
         
         self.ver = ver
         self.alphaRatio = alphaRatio
@@ -26,7 +44,6 @@ class lPCA(BaseEstimator):
         self.alphaFan = alphaFan
         self.betaFan = betaFan
         self.PFan = PFan
-        self.maxdim = maxdim
         self.verbose = verbose
         
     def fit(self,X):
@@ -34,7 +51,7 @@ class lPCA(BaseEstimator):
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
+            A local dataset of training input samples.
 
         Returns
         -------

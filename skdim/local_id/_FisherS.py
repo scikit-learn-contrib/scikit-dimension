@@ -17,28 +17,41 @@ from _commonfuncs import randsphere
 
 class FisherS(BaseEstimator):
     """
-    Class to calculate the intrinsic dimension of the provided data points with the FisherS algorithm.
+    Intrinsic dimension estimation using the FisherS algorithm.
     
     -----------
-    Parameters:
-    
-    X : 2d array-like
-        2d data matrix. Samples on rows and features on columns.
+    Attributes
+    ConditionalNumber : - a positive real value used to select the top
+            princinpal components. We consider only PCs with eigen values
+            which are not less than the maximal eigenvalue divided by
+            ConditionalNumber Default value is 10.
+    ProjectOnSphere :  a boolean value indicating if projecting on a
+            sphere should be performed. Default value is true.
+    alphas : 2D np.array, float
+        A row vector of floats, with alpha range, the values must be given increasing
+            within (0,1) interval. Default is np.arange(.6,1,.02)[None].
+    ProducePlots : bool, default=False
+        A boolean value indicating if the standard plots need to be drawn.
+    ncomp : bool
+        Whether to print number of retained principal components
+    limit_maxdim : bool
+        Whether to cap estimated maxdim to the embedding dimension
+       
     -----------
-    Returns:
+    Returns
     
-    d : int
-        Intrinsic dimension of the dataset according to TWO-NN.
-    x : 1d array (optional)
-        Array with the -log(mu) values.
-    y : 1d array (optional)
-        Array with the -log(F(mu_{sigma(i)})) values.
-        
+    n_alpha : 1D np.array, float
+        Effective dimension profile as a function of alpha
+    n_single : float
+        A single estimate for the effective dimension 
+    p_alpha : 2D np.array, float
+        Distributions as a function of alpha, matrix with columns corresponding to the alpha values, and with rows corresponding to objects. 
+    separable_fraction : 1D np.array, float
+        Separable fraction of data points as a function of alpha
+    alphas : 2D np.array, float
+        Input alpha values    
     -----------
-    References:
-    
-    [1] E. Facco, M. d’Errico, A. Rodriguez & A. Laio
-        Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
+    References
     """
     
     

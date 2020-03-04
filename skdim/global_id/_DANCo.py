@@ -23,13 +23,32 @@ from _commonfuncs import binom_coeff, get_nn, randsphere, lens, indnComb
 
 class DANCo(BaseEstimator):
     
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-    Parameters
+    """ Intrinsic dimension estimation with the DANCo (Ceruti et al. 2012), MIND_MLi and MIND_MLk (Rozza et al. 2012) methods. 
+    
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    Attributes
+    
+    k :	
+        Neighborhood parameter.
+    D :	
+        Maximal dimension
+    ver : str, default='DANCo'
+        Version to use. possible values: 'DANCo', 'MIND_MLi', 'MIND_MLk'.
+    calibration_data : dict, default=None
+        Precomputed calibration data. 
+    fractal : bool, default=True
+        Whether to return fractal rather than integer dimension
+    verbose : bool, default=False
+    
+    ----------
+    Returns
+    
+    dimension_ : int or float
+        The estimated intrinsic dimension
+    kl_divergence : float
+        The KL divergence between data and reference data for the estimated dimension (if ver == 'DANCo').
+    calibration_data : dict
+        Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
     """
     def __init__(self,k=10,D=100,calibration_data=None,ver='DANCo',fractal=True,verbose=False):
         self.k = k
@@ -44,7 +63,7 @@ class DANCo(BaseEstimator):
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
+            A data set for which the intrinsic dimension is estimated.
 
         Returns
         -------
