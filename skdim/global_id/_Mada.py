@@ -20,12 +20,13 @@ class Mada(BaseEstimator):
         self.DM = DM
         self.local = local
         
-    def fit(self,X):
+    def fit(self,X,y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             The training input samples.
+        y : dummy parameter to respect the sklearn API
 
         Returns
         -------
@@ -33,6 +34,15 @@ class Mada(BaseEstimator):
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+            
+        self._k = len(X)-1 if self.k >= len(X) else self.k  
+
         self.dimension_ = self._mada(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -48,7 +58,7 @@ class Mada(BaseEstimator):
 
         n = len(distmat)
 
-        if (self.local == False):  
+        if (self.local == False and n>10000):  
             ID = np.random.choice(n, size=int(np.round(n/2)), replace = False)
             tmpD = distmat[ID,:]
             tmpD[tmpD == 0] = np.max(tmpD)
@@ -58,8 +68,8 @@ class Mada(BaseEstimator):
             tmpD[tmpD == 0] = np.max(tmpD)
 
         sortedD = np.sort(tmpD,axis=0,kind='mergesort')
-        RK = sortedD[self.k-1,:]
-        RK2 = sortedD[int(np.floor(self.k/2)-1), ]
+        RK = sortedD[self._k-1,:]
+        RK2 = sortedD[int(np.floor(self._k/2)-1),:]
         ests = np.log(2)/np.log(RK/RK2)
         
         if (self.local == True):  

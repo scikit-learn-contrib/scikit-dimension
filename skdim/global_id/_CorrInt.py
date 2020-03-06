@@ -1,6 +1,7 @@
 import sys
 sys.path.append('..')
 
+import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
 from _commonfuncs import get_nn
@@ -36,19 +37,32 @@ class CorrInt(BaseEstimator):
         self.k2 = k2
         self.DM = DM
         
-    def fit(self,X):
+    def fit(self,X, y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             The training input samples.
-
+        y : dummy parameter to respect the sklearn API
+        
         Returns
         -------
         self : object
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+
+        if self.k2 >= len(X):
+            warnings.warn('k2 larger or equal to len(X), using len(X)-1')
+        if self.k1 >= len(X):
+            warnings.warn('k1 larger or equal to len(X), using len(X)-2')
+        
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -58,14 +72,14 @@ class CorrInt(BaseEstimator):
 
         n_elements = len(X)**2 #number of elements
 
-        dists, _ = get_nn(X,self.k2)
+        dists, _ = get_nn(X,min(self.k2,len(X)-1))
 
         if self.DM is False:
             chunked_distmat = pairwise_distances_chunked(X)
         else:
             chunked_distmat = X
 
-        r1 = np.median(dists[:, self.k1-1])
+        r1 = np.median(dists[:, min(self.k1-1,len(X)-2)])
         r2 = np.median(dists[:, -1])
 
 

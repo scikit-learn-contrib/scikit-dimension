@@ -41,12 +41,13 @@ class ESS(BaseEstimator):
         self.d = d
         self.random_state = random_state
         
-    def fit(self,X):
+    def fit(self,X,y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             The training input samples.
+        y : dummy parameter to respect the sklearn API
 
         Returns
         -------
@@ -54,6 +55,14 @@ class ESS(BaseEstimator):
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+            
+            
         self.random_state_ = check_random_state(self.random_state)
         
         self.dimension_, self.essval_ = self._essLocalDimEst(X)

@@ -27,7 +27,7 @@ class FisherS(BaseEstimator):
             ConditionalNumber Default value is 10.
     ProjectOnSphere :  a boolean value indicating if projecting on a
             sphere should be performed. Default value is true.
-    alphas : 2D np.array, float
+    test_alphas : 2D np.array, float
         A row vector of floats, with alpha range, the values must be given increasing
             within (0,1) interval. Default is np.arange(.6,1,.02)[None].
     ProducePlots : bool, default=False
@@ -56,7 +56,7 @@ class FisherS(BaseEstimator):
     
     
     def __init__(self, ConditionalNumber = 10, ProjectOnSphere = 1,
-                 alphas = np.array([np.arange(.6,1,.02)]), ProducePlots = False, 
+                 alphas = None, ProducePlots = False, 
                  ncomp = 0,limit_maxdim=False):
 
         self.ConditionalNumber = ConditionalNumber
@@ -66,12 +66,13 @@ class FisherS(BaseEstimator):
         self.ncomp = ncomp
         self.limit_maxdim = limit_maxdim
         
-    def fit(self,X):
+    def fit(self,X, y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             The training input samples.
+        y : dummy parameter to respect the sklearn API
 
         Returns
         -------
@@ -80,7 +81,16 @@ class FisherS(BaseEstimator):
         """
         
         X = check_array(X, accept_sparse=False)
-        
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+            
+        if self.alphas == None: #test_alphas introduced to pass sklearn checks (sklearn doesn't like arrays as default parameters)
+            self._alphas = np.arange(.6,1,.02)[None]
+            
         self.n_alpha_,self.dimension_,self.p_alpha_,self.alphas_,self.separable_fraction_,self.Xp_ = self._SeparabilityAnalysis(X)
         
         self.is_fitted_ = True
@@ -171,7 +181,7 @@ class FisherS(BaseEstimator):
         dxy = np.diag(xy)
         sm = (xy/dxy).T
         sm = sm - np.diag(np.diag(sm))
-        sm = sm>self.alphas
+        sm = sm>self._alphas
         py = sum(sm.T)
         py = py/len(py[0,:])
         separ_fraction = sum(py==0)/len(py[0,:])
@@ -198,12 +208,12 @@ class FisherS(BaseEstimator):
         #Number of points per 1 loop. 20k assumes approx 3.2GB
         nP = 2000
         
-        alphas = self.alphas
+        alphas = self._alphas
         #Normalize alphas
         if len(alphas[:,0])>1:
             alphas = alphas.T
         addedone = 0
-        if max(self.alphas[0,:])<1:
+        if max(self._alphas[0,:])<1:
             alphas = np.array([np.append(alphas,1)])
             addedone = 1
 
@@ -272,21 +282,21 @@ class FisherS(BaseEstimator):
         %   alfa_single_estimate is alpha for n_single_estimate.
         '''
         
-        if len(py)!=len(self.alphas[0,:]):
-            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
+        if len(py)!=len(self._alphas[0,:]):
+            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self._alphas[0,:])))
 
-        if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
+        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
             raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
 
         #Calculate dimension for each alpha
-        n = np.zeros((len(self.alphas[0,:])))
-        for i in range(len(self.alphas[0,:])):
+        n = np.zeros((len(self._alphas[0,:])))
+        for i in range(len(self._alphas[0,:])):
             if py[i] == 0:
                 #All points are separable. Nothing to do and not interesting
                 n[i]=np.nan
             else:
                 p  = py[i]
-                a2 = self.alphas[0,i]**2
+                a2 = self._alphas[0,i]**2
                 w = np.log(1-a2)
                 n[i] = np.real(lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
 
@@ -298,12 +308,12 @@ class FisherS(BaseEstimator):
             return n,np.array([np.nan]),np.nan
 
         #Find the maximal value of such alpha
-        alpha_max = max(self.alphas[0,inds])
+        alpha_max = max(self._alphas[0,inds])
         #The reference alpha is the closest to 90 of maximal partially separable alpha
         alpha_ref = alpha_max*0.9
-        k = np.where(abs(self.alphas[0,inds]-alpha_ref)==min(abs(self.alphas[0,:]-alpha_ref)))[0]
+        k = np.where(abs(self._alphas[0,inds]-alpha_ref)==min(abs(self._alphas[0,:]-alpha_ref)))[0]
         #Get corresponding values
-        alfa_single_estimate = self.alphas[0,inds[k]]
+        alfa_single_estimate = self._alphas[0,inds[k]]
         n_single_estimate = n[inds[k]]
 
         return n,n_single_estimate,alfa_single_estimate
@@ -311,21 +321,21 @@ class FisherS(BaseEstimator):
 
     def _dimension_uniform_sphere_robust(self,py):
         '''modification to return selected index and handle the case where all values are 0'''
-        if len(py)!=len(self.alphas[0,:]):
-            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self.alphas[0,:])))
+        if len(py)!=len(self._alphas[0,:]):
+            raise ValueError('length of py (%i) and alpha (%i) does not match'%(len(py),len(self._alphas[0,:])))
 
-        if np.sum(self.alphas <= 0) > 0 or np.sum(self.alphas >= 1) > 0:
+        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
             raise ValueError(['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
 
         #Calculate dimension for each alpha
-        n = np.zeros((len(self.alphas[0,:])))
-        for i in range(len(self.alphas[0,:])):
+        n = np.zeros((len(self._alphas[0,:])))
+        for i in range(len(self._alphas[0,:])):
             if py[i] == 0:
                 #All points are separable. Nothing to do and not interesting
                 n[i]=np.nan
             else:
                 p  = py[i]
-                a2 = self.alphas[0,i]**2
+                a2 = self._alphas[0,i]**2
                 w = np.log(1-a2)
                 n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
 
@@ -338,12 +348,12 @@ class FisherS(BaseEstimator):
             return n,n_single_estimate,alfa_single_estimate
         else:
             #Find the maximal value of such alpha
-            alpha_max = max(self.alphas[0,inds])
+            alpha_max = max(self._alphas[0,inds])
             #The reference alpha is the closest to 90 of maximal partially separable alpha
             alpha_ref = alpha_max*0.9
-            k = np.where(abs(self.alphas[0,inds]-alpha_ref)==min(abs(self.alphas[0,:]-alpha_ref)))[0]
+            k = np.where(abs(self._alphas[0,inds]-alpha_ref)==min(abs(self._alphas[0,:]-alpha_ref)))[0]
             #Get corresponding values
-            alfa_single_estimate = self.alphas[0,inds[k]]
+            alfa_single_estimate = self._alphas[0,inds[k]]
             n_single_estimate = n[inds[k]]
 
             return n,n_single_estimate,alfa_single_estimate,inds[k]
@@ -374,7 +384,7 @@ class FisherS(BaseEstimator):
 
         #select palpha and corresponding alpha
         palpha_selected = self.p_alpha[selected_idx,:]
-        alpha_selected = self.alphas[0,selected_idx]
+        alpha_selected = self._alphas[0,selected_idx]
 
 
         py=palpha_selected.copy()
@@ -465,7 +475,7 @@ class FisherS(BaseEstimator):
             ns = np.arange(n_min,n_max+1)
 
             plt.figure()
-            plt.plot(self.alphas[0,:],n_alpha,'ko-');plt.plot(self.alphas[0,alpha_ind_selected],n_single,'rx',markersize=16)
+            plt.plot(self._alphas[0,:],n_alpha,'ko-');plt.plot(self._alphas[0,alpha_ind_selected],n_single,'rx',markersize=16)
             plt.xlabel('\u03B1',fontsize=16); plt.ylabel('Effective dimension',fontsize=16) ; locs, labels = plt.xticks(); plt.show()
             nbins = int(round(np.floor(npoints/200)))
 
@@ -475,25 +485,25 @@ class FisherS(BaseEstimator):
 
             plt.figure()
             plt.hist(p_alpha[alpha_ind_selected,:][0],bins=nbins)
-            plt.xlabel('inseparability prob.p for \u03B1=%2.2f'%(self.alphas[0,alpha_ind_selected]),fontsize=16); plt.ylabel('Number of values');plt.show()
+            plt.xlabel('inseparability prob.p for \u03B1=%2.2f'%(self._alphas[0,alpha_ind_selected]),fontsize=16); plt.ylabel('Number of values');plt.show()
 
             plt.figure()
             plt.xticks(locs,labels);
-            pteor = np.zeros((len(ns),len(self.alphas[0,:])))
+            pteor = np.zeros((len(ns),len(self._alphas[0,:])))
             for k in range(len(ns)):
-                for j in range(len(self.alphas[0,:])):
-                    pteor[k,j] = self._probability_inseparable_sphere(self.alphas[0,j],ns[k])
+                for j in range(len(self._alphas[0,:])):
+                    pteor[k,j] = self._probability_inseparable_sphere(self._alphas[0,j],ns[k])
 
             for i in range(len(pteor[:,0])):
-                plt.semilogy(self.alphas[0,:],pteor[i,:],'-',color='r')
-            plt.xlim(min(self.alphas[0,:]),1)
+                plt.semilogy(self._alphas[0,:],pteor[i,:],'-',color='r')
+            plt.xlim(min(self._alphas[0,:]),1)
             if True in np.isnan(n_alpha):
-                plt.semilogy(self.alphas[0,:np.where(np.isnan(n_alpha))[0][0]],py_mean[:np.where(np.isnan(n_alpha))[0][0]],'bo-','LineWidth',3);
+                plt.semilogy(self._alphas[0,:np.where(np.isnan(n_alpha))[0][0]],py_mean[:np.where(np.isnan(n_alpha))[0][0]],'bo-','LineWidth',3);
             else: 
-                plt.semilogy(self.alphas[0,:],py_mean,'bo-','LineWidth',3);
+                plt.semilogy(self._alphas[0,:],py_mean,'bo-','LineWidth',3);
 
             plt.xlabel('\u03B1'); plt.ylabel('Mean inseparability prob.',fontsize=16);
             plt.title('Theor.curves for n=%i:%i'%(n_min,n_max))
             plt.show()
 
-        return n_alpha,n_single,p_alpha,self.alphas,separable_fraction,Xp
+        return n_alpha,n_single,p_alpha,self._alphas,separable_fraction,Xp

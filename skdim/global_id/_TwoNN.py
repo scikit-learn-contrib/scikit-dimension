@@ -72,12 +72,13 @@ class TwoNN(BaseEstimator):
         self.discard_fraction = discard_fraction
         self.dist = dist
         
-    def fit(self,X):
+    def fit(self,X,y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             A data set for which the intrinsic dimension is estimated.
+        y : dummy parameter to respect the sklearn API
 
         Returns
         -------
@@ -85,6 +86,12 @@ class TwoNN(BaseEstimator):
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
         
         if self.return_xy:
             self.dimension_, self.x_, self.y_ = self._twonn(X)

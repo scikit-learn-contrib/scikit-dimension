@@ -12,6 +12,7 @@ sys.path.append('..')
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
+import warnings
 import numpy as np
 import pickle
 from sklearn.neighbors import NearestNeighbors
@@ -65,12 +66,13 @@ class DANCo(BaseEstimator):
         self.verbose = verbose
         self.fractal = fractal
         
-    def fit(self,X):
+    def fit(self,X,y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             A data set for which the intrinsic dimension is estimated.
+        y : dummy parameter to respect the sklearn API
 
         Returns
         -------
@@ -78,6 +80,17 @@ class DANCo(BaseEstimator):
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+            
+        if self.k >= len(X):
+            warnings.warn('k1 larger or equal to len(X), using len(X)-1')
+        
+        
         self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -137,7 +150,7 @@ class DANCo(BaseEstimator):
 
 
     def _MIND_MLx(self, X, D):
-        nbh_data,idx = get_nn(X, self.k+1)
+        nbh_data,idx = get_nn(X, min(self.k+1,len(X)-1))
         rhos = nbh_data[:,0]/nbh_data[:,-1]
 
         d_MIND_MLk = self._MIND_MLk(rhos, D)
@@ -195,7 +208,7 @@ class DANCo(BaseEstimator):
         return dict(nu = nu, tau = tau)
 
     def _dancoDimEstNoCalibration(self, X, D, n_jobs=1):
-        nbh_data,idx = get_nn(X, self.k+1, n_jobs=n_jobs)
+        nbh_data,idx = get_nn(X, min(self.k+1,len(X)-1), n_jobs=n_jobs)
         rhos = nbh_data[:,0]/nbh_data[:,-1]
         d_MIND_MLk = self._MIND_MLk(rhos, D)
         d_MIND_MLi = self._MIND_MLi(rhos, D, d_MIND_MLk)

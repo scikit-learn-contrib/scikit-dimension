@@ -16,7 +16,7 @@ class lPCA(BaseEstimator):
     Parameters
     ----------
     ver : str 	
-        Version. Possible values: 'FO', 'fan', 'maxgap'.
+        Version. Possible values: 'FO', 'fan', 'maxgap','ratio'.
     alphaRatio : float
         Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain (1-alphaRatio) percent of the variance.
     alphaFO: float
@@ -46,19 +46,28 @@ class lPCA(BaseEstimator):
         self.PFan = PFan
         self.verbose = verbose
         
-    def fit(self,X):
+    def fit(self,X,y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
             A local dataset of training input samples.
-
+        y : dummy parameter to respect the sklearn API
+        
         Returns
         -------
         self : object
             Returns self.
         """
         X = check_array(X, accept_sparse=False)
+        if len(X) == 1:
+            raise ValueError("Can't fit with 1 sample")
+        if X.shape[1]==1:
+            raise ValueError("Can't fit with n_features = 1")
+        if not np.isfinite(X).all():
+            raise ValueError("X contains inf or NaN")
+
+            
         self.dimension_, self.gap_ = self._pcaLocalDimEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -72,6 +81,8 @@ class lPCA(BaseEstimator):
         if (self.ver == 'FO'): return(self._FO(explained_var))
         elif (self.ver == 'fan'): return(self._fan(explained_var))
         elif (self.ver == 'maxgap'): return(self._maxgap(explained_var))
+        elif (self.ver == 'ratio'): return(self._ratio(explained_var))
+
 
     def _FO(self,explained_var):
         de = sum(explained_var>(self.alphaFO*explained_var[0]))
