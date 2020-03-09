@@ -88,7 +88,7 @@ class DANCo(BaseEstimator):
             raise ValueError("X contains inf or NaN")
             
         if self.k >= len(X):
-            warnings.warn('k1 larger or equal to len(X), using len(X)-1')
+            warnings.warn('k larger or equal to len(X), using len(X)-1')
         
         
         self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
@@ -313,7 +313,7 @@ class DANCo(BaseEstimator):
 
         if self.fractal:
             # Fitting with a cubic smoothing spline:
-            f=interp1d(np.arange(1,self.D+1),kl,kind='cubic')
+            f=interp1d(np.arange(1,self.D+1),kl,kind='cubic',bounds_error=False,fill_value=(1,self.D+1))
             # Locating the minima:
             de_fractal=minimize(f, de, bounds=[(1,self.D+1)],tol=1e-3)['x']
             return de_fractal, kl[de-1], cal
