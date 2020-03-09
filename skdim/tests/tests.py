@@ -60,4 +60,25 @@ def test_corint(data):
 def test_mada(data): 
     r_mada = np.array(ider.mada(data,local=True,k=20))
     mada = global_id.Mada(local=True,k=20).fit(data)
-    assert_array_almost_equal(r_mada,mada.dimension_)   
+    assert_array_almost_equal(r_mada,mada.dimension_)
+    
+def test_mle():
+    #test base params
+    assert np.isclose(        maxLikGlobalDimEst(data, k), 
+                      intdimr.maxLikGlobalDimEst(data, k)[0][0])
+
+    #test dnoise+sigma
+    assert np.isclose(        maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2), 
+                      intdimr.maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2)[0][0])
+
+    #test neighborhood_aggregation = 'mean'
+    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean'), 
+                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean')[0][0])
+
+    #test unbiased = True
+    assert np.isclose(        maxLikGlobalDimEst(data, k, unbiased = True), 
+                      intdimr.maxLikGlobalDimEst(data, k, unbiased = True)[0][0])
+
+    #test neighborhood_based = 'False'
+    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_based = False), 
+                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_based = False)[0][0])

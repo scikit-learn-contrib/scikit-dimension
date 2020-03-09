@@ -13,8 +13,10 @@ class MLE(BaseEstimator):
     maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. 
     
     ----------
-    Parameters
+    Attributes
     
+    mode : str, default='global'
+        Whether to compute 'global', 'local' or 'pointwise' intrinsic dimension
     k : int
         Number of neighbors used for each dimension estimation.
     dnoise : function
@@ -109,13 +111,13 @@ class MLE(BaseEstimator):
         if self.neighborhood_based:
             mi = self.maxLikPointwiseDimEst(X)
 
-            if neighborhood_aggregation == 'maximum.likelihood':
+            if self.neighborhood_aggregation == 'maximum.likelihood':
                 de = 1/np.mean(1/mi) 
 
-            elif neighborhood_aggregation == 'mean':
+            elif self.neighborhood_aggregation == 'mean':
                 de = np.mean(mi) 
-            elif neighborhood_aggregation == 'median':
-                de = robust = np.median(mi)
+            elif self.neighborhood_aggregation == 'median':
+                de = np.median(mi)
             return(de)
 
         else:
@@ -178,7 +180,7 @@ class MLE(BaseEstimator):
         # with 'unbiased' option, estimator is unbiased if no noise or boundary
 
         k = len(Rs)
-        kfac = k-2 if unbiased else k-1
+        kfac = k-2 if self.unbiased else k-1
 
         Rk = np.max(Rs)
         if self.dnoise is None:

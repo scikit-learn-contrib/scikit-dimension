@@ -4,14 +4,26 @@ from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 class KNN(BaseEstimator):    
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-    
+    """ This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.
+
     Attributes
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    
+    X : 2D numeric array
+        A 2D data set with each row describing a data point.
+    k : int
+        Number of distances to neighbors used at a time.
+    ps : 1D numeric array
+        Vector with sample sizes; each sample size has to be larger than k and smaller than nrow(data).
+    M : int, default=1
+        Number of bootstrap samples for each sample size.
+    gamma : int, default=2
+        Weighting constant.
+        
+    References
+    ----------
+    
+    Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. IEEE Trans. on Sig. Proc., 58(2), 650-663. 
     """
     def __init__(self, k=None, ps=None, M=1, gamma = 2):
         self.k = k

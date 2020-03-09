@@ -58,7 +58,7 @@ class DANCo(BaseEstimator):
 
     Rozza, A et al. (2012) Novel high intrinsic dimensionality estimators. Machine learning 89, 37-65. 
     """
-    def __init__(self,k=10,D=100,calibration_data=None,ver='DANCo',fractal=True,verbose=False):
+    def __init__(self,k=10,D=10,calibration_data=None,ver='DANCo',fractal=True,verbose=False):
         self.k = k
         self.D = D
         self.calibration_data = calibration_data
