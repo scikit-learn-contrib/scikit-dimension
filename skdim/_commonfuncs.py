@@ -1,7 +1,20 @@
 import numpy as np
 import itertools
+
+from sklearn.utils.validation import check_random_state
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import gammainc
+from inspect import getmembers, isclass
+import skdim
+
+def get_classes_dicts():
+    local_class_list = [o[1] for o in getmembers(skdim.local_id) if isclass(o[1])]
+    global_class_list = [o[1] for o in getmembers(skdim.global_id) if isclass(o[1])]
+    
+    local_estimators = dict(zip([str(e).split('.')[2][:-2] for e in local_class_list], local_class_list))
+    global_estimators = dict(zip([str(e).split('.')[2][:-2] for e in global_class_list], global_class_list))
+    
+    return local_estimators, global_estimators
 
 
 def indComb(NN):
@@ -44,11 +57,12 @@ def efficient_indnComb(n,k,random_state_):
 def lens(vectors):
     return np.sqrt(np.sum(vectors**2,axis=1))
 
-def randsphere(n_points,ndim,radius,center = []):
+def randsphere(n_points,ndim,radius,center = [],random_state=None):
+    random_state_ = check_random_state(random_state)
     if center == []:
         center = np.array([0]*ndim)
     r = radius
-    x = np.random.normal(size=(n_points, ndim))
+    x = random_state_.normal(size=(n_points, ndim))
     ssq = np.sum(x**2,axis=1)
     fr = r*gammainc(ndim/2,ssq/2)**(1/ndim)/np.sqrt(ssq)
     frtiled = np.tile(fr.reshape(n_points,1),(1,ndim))
@@ -92,3 +106,6 @@ def binom_coeff(n, k):
         total_ways = total_ways * (n - i) // (i + 1)
 
     return total_ways
+
+
+

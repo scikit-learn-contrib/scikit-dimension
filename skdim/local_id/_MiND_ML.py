@@ -1,7 +1,7 @@
 import numpy as np
 import warnings
 from _commonfuncs import get_nn
-from scipy.spatial.distance import pdist, squareform
+from scipy.optimize import minimize
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_random_state
 
@@ -96,16 +96,31 @@ class MiND_ML(BaseEstimator):
         N = len(rhos)
         d_lik = np.array([np.nan]*self.D)
         for d in range(self.D):
-            d_lik[d] = lld(d, rhos, self.k, N)
+            d_lik[d] = self._lld(d, rhos, N)
         return(np.argmax(d_lik))
 
     def _MiND_MLk(self, rhos, dinit):
         #MIND MLI MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER
-        res = minimize(fun=nlld,
+        res = minimize(fun=self._nlld,
                 x0=np.array([dinit]),
-                jac=nlld_gr,
-                args=(rhos, self.k, len(rhos)),
+                jac=self._nlld_gr,
+                args=(rhos, len(rhos)),
                 method = 'L-BFGS-B',
                 bounds=[(0,self.D)])
 
         return(res['x'])  
+    
+    def _nlld(self, d, rhos, N):
+        return(-self._lld(d, rhos, N))
+
+    def _lld(self,d, rhos, N):
+        if (d == 0):
+            return(np.array([-1e30]))
+        else:
+            return N*np.log(self.k*d) + (d-1)*np.sum(np.log(rhos)) + (self.k-1)*np.sum(np.log(1-rhos**d))
+
+    def _nlld_gr(self,d,rhos, N):
+        if (d == 0):
+            return(np.array([-1e30]))
+        else:
+            return -(N/d + np.sum(np.log(rhos) - (self.k-1)*(rhos**d)*np.log(rhos)/(1 - rhos**d)))

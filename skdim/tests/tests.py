@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from skdim import local_id, global_id
 from sklearn.datasets import load_iris
-from inspect import getmembers, isfunction, isclass
+from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.utils.testing import (assert_equal,
@@ -37,6 +37,15 @@ def test_fisher_params(data):
         x = local_id.FisherS(limit_maxdim=True).fit(data)
     except:
         raise AssertionError('test_fisher_params failed')
+        
+def test_lPCA_params(data):
+    try:
+        x = local_id.lPCA().fit(data)
+        x = local_id.lPCA(ver='fan').fit(data)
+        x = local_id.lPCA(ver='ratio').fit(data)
+        x = local_id.lPCA(ver='maxgap').fit(data)
+    except:
+        raise AssertionError('test failed')
         
 def test_ess_params(data):
     try:

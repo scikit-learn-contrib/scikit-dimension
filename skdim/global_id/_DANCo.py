@@ -10,7 +10,7 @@ import sys
 sys.path.append('..')
 
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array
+from sklearn.utils.validation import check_array, check_random_state
 
 import warnings
 import numpy as np
@@ -58,13 +58,14 @@ class DANCo(BaseEstimator):
 
     Rozza, A et al. (2012) Novel high intrinsic dimensionality estimators. Machine learning 89, 37-65. 
     """
-    def __init__(self,k=10,D=10,calibration_data=None,ver='DANCo',fractal=True,verbose=False):
+    def __init__(self,k=10,D=10,calibration_data=None,ver='DANCo',fractal=True,verbose=False,random_state=None):
         self.k = k
         self.D = D
         self.calibration_data = calibration_data
         self.ver = ver
         self.verbose = verbose
         self.fractal = fractal
+        self.random_state = random_state
         
     def fit(self,X,y=None):
         """A reference implementation of a fitting function.
@@ -89,7 +90,9 @@ class DANCo(BaseEstimator):
             
         if self.k >= len(X):
             warnings.warn('k larger or equal to len(X), using len(X)-1')
-        
+            
+        self.random_state_ = check_random_state(self.random_state)
+
         
         self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
         self.is_fitted_ = True
@@ -233,7 +236,7 @@ class DANCo(BaseEstimator):
     def _increaseMaxDimByOne(self,dancoCalDat):
         newdim = dancoCalDat['maxdim'] + 1
         MIND_MLx_maxdim = newdim*2+5
-        dancoCalDat['calibration_data'].append(self._dancoDimEstNoCalibration(randsphere(dancoCalDat['N'], newdim,1,center=[0]*newdim)[0], 
+        dancoCalDat['calibration_data'].append(self._dancoDimEstNoCalibration(randsphere(dancoCalDat['N'], newdim,1,center=[0]*newdim,random_state=self.random_state_)[0], 
                                                                              dancoCalDat['k'], 
                                                                              MIND_MLx_maxdim))
         dancoCalDat['maxdim'] = newdim
