@@ -1,4 +1,5 @@
 import numpy as np
+import warnings
 from _commonfuncs import get_nn
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
@@ -7,29 +8,26 @@ from sklearn.utils.validation import check_array, check_random_state
 
 class TLE(BaseEstimator):
     """
-    Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.
+    Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.
     
     -----------
     Attributes
     
-   ver : str, 'a' or 'b'
-       See Johnsson et al. (2015).
-    d : int, default=1
-        For ver ='a', any value of d is possible,  for ver ='b', only d = 1 is supported.
+   epsilon : float
+   
     -----------
     Returns
     
     dimension_ : int
         Intrinsic dimension of the dataset
-    ess_ : float
-        The Expected Simplex Skewness value.
-        
+
     -----------
     References:
     """
     
     
-    def __init__(self,epsilon=1e-4):
+    def __init__(self, k = 20, epsilon=1e-4):
+        self.k = k
         self.epsilon = epsilon
         
     def fit(self,X,y=None):
@@ -52,12 +50,15 @@ class TLE(BaseEstimator):
             raise ValueError("Can't fit with n_features = 1")
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
+        if self.k >= len(X):
+            warnings.warn('k >= len(X), using k = len(X)-1')
         
-        dists, inds = get_nn(X)
+        
+        dists, inds = get_nn(X,min(self.k,len(X)-1))
         
         self.dimension_ = np.zeros(len(X))
         for i in range(len(X)):
-            self.dimension_[i] = self._idtle(data[inds[i,:]],dists[[i],:])
+            self.dimension_[i] = self._idtle(X[inds[i,:]],dists[[i],:])
                     
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -101,7 +102,7 @@ class TLE(BaseEstimator):
         # will subtract twice this number during ID computation below
         nV0 = np.sum(V0)
         # Drop T & S measurements below epsilon (V4: If $s_{ij}$ is thrown out, then for the sake of balance, $t_{ij}$ should be thrown out as well (or vice versa).)
-        TSeps = (T < epsilon) | (S < epsilon)
+        TSeps = (T < self.epsilon) | (S < self.epsilon)
         np.fill_diagonal(TSeps, 0)
         nTSeps = np.sum(TSeps)
         T[TSeps] = r
@@ -114,7 +115,7 @@ class TLE(BaseEstimator):
         s1t = np.sum(T)
         s1s = np.sum(S)
         # Drop distances below epsilon and compute sum
-        Deps = dists < epsilon
+        Deps = dists < self.epsilon
         nDeps = np.sum(Deps, dtype=int)
         dists = dists[nDeps:]
         s2 = np.sum(np.log(dists/r))
