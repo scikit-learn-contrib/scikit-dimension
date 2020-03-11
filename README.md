@@ -1,3 +1,6 @@
+[![Travis Status](https://travis-ci.com/github/j-bac/skcontrib-id-estimators)](hhttps://travis-ci.com/github/j-bac/skcontrib-id-estimators)
+[![CircleCI Status](https://circleci.com/gh/scikit-learn-contrib/categorical-encoding.svg?style=shield&circle-token=:circle-token)]https://app.circleci.com/pipelines/github/j-bac/skcontrib-id-estimators)
+
 # Implementation of intrinsic dimension estimators in Python.
 
 ## Credits and links to the original implementations:
