@@ -1,9 +1,9 @@
 import multiprocessing
 import pickle
-import plotly.graph_objs as go
-from plotly.offline import init_notebook_mode
-from plotly.subplots import make_subplots
-init_notebook_mode(connected=False)
+#import plotly.graph_objs as go
+#from plotly.offline import init_notebook_mode
+#from plotly.subplots import make_subplots
+#init_notebook_mode(connected=False)
 
 def DANCoTrain(k=10,D=100,
                cardinalities=list(range(20,410,20))+[500,1000,2000,5000],

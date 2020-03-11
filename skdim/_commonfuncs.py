@@ -69,11 +69,30 @@ def randsphere(n_points,ndim,radius,center = [],random_state=None):
     p = center + np.multiply(x,frtiled)
     return p, center
 
+def proxy(tup):
+    function,X,Dict = tup
+    return function(X,**Dict)
+
 def get_nn(X,k,n_jobs=1):
     neigh = NearestNeighbors(n_neighbors=k,n_jobs=n_jobs)
     neigh.fit(X)
     dists, inds = neigh.kneighbors(return_distance=True)
     return dists,inds
+
+def asPointwise(data,function, precomputed_knn = None, n_neighbors=100, n_jobs=1):
+    '''Use a global estimator as a pointwise one by creating kNN neighborhoods'''
+    if precomputed_knn is not None:
+        knn = precomputed_knn
+    else:
+        _, knn = get_nn(data, k=n_neighbors, n_jobs=n_jobs)
+        
+    if n_jobs > 1:
+        pool = mp.Pool(n_jobs)
+        results = pool.map(proxy,[(function,data[i,:],params) for i in knn])
+        pool.close()
+        return results
+    else:
+        return [function(data[i,:]) for i in knn]
 
 def binom_coeff(n, k):
     '''

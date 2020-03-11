@@ -3,15 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to sklearn-template's documentation!
+Welcome to scikit-dimension's documentation!
 ============================================
-
-This project is a reference implementation to anyone who wishes to develop
-scikit-learn compatible classes.
 
 .. automodule:: skdim.local_id
     :members:
-
 
 .. toctree::
    :maxdepth: 2
