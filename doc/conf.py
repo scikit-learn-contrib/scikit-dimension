@@ -18,6 +18,9 @@ import os
 import sphinx_gallery
 import sphinx_rtd_theme
 
+
+sys.path.append("../skdim/")
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -36,10 +39,12 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'numpydoc',
-    'sphinx_gallery.gen_gallery',
+    'sphinx_gallery.gen_gallery'
 ]
+
 
 # this is needed for some reason...
 # see https://github.com/numpy/numpydoc/issues/69
@@ -74,15 +79,15 @@ plot_gallery = True
 master_doc = 'index'
 
 # General information about the project.
-project = u'sklearn-template'
-copyright = u'2016, Vighnesh Birodkar'
+project = u'scikit-dimension'
+copyright = u'2020, Jonathan Bac'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-from skltemplate import __version__
+from skdim import __version__
 version = __version__
 # The full version, including alpha/beta/rc tags.
 release = __version__
@@ -211,7 +216,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'project-templatedoc'
+htmlhelp_basename = 'scikit-dimensiondoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -231,8 +236,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'project-template.tex', u'project-template Documentation',
-   u'Vighnesh Birodkar', 'manual'),
+  ('index', 'scikit-dimension.tex', u'scikit-dimension Documentation',
+   u'Jonathan Bac', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -261,8 +266,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'project-template', u'project-template Documentation',
-     [u'Vighnesh Birodkar'], 1)
+    ('index', 'scikit-dimension', u'scikit-dimension Documentation',
+     [u'Jonathan Bac'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -275,8 +280,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'project-template', u'project-template Documentation',
-   u'Vighnesh Birodkar', 'project-template', 'One line description of project.',
+  ('index', 'scikit-dimension', u'scikit-dimension Documentation',
+   u'Jonathan Bac', 'scikit-dimension', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -306,10 +311,10 @@ intersphinx_mapping = {
 
 # sphinx-gallery configuration
 sphinx_gallery_conf = {
-    'doc_module': 'skltemplate',
+    'doc_module': 'skdim',
     'backreferences_dir': os.path.join('generated'),
     'reference_url': {
-        'skltemplate': None}
+        'skdim': None}
 }
 
 def setup(app):

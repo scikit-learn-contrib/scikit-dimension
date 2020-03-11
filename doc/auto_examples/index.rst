@@ -32,46 +32,6 @@ Introductory examples.
    :hidden:
 
    /auto_examples/plot_template
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateTransformer">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_transformer_thumb.png
-
-     :ref:`sphx_glr_auto_examples_plot_transformer.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_transformer
-
-.. raw:: html
-
-    <div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateClassifier">
-
-.. only:: html
-
- .. figure:: /auto_examples/images/thumb/sphx_glr_plot_classifier_thumb.png
-
-     :ref:`sphx_glr_auto_examples_plot_classifier.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/plot_classifier
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

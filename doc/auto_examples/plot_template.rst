@@ -19,40 +19,25 @@ An example plot of :class:`skltemplate.template.TemplateEstimator`
     :class: sphx-glr-single-img
 
 
-.. rst-class:: sphx-glr-script-out
-
- Out:
-
- .. code-block:: none
-
-    /home/utilisateur/skcontrib-id-estimators/examples/plot_template.py:17: UserWarning: Matplotlib is currently using agg, which is a non-GUI backend, so cannot show the figure.
-      plt.show()
 
 
-
-
-
-
-|
 
 
 .. code-block:: default
 
     import numpy as np
     from matplotlib import pyplot as plt
-    from skltemplate import TemplateEstimator
 
     X = np.arange(100).reshape(100, 1)
     y = np.zeros((100, ))
-    estimator = TemplateEstimator()
-    estimator.fit(X, y)
-    plt.plot(estimator.predict(X))
+
+    plt.plot(y,y)
     plt.show()
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.105 seconds)
+   **Total running time of the script:** ( 0 minutes  0.108 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_template.py:
