@@ -23,6 +23,6 @@ res = local_id.lPCA().fit(X)
 
 
 #all datapoint neighborhoods
-pw_id = skdim.commonfuncs.asPointwise(X,local_id.FisherS().fit,n_neighbors=100,n_jobs=1)
+pw_id = skdim.asPointwise(X,local_id.FisherS().fit,n_neighbors=100,n_jobs=1)
 
 
