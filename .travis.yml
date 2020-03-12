@@ -34,6 +34,7 @@ install:
           conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION scikit-learn==$SKLEARN_VERSION cython nose pytest pytest-cov
       fi
   - pip install codecov
+  - pip install -r requirements.txt
   - pip install .
 
 script:
