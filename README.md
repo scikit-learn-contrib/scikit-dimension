@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/j-bac/skcontrib-id-estimators.svg?token=St4VFQxgQ93UPzzi8TFA&branch=master)](https://travis-ci.com/j-bac/skcontrib-id-estimators)
+[![CircleCI](https://circleci.com/gh/j-bac/skcontrib-id-estimators)](https://circleci.com/gh/j-bac/skcontrib-id-estimators)
+
+
 # Implementation of intrinsic dimension estimators in Python.
 
 ## Credits and links to the original implementations:
