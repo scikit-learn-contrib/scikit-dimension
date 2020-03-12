@@ -1,5 +1,6 @@
-name: project-template
+name: skdim
 dependencies:
   - numpy
   - scipy
   - scikit-learn
+  - numba
