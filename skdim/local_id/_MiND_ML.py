@@ -8,7 +8,7 @@ from sklearn.utils.validation import check_array, check_random_state
 
 class MiND_ML(BaseEstimator):
     """
-    Class to calculate the intrinsic dimension of the provided data points with the MiND_MLx algorithms.
+    Intrinsic dimension estimation with the MiND_MLx algorithms.
     
     -----------
     Attributes
@@ -17,6 +17,7 @@ class MiND_ML(BaseEstimator):
         Neighborhood parameter for ver='MLk' or ver='MLi'. ver='ML1' uses the first two neighbor distances.
     ver : str
         'MLk' or 'MLi' or 'ML1'. See the reference paper
+
     -----------
     Returns
     
@@ -38,6 +39,7 @@ class MiND_ML(BaseEstimator):
         
     def fit(self,X,y=None):
         """A reference implementation of a fitting function.
+        
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
@@ -82,7 +84,7 @@ class MiND_ML(BaseEstimator):
             return(d_MIND_MLk)
         else:
             raise ValueError("Unknown version: ", self.ver)
-                              
+
     @staticmethod
     def _MiND_ML1(nbh_data):
         n = len(nbh_data)

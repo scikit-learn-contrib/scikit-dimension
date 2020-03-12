@@ -1,0 +1,60 @@
+.. title:: User guide : contents
+
+.. _user_guide:
+
+==================================================
+Scikit-dimension
+==================================================
+
+The package provides scikit-learn compatible estimators built upon the base class
+:class:`sklearn.base.BaseEstimator`. All estimators in scikit-dimension are derived
+from this class.
+
+Global estimators
+-----------
+
+
+* at ``fit``, some parameters can be learned from ``X`` and ``y``;
+* at ``transform``, `X` will be transformed, using the parameters learned
+  during ``fit``.
+
+.. _mixin: https://en.wikipedia.org/wiki/Mixin
+
+In addition, scikit-learn provides a
+mixin_, i.e. :class:`sklearn.base.TransformerMixin`, which
+implement the combination of ``fit`` and ``transform`` called ``fit_transform``::
+
+One can import the mixin class as::
+
+    >>> from sklearn.base import TransformerMixin
+
+Therefore, when creating a transformer, you need to create a class which
+inherits from both :class:`sklearn.base.BaseEstimator` and
+:class:`sklearn.base.TransformerMixin`. The scikit-learn API imposed ``fit`` to
+**return ``self``**. The reason is that it allows to pipeline ``fit`` and
+``transform`` imposed by the :class:`sklearn.base.TransformerMixin`. The
+``fit`` method is expected to have ``X`` and ``y`` as inputs. Note that
+``transform`` takes only ``X`` as input and is expected to return the
+transformed version of ``X``::
+
+    >>> class MyOwnTransformer(BaseEstimator, TransformerMixin):
+    ...     def fit(self, X, y=None):
+    ...         return self
+    ...     def transform(self, X):
+    ...         return X
+
+We build a basic example to show that our :class:`MyOwnTransformer` is working
+within a scikit-learn ``pipeline``::
+
+    >>> from sklearn.datasets import load_iris
+    >>> from sklearn.pipeline import make_pipeline
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> X, y = load_iris(return_X_y=True)
+    >>> pipe = make_pipeline(MyOwnTransformer(),
+    ...                      LogisticRegression(random_state=10,
+    ...                                         solver='lbfgs',
+    ...                                         multi_class='auto'))
+    >>> pipe.fit(X, y)  # doctest: +ELLIPSIS
+    Pipeline(...)
+    >>> pipe.predict(X)  # doctest: +ELLIPSIS
+    array([...])

@@ -21,7 +21,6 @@ Welcome to scikit-dimension's documentation!
    :hidden:
    :caption: Documentation
 
-   user_guide
    api
 
 .. toctree::
@@ -35,11 +34,6 @@ Welcome to scikit-dimension's documentation!
 -------------------------------------
 
 Information regarding this template and how to modify it for your own project.
-
-`User Guide <user_guide.html>`_
--------------------------------
-
-An example of narrative documentation.
 
 `API Documentation <api.html>`_
 -------------------------------

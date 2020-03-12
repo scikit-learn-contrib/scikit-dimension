@@ -6,7 +6,6 @@ The module global_id provides global intrinsic dimension estimators (i.e., one v
 
 #.. currentmodule:: skdim.local_id
 
-
 local_id
 =========
 

@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>skdim.global_id.MLE &mdash; scikit-dimension 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="skdim.global_id.TwoNN" href="skdim.global_id.TwoNN.html" />
+    <link rel="prev" title="skdim.global_id.Mada" href="skdim.global_id.Mada.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> scikit-dimension
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#local-id">local_id</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#global-id">global_id</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.CorrInt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.CorrInt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.DANCo.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.DANCo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.KNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.KNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.Mada.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.Mada</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.MLE</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples-using-skdim-global-id-mle">Examples using <code class="docutils literal notranslate"><span class="pre">skdim.global_id.MLE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.TwoNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.TwoNN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">General examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scikit-dimension</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">scikit-dimension API</a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.MLE</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/skdim.global_id.MLE.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="skdim-global-id-mle">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.MLE<a class="headerlink" href="#skdim-global-id-mle" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skdim.global_id.MLE">
+<em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">MLE</code><span class="sig-paren">(</span><em class="sig-param">mode='global'</em>, <em class="sig-param">k=20</em>, <em class="sig-param">dnoise=None</em>, <em class="sig-param">sigma=0</em>, <em class="sig-param">n=None</em>, <em class="sig-param">integral_approximation='Haro'</em>, <em class="sig-param">unbiased=False</em>, <em class="sig-param">neighborhood_based=True</em>, <em class="sig-param">neighborhood_aggregation='maximum.likelihood'</em>, <em class="sig-param">iterations=5</em>, <em class="sig-param">K=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_MLE.html#MLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.MLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intrinsic dimension estimation with the Maximum Likelihood method. The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. The estimator in the paper is obtained using default parameters and dnoise = dnoiseGaussH.</p>
+<p>With integral.approximation = ‘Haro’ the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = ‘guaranteed.convergence’, r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = ‘iteration’, five iterations is used to determine m.</p>
+<p>maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension.</p>
+<p>Attributes</p>
+<dl class="simple">
+<dt>mode<span class="classifier">str, default=’global’</span></dt><dd><p>Whether to compute ‘global’, ‘local’ or ‘pointwise’ intrinsic dimension</p>
+</dd>
+<dt>k<span class="classifier">int</span></dt><dd><p>Number of neighbors used for each dimension estimation.</p>
+</dd>
+<dt>dnoise<span class="classifier">function</span></dt><dd><p>Vector valued function giving the transition density.</p>
+</dd>
+<dt>sigma<span class="classifier">float, default=0</span></dt><dd><p>Estimated standard deviation for the noise.</p>
+</dd>
+<dt>n<span class="classifier">int, default=’None’</span></dt><dd><p>Dimension of the noise (at least data.shape[1])</p>
+</dd>
+<dt>integral.approximation<span class="classifier">str, default=’Haro’</span></dt><dd><p>Can take values ‘Haro’, ‘guaranteed.convergence’, ‘iteration’</p>
+</dd>
+<dt>neighborhood.based<span class="classifier">bool, default=’True’</span></dt><dd><p>means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.</p>
+</dd>
+<dt>K<span class="classifier">int, default=5</span></dt><dd><p>Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE</p>
+</dd>
+</dl>
+<p>Returns</p>
+<dl class="simple">
+<dt><a href="#id2"><span class="problematic" id="id3">dimension_</span></a><span class="classifier">float</span></dt><dd><p>The estimated intrinsic dimension</p>
+</dd>
+</dl>
+<p>References</p>
+<p>Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.</p>
+<p>Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.</p>
+<p>Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press.</p>
+<dl class="method">
+<dt id="skdim.global_id.MLE.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">mode='global'</em>, <em class="sig-param">k=20</em>, <em class="sig-param">dnoise=None</em>, <em class="sig-param">sigma=0</em>, <em class="sig-param">n=None</em>, <em class="sig-param">integral_approximation='Haro'</em>, <em class="sig-param">unbiased=False</em>, <em class="sig-param">neighborhood_based=True</em>, <em class="sig-param">neighborhood_aggregation='maximum.likelihood'</em>, <em class="sig-param">iterations=5</em>, <em class="sig-param">K=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_MLE.html#MLE.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.MLE.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.MLE.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_MLE.html#MLE.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.MLE.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a fitting function.
+:param X: A data set for which the intrinsic dimension is estimated.
+:type X: {array-like}, shape (n_samples, n_features)
+:param y:
+:type y: dummy parameter to respect the sklearn API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>self</strong> – Returns self.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.MLE.get_params">
+<code class="sig-name descname">get_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.global_id.MLE.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mapping of string to any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.MLE.set_params">
+<code class="sig-name descname">set_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**params</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.global_id.MLE.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Estimator parameters.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="examples-using-skdim-global-id-mle">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">skdim.global_id.MLE</span></code><a class="headerlink" href="#examples-using-skdim-global-id-mle" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateEstimator"><div class="figure align-default" id="id1">
+<img alt="../_images/sphx_glr_plot_global_thumb.png" src="../_images/sphx_glr_plot_global_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_global.html#sphx-glr-auto-examples-plot-global-py"><span class="std std-ref">Plotting Template Estimator</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="skdim.global_id.TwoNN.html" class="btn btn-neutral float-right" title="skdim.global_id.TwoNN" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="skdim.global_id.Mada.html" class="btn btn-neutral float-left" title="skdim.global_id.Mada" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Jonathan Bac
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

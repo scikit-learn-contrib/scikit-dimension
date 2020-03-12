@@ -1,0 +1,314 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>skdim.global_id.Mada &mdash; scikit-dimension 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="skdim.global_id.MLE" href="skdim.global_id.MLE.html" />
+    <link rel="prev" title="skdim.global_id.KNN" href="skdim.global_id.KNN.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> scikit-dimension
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html#local-id">local_id</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#global-id">global_id</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.CorrInt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.CorrInt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.DANCo.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.DANCo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.KNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.KNN</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.Mada</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples-using-skdim-global-id-mada">Examples using <code class="docutils literal notranslate"><span class="pre">skdim.global_id.Mada</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.MLE.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.MLE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.global_id.TwoNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.TwoNN</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">General examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scikit-dimension</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">scikit-dimension API</a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.Mada</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/skdim.global_id.Mada.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="skdim-global-id-mada">
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.Mada<a class="headerlink" href="#skdim-global-id-mada" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skdim.global_id.Mada">
+<em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">Mada</code><span class="sig-paren">(</span><em class="sig-param">k=20</em>, <em class="sig-param">comb='average'</em>, <em class="sig-param">DM=False</em>, <em class="sig-param">local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_Mada.html#Mada"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.Mada" title="Permalink to this definition">¶</a></dt>
+<dd><p>A template estimator to be used as a reference implementation.
+For more information regarding how to build your own estimator, read more
+in the <a class="reference external" href="https://scikit-learn.org/stable/user_guide.html#user-guide" title="(in scikit-learn v0.22)"><span class="xref std std-ref">User Guide</span></a>.
+:param demo_param: A parameter used for demonstation of how to pass and store paramters.
+:type demo_param: str, default=’demo_param’</p>
+<dl class="method">
+<dt id="skdim.global_id.Mada.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">k=20</em>, <em class="sig-param">comb='average'</em>, <em class="sig-param">DM=False</em>, <em class="sig-param">local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_Mada.html#Mada.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.Mada.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.Mada.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_Mada.html#Mada.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.Mada.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a fitting function.
+:param X: The training input samples.
+:type X: {array-like}, shape (n_samples, n_features)
+:param y:
+:type y: dummy parameter to respect the sklearn API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>self</strong> – Returns self.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.Mada.get_params">
+<code class="sig-name descname">get_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.global_id.Mada.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mapping of string to any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.global_id.Mada.set_params">
+<code class="sig-name descname">set_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**params</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.global_id.Mada.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Estimator parameters.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="examples-using-skdim-global-id-mada">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">skdim.global_id.Mada</span></code><a class="headerlink" href="#examples-using-skdim-global-id-mada" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateEstimator"><div class="figure align-default" id="id1">
+<img alt="../_images/sphx_glr_plot_global_thumb.png" src="../_images/sphx_glr_plot_global_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_global.html#sphx-glr-auto-examples-plot-global-py"><span class="std std-ref">Plotting Template Estimator</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="skdim.global_id.MLE.html" class="btn btn-neutral float-right" title="skdim.global_id.MLE" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="skdim.global_id.KNN.html" class="btn btn-neutral float-left" title="skdim.global_id.KNN" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Jonathan Bac
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
