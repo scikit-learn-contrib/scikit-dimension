@@ -25,8 +25,7 @@
 #Author of the speed modifications (with sklearn dependencies): Jonathan Bac
 #Date  : 02-Jan-2020
 #-----------------------------
-import sys
-sys.path.append('..')
+
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
@@ -34,7 +33,7 @@ from sklearn.utils.validation import check_array
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances_chunked
 from sklearn.linear_model import LinearRegression
-from _commonfuncs import get_nn
+from .._commonfuncs import get_nn
 
 
 class TwoNN(BaseEstimator):

@@ -12,7 +12,7 @@ from scipy.special import gammainc
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
 import scipy.io
-from _commonfuncs import randsphere
+from .._commonfuncs import randsphere
 
 
 class FisherS(BaseEstimator):

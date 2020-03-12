@@ -6,8 +6,6 @@
 ### https://cran.r-project.org/web/packages/intrinsicDimension/index.html
 ### for the R implementation
 
-import sys
-sys.path.append('..')
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_random_state
@@ -19,7 +17,7 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.optimize import minimize
 from scipy.special import i0,i1,digamma,gammainc
 from scipy.interpolate import interp1d,interp2d
-from _commonfuncs import binom_coeff, get_nn, randsphere, lens, indnComb
+from .._commonfuncs import binom_coeff, get_nn, randsphere, lens, indnComb
 
 
 class DANCo(BaseEstimator):

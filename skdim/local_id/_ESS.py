@@ -7,7 +7,7 @@ import numpy as np
 import bisect
 from scipy.special import gamma
 from functools import lru_cache
-from _commonfuncs import binom_coeff, lens, indComb, indnComb, efficient_indnComb
+from .._commonfuncs import binom_coeff, lens, indComb, indnComb, efficient_indnComb
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_random_state
 
