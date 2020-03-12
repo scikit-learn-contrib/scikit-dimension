@@ -5,7 +5,6 @@ import numba as nb
 import numpy as np
 import math
 import sklearn.decomposition as sk
-import seaborn as sns
 import warnings
 warnings.filterwarnings('ignore')
 from scipy.special import gammainc
