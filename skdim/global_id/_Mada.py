@@ -40,6 +40,8 @@ class Mada(BaseEstimator):
             raise ValueError("Can't fit with n_features = 1")
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
+        if self.k >= len(X):
+            warnings.warn('k larger or equal to len(X), using len(X)-1')
             
         self._k = len(X)-1 if self.k >= len(X) else self.k  
 

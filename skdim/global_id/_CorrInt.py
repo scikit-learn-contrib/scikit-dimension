@@ -54,7 +54,7 @@ class CorrInt(BaseEstimator):
             raise ValueError("Can't fit with n_features = 1")
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
-
+            
         if self.k2 >= len(X):
             warnings.warn('k2 larger or equal to len(X), using len(X)-1')
         if self.k1 >= len(X):

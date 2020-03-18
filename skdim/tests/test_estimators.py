@@ -12,6 +12,16 @@ from sklearn.utils.testing import (assert_equal,
                                    assert_not_in,
                                    assert_no_warnings)
 
+import rpy2.robjects.packages as rpackages
+import rpy2.robjects.numpy2ri
+utils = rpackages.importr('utils')
+utils.install_packages('intrinsicDimension')
+utils.install_packages('ider')
+intdimr = rpackages.importr('intrinsicDimension')
+ider = intdimr = rpackages.importr('ider')
+rpy2.robjects.numpy2ri.activate()
+
+
 @pytest.fixture
 def data():
     return np.random.random((1000,10))

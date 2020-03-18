@@ -88,7 +88,10 @@ class DANCo(BaseEstimator):
             raise ValueError("X contains inf or NaN")
             
         if self.k >= len(X):
-            warnings.warn('k larger or equal to len(X), using len(X)-1')
+            warnings.warn('k larger or equal to len(X), using len(X)-2')
+            self._k = len(X)-2
+        else:
+            self._k = self.k
             
         self.random_state_ = check_random_state(self.random_state)
 
@@ -106,10 +109,10 @@ class DANCo(BaseEstimator):
         return(kld + klnutau)
 
     def _KLd(self,dhat, dcal):
-        H_k = np.sum(1/np.arange(1,self.k+1))    
+        H_k = np.sum(1/np.arange(1,self._k+1))    
         quo = dcal/dhat
-        a = np.power(-1,np.arange(self.k+1))*np.array(list(binom_coeff(self.k,i) for i in range(self.k+1)))*digamma(1 + np.arange(self.k+1)/quo)
-        return(H_k*quo - np.log(quo) - (self.k-1)*np.sum(a))   
+        a = np.power(-1,np.arange(self._k+1))*np.array(list(binom_coeff(self._k,i) for i in range(self._k+1)))*digamma(1 + np.arange(self._k+1)/quo)
+        return(H_k*quo - np.log(quo) - (self._k-1)*np.sum(a))   
     
     @staticmethod
     def _KLnutau(nu1, nu2, tau1, tau2):
@@ -124,13 +127,13 @@ class DANCo(BaseEstimator):
         if (d == 0):
             return(np.array([-1e30]))
         else:
-            return N*np.log(self.k*d) + (d-1)*np.sum(np.log(rhos)) + (self.k-1)*np.sum(np.log(1-rhos**d))
+            return N*np.log(self._k*d) + (d-1)*np.sum(np.log(rhos)) + (self._k-1)*np.sum(np.log(1-rhos**d))
 
     def _nlld_gr(self,d,rhos, N):
         if (d == 0):
             return(np.array([-1e30]))
         else:
-            return -(N/d + np.sum(np.log(rhos) - (self.k-1)*(rhos**d)*np.log(rhos)/(1 - rhos**d)))
+            return -(N/d + np.sum(np.log(rhos) - (self._k-1)*(rhos**d)*np.log(rhos)/(1 - rhos**d)))
         
     
     def _MIND_MLk(self,rhos,D):
@@ -152,7 +155,7 @@ class DANCo(BaseEstimator):
 
 
     def _MIND_MLx(self, X, D):
-        nbh_data,idx = get_nn(X, min(self.k+1,len(X)-1))
+        nbh_data,idx = get_nn(X, self._k+1)
         rhos = nbh_data[:,0]/nbh_data[:,-1]
 
         d_MIND_MLk = self._MIND_MLk(rhos, D)
@@ -191,11 +194,10 @@ class DANCo(BaseEstimator):
             print(cos_th[np.abs(cos_th) > 1])
         return(np.arccos(cos_th))
 
-    def _angles(self,X, nbs):
+    def _angles(self, X, nbs):
         N = len(X)
-        self.k = nbs.shape[1]
 
-        thetas = np.zeros((N, binom_coeff(self.k, 2)))
+        thetas = np.zeros((N, binom_coeff(self._k, 2)))
         for i in range(N):
             nb_data = X[nbs[i, ],]
             thetas[i, ] = self._loc_angles(X[i, ], nb_data)    
@@ -210,12 +212,12 @@ class DANCo(BaseEstimator):
         return dict(nu = nu, tau = tau)
 
     def _dancoDimEstNoCalibration(self, X, D, n_jobs=1):
-        nbh_data,idx = get_nn(X, min(self.k+1,len(X)-1), n_jobs=n_jobs)
+        nbh_data,idx = get_nn(X, self._k+1, n_jobs=n_jobs)
         rhos = nbh_data[:,0]/nbh_data[:,-1]
         d_MIND_MLk = self._MIND_MLk(rhos, D)
         d_MIND_MLi = self._MIND_MLi(rhos, D, d_MIND_MLk)
 
-        thetas = self._angles(X, idx[:,:self.k])
+        thetas = self._angles(X, idx[:,:self._k])
         ml_vm = list(map(self._ML_VM,thetas))
         mu_nu = np.mean([i['nu'] for i in ml_vm])
         mu_tau = np.mean([i['tau'] for i in ml_vm])
@@ -225,7 +227,7 @@ class DANCo(BaseEstimator):
         return dict(dhat = d_MIND_MLi, mu_nu = mu_nu, mu_tau = mu_tau)
     
     def _DancoCalibrationData(self, N):
-        me = dict(k = self.k,
+        me = dict(k = self._k,
                 N = N,
                 calibration_data = list(),
                 maxdim = 0)    
@@ -241,18 +243,18 @@ class DANCo(BaseEstimator):
         dancoCalDat['maxdim'] = newdim
         return(dancoCalDat)    
 
-    @staticmethod
-    def increaseMaxDimByOne_precomputedSpline(dancoCalDat,DANCo_splines):
-        newdim = dancoCalDat['maxdim'] + 1
-        dancoCalDat['calibration_data'].append({'dhat':DANCo_splines['spline_dhat'](newdim,dancoCalDat['N']),
-                                                'mu_nu':DANCo_splines['spline_mu'](newdim,dancoCalDat['N']),
-                                                'mu_tau':DANCo_splines['spline_tau'](newdim,dancoCalDat['N'])})
-        dancoCalDat['maxdim'] = newdim
-        return(dancoCalDat)
+#    @staticmethod
+#    def increaseMaxDimByOne_precomputedSpline(dancoCalDat,DANCo_splines):
+#        newdim = dancoCalDat['maxdim'] + 1
+#        dancoCalDat['calibration_data'].append({'dhat':DANCo_splines['spline_dhat'](newdim,dancoCalDat['N']),
+#                                                'mu_nu':DANCo_splines['spline_mu'](newdim,dancoCalDat['N']),
+#                                                'mu_tau':DANCo_splines['spline_tau'](newdim,dancoCalDat['N'])})
+#        dancoCalDat['maxdim'] = newdim
+#        return(dancoCalDat)
 
     def _computeDANCoCalibrationData(self,N):
         print('Computing calibration X...\nCurrent dimension: ',end=' ')
-        cal=self._DancoCalibrationData(self.k,N)
+        cal=self._DancoCalibrationData(self._k,N)
         while (cal['maxdim'] < self.D):
             if cal['maxdim']%10==0:
                 print(cal['maxdim'],end=' ')
@@ -266,9 +268,9 @@ class DANCo(BaseEstimator):
         N = len(X)
 
         if cal is not None:
-            if (cal['k'] != self.k):
+            if (cal['k'] != self._k):
                 raise ValueError("Neighborhood parameter k = %s does not agree with neighborhood parameter of calibration data, cal$k = %s",
-                       self.k, cal['k'])
+                       self._k, cal['k'])
             if (cal['N'] != N):
                 raise ValueError("Number of data points N = %s does not agree with number of data points of calibration data, cal$N = %s",
                        N, cal['N'])
@@ -300,7 +302,7 @@ class DANCo(BaseEstimator):
 
             else:
                 if self.verbose:
-                    print("Computing DANCo calibration data for N = {}, k = {} for dimensions {} to {}".format(N, self.k, cal['maxdim']+1, self.D))
+                    print("Computing DANCo calibration data for N = {}, k = {} for dimensions {} to {}".format(N, self._k, cal['maxdim']+1, self.D))
 
                 #compute statistics
                 while (cal['maxdim'] < self.D):
