@@ -1,6 +1,6 @@
 import numpy as np
 import itertools
-
+import numbers
 from sklearn.utils.validation import check_random_state
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import gammainc
@@ -44,14 +44,14 @@ def indnComb(NN, n):
     new_ind2[new_ind2 == 0] = NN
     return np.hstack((prev[new_ind1,:], np.arange(NN)[new_ind2].reshape((-1,1))))
 
-def efficient_indnComb(n,k,random_state_):
+def efficient_indnComb(n,k,random_generator_):
     '''
     memory-efficient indnComb:
     uniformly takes 5000 samples from itertools.combinations(n,k)
     '''
     ncomb=binom_coeff(n,k)
     pop=itertools.combinations(range(n),k)
-    targets = set(random_state_.choice(range(ncomb), 5000, replace = False))
+    targets = set(random_generator_.choice(ncomb, min(ncomb,5000), replace = False))
     return np.array(list(itertools.compress(pop, map(targets.__contains__, itertools.count()))))
 
 def lens(vectors):
@@ -125,6 +125,25 @@ def binom_coeff(n, k):
         total_ways = total_ways * (n - i) // (i + 1)
 
     return total_ways
+
+def check_random_generator(seed):
+    """Turn seed into a numpy.random._generator.Generator' instance
+    Parameters
+    ----------
+    seed : None | int | instance of RandomState
+        If seed is None, return the RandomState singleton used by np.random.
+        If seed is an int, return a new RandomState instance seeded with seed.
+        If seed is already a RandomState instance, return it.
+        Otherwise raise ValueError.
+    """
+    if seed is None or seed is np.random:
+        return np.random.default_rng()
+    if isinstance(seed, numbers.Integral):
+        return np.random.default_rng(seed)
+    if isinstance(seed, np.random._generator.Generator):
+        return seed
+    raise ValueError('%r cannot be used to seed a numpy.random._generator.Generator'
+                     ' instance' % seed)
 
 
 

@@ -67,8 +67,10 @@ class lPCA(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
 
-            
-        self.dimension_, self.gap_ = self._pcaLocalDimEst(X)
+        if self.ver == 'ratio':
+            self.dimension_ = self._pcaLocalDimEst(X)
+        else:
+            self.dimension_, self.gap_ = self._pcaLocalDimEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self        
@@ -102,7 +104,11 @@ class lPCA(BaseEstimator):
         #X - data set (n x d)
         #theta - ratio of variance to preserve (theta \in [0,1])
         sumexp = np.cumsum(explained_var)
-        de = np.where(sumexp>(1-self.alphaRatio))[0].min() + 1 
+        idx_threshold = np.where(sumexp>(1-self.alphaRatio))[0]
+        if len(idx_threshold) == 0:
+            de = len(explained_var)
+        else:
+            de = idx_threshold.min() + 1 
         return de
         
     def _fan(self,explained_var):
@@ -116,32 +122,30 @@ class lPCA(BaseEstimator):
         except: return de, gaps[-1]
         
         
-        
-        
 ##### dev in progress
-from sklearn.cluster import KMeans
-def pcaOtpmPointwiseDimEst(data, N, alpha = 0.05):
-    km = KMeans(n_clusters=N)
-    km.fit(data)
-    pt = km.cluster_centers_
-    pt_bm = km.labels_
-    pt_sm = np.repeat(np.nan, len(pt_bm))
-
-    for k in range(len(data)):
-        pt_sm[k] = np.argmin(lens(pt[[i for i in range(N) if i!=pt_bm[k]],:] - data[k,:]))
-        if (pt_sm[k] >= pt_bm[k]):
-            pt_sm[k] += 1
-
-    de_c = np.repeat(np.nan, N)
-    nbr_nb_c = np.repeat(np.nan, N)
-    for k in range(N):
-        nb = np.unique(np.concatenate((pt_sm[pt_bm == k], pt_bm[pt_sm == k]))).astype(int)
-        nbr_nb_c[k] = len(nb)
-        loc_dat = pt[nb,:] - pt[k,:]
-        if len(loc_dat) == 1:
-            continue
-        de_c[k] = lPCA().fit(loc_dat).dimension_ #pcaLocalDimEst(loc_dat, ver = "FO", alphaFO = alpha)
-
-    de = de_c[pt_bm]
-    nbr_nb = nbr_nb_c[pt_bm]
-    return de, nbr_nb
+#from sklearn.cluster import KMeans
+#def pcaOtpmPointwiseDimEst(data, N, alpha = 0.05):
+#    km = KMeans(n_clusters=N)
+#    km.fit(data)
+#    pt = km.cluster_centers_
+#    pt_bm = km.labels_
+#    pt_sm = np.repeat(np.nan, len(pt_bm))
+#
+#    for k in range(len(data)):
+#        pt_sm[k] = np.argmin(lens(pt[[i for i in range(N) if i!=pt_bm[k]],:] - data[k,:]))
+#        if (pt_sm[k] >= pt_bm[k]):
+#            pt_sm[k] += 1
+#
+#    de_c = np.repeat(np.nan, N)
+#    nbr_nb_c = np.repeat(np.nan, N)
+#    for k in range(N):
+#        nb = np.unique(np.concatenate((pt_sm[pt_bm == k], pt_bm[pt_sm == k]))).astype(int)
+#        nbr_nb_c[k] = len(nb)
+#        loc_dat = pt[nb,:] - pt[k,:]
+#        if len(loc_dat) == 1:
+#            continue
+#        de_c[k] = lPCA().fit(loc_dat).dimension_ #pcaLocalDimEst(loc_dat, ver = "FO", alphaFO = alpha)
+#
+#    de = de_c[pt_bm]
+#    nbr_nb = nbr_nb_c[pt_bm]
+#    return de, nbr_nb

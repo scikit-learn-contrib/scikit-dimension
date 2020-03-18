@@ -7,9 +7,9 @@ import numpy as np
 import bisect
 from scipy.special import gamma
 from functools import lru_cache
-from .._commonfuncs import binom_coeff, lens, indComb, indnComb, efficient_indnComb
+from .._commonfuncs import binom_coeff, lens, indComb, indnComb, efficient_indnComb, check_random_generator
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array, check_random_state
+from sklearn.utils.validation import check_array
 
 
 class ESS(BaseEstimator):
@@ -36,10 +36,10 @@ class ESS(BaseEstimator):
     """
     
     
-    def __init__(self, ver = 'a', d = 1, random_state=None):
+    def __init__(self, ver = 'a', d = 1, random_generator=None):
         self.ver = ver
         self.d = d
-        self.random_state = random_state
+        self.random_generator = random_generator
         
     def fit(self,X,y=None):
         """A reference implementation of a fitting function.
@@ -63,7 +63,7 @@ class ESS(BaseEstimator):
             raise ValueError("X contains inf or NaN")
             
             
-        self.random_state_ = check_random_state(self.random_state)
+        self.random_generator_ = check_random_generator(self.random_generator)
         
         self.dimension_, self.essval_ = self._essLocalDimEst(X)
         
@@ -120,10 +120,10 @@ class ESS(BaseEstimator):
         #if (len(groups) > 5000):
         #    groups = groups[np.random.choice(range(len(groups)),size=5000, replace=False),:]
 
-        if len(vectors)>100: #sample 5000 combinations
-            groups = efficient_indnComb(len(vectors), p, self.random_state_)
-        else: #generate all combs with the original function
-            groups = indnComb(len(vectors), p)
+#         if len(vectors)>100: #sample 5000 combinations
+        groups = efficient_indnComb(len(vectors), p, self.random_generator_)
+#         else: #generate all combs with the original function
+#             groups = indnComb(len(vectors), p)
 
         if (verbose):
             print('Number of simple elements:', len(groups), '\n')

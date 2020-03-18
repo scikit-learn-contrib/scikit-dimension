@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 from skdim import local_id, global_id
-from sklearn.datasets import load_iris
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
@@ -26,40 +25,31 @@ estimators = local_class_list+global_class_list
 def test_all_estimators(Estimator):
     return check_estimator(Estimator)
 
-#test all kwargs work with non-default parameters
+#test default and non-default parameters
 def test_fisher_params(data):
-    try:
-        x = local_id.FisherS().fit(data)
-        x = local_id.FisherS(ConditionalNumber=2).fit(data)
-        x = local_id.FisherS(ProducePlots=True).fit(data)
-        x = local_id.FisherS(ProjectOnSphere=False).fit(data)
-        x = local_id.FisherS(ncomp=True).fit(data)
-        x = local_id.FisherS(limit_maxdim=True).fit(data)
-    except:
-        raise AssertionError('test_fisher_params failed')
+    x = local_id.FisherS().fit(data)
+    x = local_id.FisherS(ConditionalNumber=2).fit(data)
+    x = local_id.FisherS(ProducePlots=True).fit(data)
+    x = local_id.FisherS(ProjectOnSphere=False).fit(data)
+    x = local_id.FisherS(ncomp=True).fit(data)
+    x = local_id.FisherS(limit_maxdim=True).fit(data)
         
 def test_lPCA_params(data):
-    try:
-        x = local_id.lPCA().fit(data)
-        x = local_id.lPCA(ver='fan').fit(data)
-        x = local_id.lPCA(ver='ratio').fit(data)
-        x = local_id.lPCA(ver='maxgap').fit(data)
-    except:
-        raise AssertionError('test failed')
+    x = local_id.lPCA().fit(data)
+    x = local_id.lPCA(ver='fan').fit(data)
+    x = local_id.lPCA(ver='ratio').fit(data)
+    x = local_id.lPCA(ver='maxgap').fit(data)
         
 def test_ess_params(data):
-    try:
-        x = local_id.ESS().fit(data)
-        x = local_id.ESS(ver='b').fit(data)
-        x = local_id.ESS(d=2).fit(data)
-    except:
-        raise AssertionError('test_ess_params failed')
+    x = local_id.ESS().fit(data)
+    x = local_id.ESS(ver='b').fit(data)
+    x = local_id.ESS(d=2).fit(data)
 
 #test equality with R version#
-def test_ess(data):
-    res = intdimr.essLocalDimEst(data)
-    r_ess = dict(zip(res.names,[np.array(i) for i in res]))
-    assert (r_ess['dim.est'] == ess.dimension_ and r_ess['ess'] == ess.essval_)
+#def test_ess(data):
+#    res = intdimr.essLocalDimEst(data)
+#    r_ess = dict(zip(res.names,[np.array(i) for i in res]))
+#    assert (r_ess['dim.est'] == ess.dimension_ and r_ess['ess'] == ess.essval_)
 
 def test_corint(data): 
     corint = global_id.CorrInt(k1=10,k2=20).fit(data)

@@ -54,7 +54,7 @@ class MOM(BaseEstimator):
         
         dists, inds = get_nn(X,min(self.k,len(X)-1))
         
-        self.dimension_ = self._idmom(dists.T)
+        self.dimension_ = self._idmom(dists)
                     
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -62,8 +62,7 @@ class MOM(BaseEstimator):
 
     def _idmom(self, dists):
         # dists - nearest-neighbor distances (k x 1, or k x n), sorted
-        k = len(dists)
-        w = dists[self.k-1, :]
-        m1 = np.sum(dists, axis=0)/self.k
+        w = dists[:,-1]
+        m1 = np.sum(dists, axis=1)/dists.shape[1]
         ID = -m1 / (m1-w)
         return ID
