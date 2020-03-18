@@ -38,7 +38,7 @@ install:
 
 script:
   - ls
-  - pytest -v --cov=skdim --pyargs skdim
+  - pytest -v --cov=skdim --pyargs skdim/tests/
 
 after_success:
   - codecov
