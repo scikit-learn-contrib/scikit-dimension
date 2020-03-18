@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
