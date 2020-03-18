@@ -12,7 +12,6 @@ from sklearn.utils.testing import (assert_equal,
                                    assert_not_in,
                                    assert_no_warnings)
 
-import readline
 import rpy2.robjects.packages as rpackages
 import rpy2.robjects.numpy2ri
 utils = rpackages.importr('utils')
