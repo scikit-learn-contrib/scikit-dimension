@@ -12,14 +12,14 @@ from sklearn.utils.testing import (assert_equal,
                                    assert_not_in,
                                    assert_no_warnings)
 
-import rpy2.robjects.packages as rpackages
-import rpy2.robjects.numpy2ri
-utils = rpackages.importr('utils')
-utils.install_packages('intrinsicDimension')
-utils.install_packages('ider')
-intdimr = rpackages.importr('intrinsicDimension')
-ider = intdimr = rpackages.importr('ider')
-rpy2.robjects.numpy2ri.activate()
+#import rpy2.robjects.packages as rpackages
+#import rpy2.robjects.numpy2ri
+#utils = rpackages.importr('utils')
+#utils.install_packages('intrinsicDimension')
+#utils.install_packages('ider')
+#intdimr = rpackages.importr('intrinsicDimension')
+#ider = intdimr = rpackages.importr('ider')
+#rpy2.robjects.numpy2ri.activate()
 
 
 @pytest.fixture
@@ -56,37 +56,38 @@ def test_ess_params(data):
     x = local_id.ESS(d=2).fit(data)
 
 #test equality with R version#
-def test_ess(data):
-    res = intdimr.essLocalDimEst(data)
-    r_ess = dict(zip(res.names,[np.array(i) for i in res]))
-    assert (r_ess['dim.est'] == ess.dimension_ and r_ess['ess'] == ess.essval_)
-def test_corint(data): 
-    corint = global_id.CorrInt(k1=10,k2=20).fit(data)
-    r_corint = np.array(ider.corint(data,k1=10,k2=20))
-    assert_equal(r_corint, corint.dimension_)
-        
-def test_mada(data): 
-    r_mada = np.array(ider.mada(data,local=True,k=20))
-    mada = global_id.Mada(local=True,k=20).fit(data)
-    assert_array_almost_equal(r_mada,mada.dimension_)
-    
-def test_mle():
-    #test base params
-    assert np.isclose(        maxLikGlobalDimEst(data, k), 
-                      intdimr.maxLikGlobalDimEst(data, k)[0][0])
-
-    #test dnoise+sigma
-    assert np.isclose(        maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2), 
-                      intdimr.maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2)[0][0])
-
-    #test neighborhood_aggregation = 'mean'
-    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean'), 
-                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean')[0][0])
-
-    #test unbiased = True
-    assert np.isclose(        maxLikGlobalDimEst(data, k, unbiased = True), 
-                      intdimr.maxLikGlobalDimEst(data, k, unbiased = True)[0][0])
-
-    #test neighborhood_based = 'False'
-    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_based = False), 
-                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_based = False)[0][0])
+#def test_ess(data):
+#    res = intdimr.essLocalDimEst(data)
+#    r_ess = dict(zip(res.names,[np.array(i) for i in res]))
+#    assert (r_ess['dim.est'] == ess.dimension_ and r_ess['ess'] == ess.essval_)
+#def test_corint(data): 
+#    corint = global_id.CorrInt(k1=10,k2=20).fit(data)
+#    r_corint = np.array(ider.corint(data,k1=10,k2=20))
+#    assert_equal(r_corint, corint.dimension_)
+#        
+#def test_mada(data): 
+#    r_mada = np.array(ider.mada(data,local=True,k=20))
+#    mada = global_id.Mada(local=True,k=20).fit(data)
+#    assert_array_almost_equal(r_mada,mada.dimension_)
+#    
+#def test_mle():
+#    #test base params
+#    assert np.isclose(        maxLikGlobalDimEst(data, k), 
+#                      intdimr.maxLikGlobalDimEst(data, k)[0][0])
+#
+#    #test dnoise+sigma
+#    assert np.isclose(        maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2), 
+#                      intdimr.maxLikGlobalDimEst(data, k, dnoise = 'dnoiseGaussH', sigma = 0.2)[0][0])
+#
+#    #test neighborhood_aggregation = 'mean'
+#    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean'), 
+#                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_aggregation = 'mean')[0][0])
+#
+#    #test unbiased = True
+#    assert np.isclose(        maxLikGlobalDimEst(data, k, unbiased = True), 
+#                      intdimr.maxLikGlobalDimEst(data, k, unbiased = True)[0][0])
+#
+#    #test neighborhood_based = 'False'
+#    assert np.isclose(        maxLikGlobalDimEst(data, k, neighborhood_based = False), 
+#                      intdimr.maxLikGlobalDimEst(data, k, neighborhood_based = False)[0][0])
+#
