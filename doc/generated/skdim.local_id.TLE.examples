@@ -5,7 +5,7 @@ Examples using ``skdim.local_id.TLE``
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateEstimator">
+    <div class="sphx-glr-thumbcontainer" tooltip="Local ID example">
 
 .. only:: html
 

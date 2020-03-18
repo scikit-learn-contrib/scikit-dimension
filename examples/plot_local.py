@@ -1,9 +1,7 @@
 """
 ===========================
-Plotting Template Estimator
+Local ID example
 ===========================
-
-An example plot of :class:`skltemplate.template.TemplateEstimator`
 """
 import skdim
 from skdim import local_id

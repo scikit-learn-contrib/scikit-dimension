@@ -92,7 +92,7 @@ def asPointwise(data,function, precomputed_knn = None, n_neighbors=100, n_jobs=1
         pool.close()
         return results
     else:
-        return [function(data[i,:]) for i in knn]
+        return [function(data[i,:]).dimension_ for i in knn]
 
 def binom_coeff(n, k):
     '''

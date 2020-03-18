@@ -15,7 +15,7 @@ from sklearn.utils.testing import (assert_equal,
 
 @pytest.fixture
 def data():
-    return np.random.random((100,10))
+    return np.random.random((1000,10))
 
 #test all estimators pass check_estimator
 local_class_list = [o[1] for o in getmembers(local_id) if isclass(o[1])]

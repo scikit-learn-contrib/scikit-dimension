@@ -15,7 +15,7 @@ Introductory examples.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateEstimator">
+    <div class="sphx-glr-thumbcontainer" tooltip="Global ID example">
 
 .. only:: html
 
@@ -35,7 +35,7 @@ Introductory examples.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="An example plot of skltemplate.template.TemplateEstimator">
+    <div class="sphx-glr-thumbcontainer" tooltip="Local ID example">
 
 .. only:: html
 

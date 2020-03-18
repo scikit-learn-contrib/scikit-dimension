@@ -1,9 +1,7 @@
 """
 ===========================
-Plotting Template Estimator
+Global ID example
 ===========================
-
-An example plot of :class:`skltemplate.template.TemplateEstimator`
 """
 from skdim import global_id
 import numpy as np

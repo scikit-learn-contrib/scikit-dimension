@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Plotting Template Estimator &mdash; scikit-dimension 0.1 documentation</title>
+  <title>Local ID example &mdash; scikit-dimension 0.1 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Plotting Template Estimator" href="plot_global.html" /> 
+    <link rel="prev" title="Global ID example" href="plot_global.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,8 +96,8 @@
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">General examples</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="plot_global.html">Plotting Template Estimator</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Plotting Template Estimator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plot_global.html">Global ID example</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Local ID example</a></li>
 </ul>
 </li>
 </ul>
@@ -147,7 +147,7 @@
         
           <li><a href="index.html">General examples</a> &raquo;</li>
         
-      <li>Plotting Template Estimator</li>
+      <li>Local ID example</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -170,9 +170,8 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-plot-local-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
-<div class="sphx-glr-example-title section" id="plotting-template-estimator">
-<span id="sphx-glr-auto-examples-plot-local-py"></span><h1>Plotting Template Estimator<a class="headerlink" href="#plotting-template-estimator" title="Permalink to this headline">¶</a></h1>
-<p>An example plot of <code class="xref py py-class docutils literal notranslate"><span class="pre">skltemplate.template.TemplateEstimator</span></code></p>
+<div class="sphx-glr-example-title section" id="local-id-example">
+<span id="sphx-glr-auto-examples-plot-local-py"></span><h1>Local ID example<a class="headerlink" href="#local-id-example" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skdim</span>
 <span class="kn">from</span> <span class="nn">skdim</span> <span class="kn">import</span> <span class="n">local_id</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -191,10 +190,10 @@
 
 
 <span class="c1">#all datapoint neighborhoods</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">pw_id</span></a> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">commonfuncs</span><span class="o">.</span><span class="n">asPointwise</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">X</span></a><span class="p">,</span><a href="../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS" title="View documentation for skdim.local_id.FisherS"><span class="n">local_id</span><span class="o">.</span><span class="n">FisherS</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">,</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">pw_id</span></a> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">asPointwise</span><span class="p">(</span><a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">X</span></a><span class="p">,</span><a href="../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS" title="View documentation for skdim.local_id.FisherS"><span class="n">local_id</span><span class="o">.</span><span class="n">FisherS</span></a><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">,</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.474 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.782 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-local-py">
 <div class="sphx-glr-download docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/595b64d093516337f5a9a5ca6b9de3df/plot_local.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_local.py</span></code></a></p>
@@ -215,7 +214,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="plot_global.html" class="btn btn-neutral float-left" title="Plotting Template Estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="plot_global.html" class="btn btn-neutral float-left" title="Global ID example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -166,12 +166,11 @@
 <span class="c1">### https://cran.r-project.org/web/packages/intrinsicDimension/index.html</span>
 <span class="c1">### for the R implementation</span>
 
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_random_state</span>
 
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
@@ -179,7 +178,7 @@
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">i0</span><span class="p">,</span><span class="n">i1</span><span class="p">,</span><span class="n">digamma</span><span class="p">,</span><span class="n">gammainc</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span><span class="p">,</span><span class="n">interp2d</span>
-<span class="kn">from</span> <span class="nn">_commonfuncs</span> <span class="kn">import</span> <span class="n">binom_coeff</span><span class="p">,</span> <span class="n">get_nn</span><span class="p">,</span> <span class="n">randsphere</span><span class="p">,</span> <span class="n">lens</span><span class="p">,</span> <span class="n">indnComb</span>
+<span class="kn">from</span> <span class="nn">.._commonfuncs</span> <span class="kn">import</span> <span class="n">binom_coeff</span><span class="p">,</span> <span class="n">get_nn</span><span class="p">,</span> <span class="n">randsphere</span><span class="p">,</span> <span class="n">lens</span><span class="p">,</span> <span class="n">indnComb</span>
 
 
 <div class="viewcode-block" id="DANCo"><a class="viewcode-back" href="../../../generated/skdim.global_id.DANCo.html#skdim.global_id.DANCo">[docs]</a><span class="k">class</span> <span class="nc">DANCo</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
