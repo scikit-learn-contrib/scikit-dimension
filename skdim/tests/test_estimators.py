@@ -36,25 +36,25 @@ def test_all_estimators(Estimator):
     return check_estimator(Estimator)
 
 #test default and non-default parameters
-#def test_fisher_params(data):
-#    x = local_id.FisherS().fit(data)
-#    x = local_id.FisherS(ConditionalNumber=2).fit(data)
-#    x = local_id.FisherS(ProducePlots=True).fit(data)
-#    x = local_id.FisherS(ProjectOnSphere=False).fit(data)
-#    x = local_id.FisherS(ncomp=True).fit(data)
-#    x = local_id.FisherS(limit_maxdim=True).fit(data)
-#        
-#def test_lPCA_params(data):
-#    x = local_id.lPCA().fit(data)
-#    x = local_id.lPCA(ver='fan').fit(data)
-#    x = local_id.lPCA(ver='ratio').fit(data)
-#    x = local_id.lPCA(ver='maxgap').fit(data)
-#        
-#def test_ess_params(data):
-#    x = local_id.ESS().fit(data)
-#    x = local_id.ESS(ver='b').fit(data)
-#    x = local_id.ESS(d=2).fit(data)
-#
+def test_fisher_params(data):
+    x = local_id.FisherS().fit(data)
+    x = local_id.FisherS(ConditionalNumber=2).fit(data)
+    x = local_id.FisherS(ProducePlots=True).fit(data)
+    x = local_id.FisherS(ProjectOnSphere=False).fit(data)
+    x = local_id.FisherS(ncomp=True).fit(data)
+    x = local_id.FisherS(limit_maxdim=True).fit(data)
+        
+def test_lPCA_params(data):
+    x = local_id.lPCA().fit(data)
+    x = local_id.lPCA(ver='fan').fit(data)
+    x = local_id.lPCA(ver='ratio').fit(data)
+    x = local_id.lPCA(ver='maxgap').fit(data)
+        
+def test_ess_params(data):
+    x = local_id.ESS().fit(data)
+    x = local_id.ESS(ver='b').fit(data)
+    x = local_id.ESS(d=2).fit(data)
+
 ##test equality with R version#
 #def test_ess(data):
 #    res = intdimr.essLocalDimEst(data)
