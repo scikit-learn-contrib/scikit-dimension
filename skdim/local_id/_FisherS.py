@@ -82,7 +82,7 @@ class FisherS(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
             
-        if self.alphas == None: #test_alphas introduced to pass sklearn checks (sklearn doesn't like arrays as default parameters)
+        if self.alphas is None: #test_alphas introduced to pass sklearn checks (sklearn doesn't like arrays as default parameters)
             self._alphas = np.arange(.6,1,.02)[None]
             
         self.n_alpha_,self.dimension_,self.p_alpha_,self.alphas_,self.separable_fraction_,self.Xp_ = self._SeparabilityAnalysis(X)
