@@ -14,10 +14,9 @@ import sys
 import warnings
 import numpy as np
 import pickle
-from sklearn.neighbors import NearestNeighbors
 from scipy.optimize import minimize
-from scipy.special import i0,i1,digamma,gammainc
-from scipy.interpolate import interp1d,interp2d
+from scipy.special import i0,i1,digamma
+from scipy.interpolate import interp1d
 from .._commonfuncs import binom_coeff, get_nn, randsphere, lens, indnComb
 
 
