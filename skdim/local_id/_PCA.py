@@ -88,6 +88,7 @@ class lPCA(BaseEstimator):
     def _FO(self,explained_var):
         de = sum(explained_var>(self.alphaFO*explained_var[0]))
         gaps = explained_var[:-1]/explained_var[1:]
+        
         try: return de, gaps[de-1]
         except: return de, gaps[-1]
     
