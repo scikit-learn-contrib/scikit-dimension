@@ -124,18 +124,15 @@ class FisherS(BaseEstimator):
         %   X is preprocessed data matrix.'''
 
         #centering
-        nobjects = len(X[:,0])
         sampleMean = np.mean(X,axis=0)
         if center:
             X = X-sampleMean
         #dimensionality reduction if requested dimensionality reduction or whitening
-        PCAcomputed = 0
         if dimred or whiten:
             pca = sk.PCA()
             u = pca.fit_transform(X)
             v = pca.components_.T
             s = pca.explained_variance_
-            PCAcomputed = 1
             sc = s/s[0]
             ind = np.where(sc > 1/self.ConditionalNumber)[0]
             X = X @ v[:,ind]
