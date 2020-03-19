@@ -2,12 +2,11 @@
 ### https://cran.r-project.org/web/packages/intrinsicDimension/index.html
 ### for the original R implementation
 
-import itertools
 import numpy as np
 import bisect
 from scipy.special import gamma
 from functools import lru_cache
-from .._commonfuncs import binom_coeff, lens, indComb, indnComb, efficient_indnComb, check_random_generator
+from .._commonfuncs import lens, indComb, indnComb, efficient_indnComb, check_random_generator
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
