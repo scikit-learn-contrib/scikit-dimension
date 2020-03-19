@@ -3,16 +3,11 @@ from sklearn.utils.validation import check_array
 
 import numba as nb
 import numpy as np
-import math
 import sklearn.decomposition as sk
-import warnings
-warnings.filterwarnings('ignore')
-from scipy.special import gammainc
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
-import scipy.io
-from .._commonfuncs import randsphere
-
+import warnings
+warnings.filterwarnings('ignore')
 
 class FisherS(BaseEstimator):
     """
