@@ -206,7 +206,7 @@ class MLE(BaseEstimator):
     def _dnorm(x,mu=0,sigma=1): 
         return np.exp(-.5*((x-mu)/sigma)**2)/(sigma*np.sqrt(2*np.pi))
 
-    def _dnoiseGaussH(r, s, sigma, k = None):
+    def _dnoiseGaussH(self, r, s, sigma, k = None):
         return self._dnorm(s,mu=r,sigma=sigma) 
                                             # f(s|r) in Haro et al. (2008) w/ Gaussian
                                             # transition density
