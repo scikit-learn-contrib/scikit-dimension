@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 import numpy as np
-from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
