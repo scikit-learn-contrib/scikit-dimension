@@ -290,15 +290,15 @@ class DANCo(BaseEstimator):
             if self.ver == 'DANCoFit':
                 if self.verbose:
                     print("Generating DANCo calibration data from precomputed spline interpolation for cardinality 50 to 5000, k = 10, dimensions 1 to 100")
-                raise ValueError('Not yet implemented')
+                raise ValueError('DANCoFit not yet implemented')
                 #load precomputed splines as a function of dimension and dataset cardinality
-                DANCo_splines = {}
-                for spl in ['spline_dhat','spline_mu','spline_tau']:
-                    with open(path_to_estimators+'/DANCoFit/DANCo_'+spl+'.pkl', 'rb') as f:
-                        DANCo_splines[spl]=pickle.load(f)
-                #compute interpolated statistics
-                while (cal['maxdim'] < D):
-                    cal = self.increaseMaxDimByOne_precomputedSpline(cal,DANCo_splines)
+                #DANCo_splines = {}
+                #for spl in ['spline_dhat','spline_mu','spline_tau']:
+                #    with open(path_to_estimators+'/DANCoFit/DANCo_'+spl+'.pkl', 'rb') as f:
+                #        DANCo_splines[spl]=pickle.load(f)
+                ##compute interpolated statistics
+                #while (cal['maxdim'] < D):
+                #    cal = self.increaseMaxDimByOne_precomputedSpline(cal,DANCo_splines)
 
             else:
                 if self.verbose:
