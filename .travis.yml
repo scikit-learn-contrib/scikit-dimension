@@ -1,49 +1,51 @@
 dist: trusty
 sudo: false
 
-language: python
+jobs:
+  include:
+    - name: Python 3.7 on Ubuntu Linux 18.04
+      os: linux
+      dist: bionic
+      language: python
+      python: '3.7'
+    - name: Python 3.8 on Ubuntu Linux 18.04
+      os: linux
+      dist: bionic
+      language: python
+      python: '3.8'
+    # See https://blog.travis-ci.com/2019-08-07-extensive-python-testing-on-travis-ci
+    # for macos config peculiarities.
+    - name: Python 3.7 on MacOS X (xcode 10.3)
+      os: osx
+      language: shell
+      osx_image: xcode10.3  # Python 3.7
+    - name: Python 3.7 on MacOS X (xcode 11.3)
+      os: osx
+      language: shell
+      osx_image: xcode11.3  # Python 3.7.5
+      
 
 cache:
   directories:
   - $HOME/.cache/pip
 
-matrix:
-  include:
-    - env: PYTHON_VERSION="3.5" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
-           SKLEARN_VERSION="0.19.1"
-    - env: PYTHON_VERSION="3.6" NUMPY_VERSION="1.13.1" SCIPY_VERSION="0.19.1"
-           SKLEARN_VERSION="0.20.3"
-    - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
-           SKLEARN_VERSION="*"
-    - env: PYTHON_VERSION="3.7" NUMPY_VERSION="*" SCIPY_VERSION="*"
-           SKLEARN_VERSION="nightly"
-
 install:
   # install miniconda
-  - deactivate
+  #- deactivate
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - MINICONDA_PATH=/home/travis/miniconda
   - chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PATH
   - export PATH=$MINICONDA_PATH/bin:$PATH
-  - conda update --yes conda
+  - conda update -y conda
   # create the testing environment
-  - conda create -n testenv --yes python=$PYTHON_VERSION pip
+  - conda create -n testenv --yes pip
   - source activate testenv
-  - |
-      if [ $SKLEARN_VERSION = "nightly" ]; then
-          conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION cython nose pytest pytest-cov
-          # install nightly wheels
-          pip install --pre -f https://sklearn-nightly.scdn8.secure.raxcdn.com scikit-learn
-      else
-          conda install --yes numpy==$NUMPY_VERSION scipy==$SCIPY_VERSION scikit-learn==$SKLEARN_VERSION cython nose pytest pytest-cov
-      fi
+  - conda install -y numpy scipy scikit-learn cython nose numba matplotlib pytest pytest-cov
   - pip install codecov
   - pip install .
 
 script:
-  - mkdir for_test
-  - cd for_test
-  - pytest -v --cov=skltemplate --pyargs skltemplate
+  - pytest -v --cov=skdim --pyargs skdim
 
 after_success:
   - codecov

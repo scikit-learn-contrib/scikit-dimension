@@ -1,36 +1,35 @@
 import numpy as np
 import warnings
-from _commonfuncs import get_nn
+from .._commonfuncs import get_nn
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array, check_random_state
+from sklearn.utils.validation import check_array
 
 
 class TLE(BaseEstimator):
     """
     Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.
-    
+
     -----------
     Attributes
-    
+
    epsilon : float
-   
+
     -----------
     Returns
-    
+
     dimension_ : int
         Intrinsic dimension of the dataset
 
     -----------
     References:
     """
-    
-    
-    def __init__(self, k = 20, epsilon=1e-4):
+
+    def __init__(self, k=20, epsilon=1e-4):
         self.k = k
         self.epsilon = epsilon
-        
-    def fit(self,X,y=None):
+
+    def fit(self, X, y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
@@ -46,24 +45,22 @@ class TLE(BaseEstimator):
         X = check_array(X, accept_sparse=False)
         if len(X) == 1:
             raise ValueError("Can't fit with 1 sample")
-        if X.shape[1]==1:
+        if X.shape[1] == 1:
             raise ValueError("Can't fit with n_features = 1")
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
         if self.k >= len(X):
             warnings.warn('k >= len(X), using k = len(X)-1')
-        
-        
-        dists, inds = get_nn(X,min(self.k,len(X)-1))
-        
+
+        dists, inds = get_nn(X, min(self.k, len(X)-1))
+
         self.dimension_ = np.zeros(len(X))
         for i in range(len(X)):
-            self.dimension_[i] = self._idtle(X[inds[i,:]],dists[[i],:])
-                    
+            self.dimension_[i] = self._idtle(X[inds[i, :]], dists[[i], :])
+
         self.is_fitted_ = True
         # `fit` should always return `self`
-        return self  
-
+        return self
 
     def _idtle(self, nn, dists):
         # nn - matrix of nearest neighbors (k x d), sorted by distance
@@ -97,8 +94,10 @@ class TLE(BaseEstimator):
         # Boundary case 4: If $v_{ij} = 0$, then the measurement $s_{ij}$ is zero and must be dropped. The measurement $t_{ij}$ should be dropped as well.
         V0 = (V == 0).squeeze()
         np.fill_diagonal(V0, False)
-        T[V0] = r  # by setting to r, $t_{ij}$ will not contribute to the sum s1t
-        S[V0] = r  # by setting to r, $s_{ij}$ will not contribute to the sum s1s
+        # by setting to r, $t_{ij}$ will not contribute to the sum s1t
+        T[V0] = r
+        # by setting to r, $s_{ij}$ will not contribute to the sum s1s
+        S[V0] = r
         # will subtract twice this number during ID computation below
         nV0 = np.sum(V0)
         # Drop T & S measurements below epsilon (V4: If $s_{ij}$ is thrown out, then for the sake of balance, $t_{ij}$ should be thrown out as well (or vice versa).)

@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>skdim.local_id.FisherS &mdash; scikit-dimension 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/js/copybutton.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/project-template.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="skdim.local_id.lPCA" href="skdim.local_id.lPCA.html" />
+    <link rel="prev" title="skdim.local_id.ESS" href="skdim.local_id.ESS.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> scikit-dimension
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../api.html#local-id">local_id</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="skdim.local_id.ESS.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.ESS</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.FisherS</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#examples-using-skdim-local-id-fishers">Examples using <code class="docutils literal notranslate"><span class="pre">skdim.local_id.FisherS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.local_id.lPCA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.lPCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.local_id.MiND_ML.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.MiND_ML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.local_id.MOM.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.MOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="skdim.local_id.TLE.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.TLE</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../api.html#global-id">global_id</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../auto_examples/index.html">General examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scikit-dimension</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api.html">scikit-dimension API</a> &raquo;</li>
+        
+      <li><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.FisherS</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/generated/skdim.local_id.FisherS.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="skdim-local-id-fishers">
+<h1><a class="reference internal" href="../index.html#module-skdim.local_id" title="skdim.local_id"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code></a>.FisherS<a class="headerlink" href="#skdim-local-id-fishers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="skdim.local_id.FisherS">
+<em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">FisherS</code><span class="sig-paren">(</span><em class="sig-param">ConditionalNumber=10</em>, <em class="sig-param">ProjectOnSphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">ProducePlots=False</em>, <em class="sig-param">ncomp=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Intrinsic dimension estimation using the FisherS algorithm.</p>
+<p>Attributes
+ConditionalNumber : - a positive real value used to select the top</p>
+<blockquote>
+<div><p>princinpal components. We consider only PCs with eigen values
+which are not less than the maximal eigenvalue divided by
+ConditionalNumber Default value is 10.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ProjectOnSphere<span class="classifier">a boolean value indicating if projecting on a</span></dt><dd><p>sphere should be performed. Default value is true.</p>
+</dd>
+<dt>test_alphas<span class="classifier">2D np.array, float</span></dt><dd><dl class="simple">
+<dt>A row vector of floats, with alpha range, the values must be given increasing</dt><dd><p>within (0,1) interval. Default is np.arange(.6,1,.02)[None].</p>
+</dd>
+</dl>
+</dd>
+<dt>ProducePlots<span class="classifier">bool, default=False</span></dt><dd><p>A boolean value indicating if the standard plots need to be drawn.</p>
+</dd>
+<dt>ncomp<span class="classifier">bool</span></dt><dd><p>Whether to print number of retained principal components</p>
+</dd>
+<dt>limit_maxdim<span class="classifier">bool</span></dt><dd><p>Whether to cap estimated maxdim to the embedding dimension</p>
+</dd>
+</dl>
+<p>Returns</p>
+<dl class="simple">
+<dt>n_alpha<span class="classifier">1D np.array, float</span></dt><dd><p>Effective dimension profile as a function of alpha</p>
+</dd>
+<dt>n_single<span class="classifier">float</span></dt><dd><p>A single estimate for the effective dimension</p>
+</dd>
+<dt>p_alpha<span class="classifier">2D np.array, float</span></dt><dd><p>Distributions as a function of alpha, matrix with columns corresponding to the alpha values, and with rows corresponding to objects.</p>
+</dd>
+<dt>separable_fraction<span class="classifier">1D np.array, float</span></dt><dd><p>Separable fraction of data points as a function of alpha</p>
+</dd>
+<dt>alphas<span class="classifier">2D np.array, float</span></dt><dd><p>Input alpha values</p>
+</dd>
+</dl>
+<p>References</p>
+<dl class="method">
+<dt id="skdim.local_id.FisherS.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ConditionalNumber=10</em>, <em class="sig-param">ProjectOnSphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">ProducePlots=False</em>, <em class="sig-param">ncomp=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.local_id.FisherS.fit">
+<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">X</em>, <em class="sig-param">y=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>A reference implementation of a fitting function.
+:param X: The training input samples.
+:type X: {array-like}, shape (n_samples, n_features)
+:param y:
+:type y: dummy parameter to respect the sklearn API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>self</strong> – Returns self.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.local_id.FisherS.get_params">
+<code class="sig-name descname">get_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">deep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.local_id.FisherS.get_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get parameters for this estimator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>deep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>default=True</em>) – If True, will return the parameters for this estimator and
+contained subobjects that are estimators.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>params</strong> – Parameter names mapped to their values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>mapping of string to any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.local_id.FisherS.point_inseparability_to_pointID">
+<code class="sig-name descname">point_inseparability_to_pointID</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">idx='all_inseparable'</em>, <em class="sig-param">force_definite_dim=False</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS.point_inseparability_to_pointID"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS.point_inseparability_to_pointID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn pointwise inseparability probability into pointwise global ID
+Inputs :</p>
+<blockquote>
+<div><p>args : same as SeparabilityAnalysis
+kwargs :</p>
+<blockquote>
+<div><dl class="simple">
+<dt>idx<span class="classifier">int, string</span></dt><dd><p>int for custom alpha index
+‘all_inseparable’ to choose alpha where lal points have non-zero inseparability probability
+‘selected’ to keep global alpha selected</p>
+</dd>
+<dt>force_definite_dim<span class="classifier">bool</span></dt><dd><p>whether to force fully separable points to take the minimum detectable inseparability value (1/(n-1)) (i.e., maximal detectable dimension)</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="skdim.local_id.FisherS.set_params">
+<code class="sig-name descname">set_params</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**params</em><span class="sig-paren">)</span><a class="headerlink" href="#skdim.local_id.FisherS.set_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parameters of this estimator.</p>
+<p>The method works on simple estimators as well as on nested objects
+(such as pipelines). The latter have parameters of the form
+<code class="docutils literal notranslate"><span class="pre">&lt;component&gt;__&lt;parameter&gt;</span></code> so that it’s possible to update each
+component of a nested object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>**params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Estimator parameters.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> – Estimator instance.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)">object</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="examples-using-skdim-local-id-fishers">
+<h2>Examples using <code class="docutils literal notranslate"><span class="pre">skdim.local_id.FisherS</span></code><a class="headerlink" href="#examples-using-skdim-local-id-fishers" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="Local ID example"><div class="figure align-default" id="id1">
+<img alt="../_images/sphx_glr_plot_local_thumb.png" src="../_images/sphx_glr_plot_local_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/plot_local.html#sphx-glr-auto-examples-plot-local-py"><span class="std std-ref">Local ID example</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div style='clear:both'></div></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="skdim.local_id.lPCA.html" class="btn btn-neutral float-right" title="skdim.local_id.lPCA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="skdim.local_id.ESS.html" class="btn btn-neutral float-left" title="skdim.local_id.ESS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Jonathan Bac
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

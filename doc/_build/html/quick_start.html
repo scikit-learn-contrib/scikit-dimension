@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Quick Start with the project-template &mdash; sklearn-template 0.0.3 documentation</title>
+  <title>Quick Start with scikit-dimension &mdash; scikit-dimension 0.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User guide: create your own scikit-learn estimator" href="user_guide.html" />
-    <link rel="prev" title="Welcome to sklearn-template’s documentation!" href="index.html" /> 
+    <link rel="next" title="scikit-dimension API" href="api.html" />
+    <link rel="prev" title="Welcome to scikit-dimension’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -52,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> sklearn-template
+            <a href="index.html" class="icon icon-home"> scikit-dimension
           
 
           
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.0.3
+                0.1
               </div>
             
           
@@ -88,22 +88,15 @@
             
               <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start with the project-template</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#creating-your-own-scikit-learn-contribution-package">Creating your own scikit-learn contribution package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#download-and-setup-your-repository">1. Download and setup your repository</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#develop-your-own-scikit-learn-estimators">2. Develop your own scikit-learn estimators</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#edit-the-documentation">3. Edit the documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#setup-the-continuous-integration">4. Setup the continuous integration</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#publish-your-package">Publish your package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start with scikit-dimension</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide: create your own scikit-learn estimator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">project-template API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">scikit-dimension API</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Tutorial - Examples</span></p>
 <ul>
@@ -122,7 +115,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">sklearn-template</a>
+          <a href="index.html">scikit-dimension</a>
         
       </nav>
 
@@ -153,7 +146,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Quick Start with the project-template</li>
+      <li>Quick Start with scikit-dimension</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,119 +165,56 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="quick-start-with-the-project-template">
-<h1>Quick Start with the project-template<a class="headerlink" href="#quick-start-with-the-project-template" title="Permalink to this headline">¶</a></h1>
-<p>This package serves as a skeleton package aiding at developing compatible
-scikit-learn contribution.</p>
-<div class="section" id="creating-your-own-scikit-learn-contribution-package">
-<h2>Creating your own scikit-learn contribution package<a class="headerlink" href="#creating-your-own-scikit-learn-contribution-package" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="download-and-setup-your-repository">
-<h3>1. Download and setup your repository<a class="headerlink" href="#download-and-setup-your-repository" title="Permalink to this headline">¶</a></h3>
-<p>To create your package, you need to clone the <code class="docutils literal notranslate"><span class="pre">project-template</span></code> repository:</p>
+  <div class="section" id="quick-start-with-scikit-dimension">
+<h1>Quick Start with scikit-dimension<a class="headerlink" href="#quick-start-with-scikit-dimension" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">scikit-dimension</span></code> provides Python implementations of scikit-learn compatible estimators.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>To install with pip run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/scikit-learn-contrib/project-template.git
 </pre></div>
 </div>
-<p>Before to reinitialize your git repository, you need to make the following
-changes. Replace all occurrences of <code class="docutils literal notranslate"><span class="pre">skltemplate</span></code> and <code class="docutils literal notranslate"><span class="pre">sklearn-template</span></code>
-with the name of you own contribution. You can find all the occurrences using
-the following command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git grep skltemplate
-$ git grep sklearn-template
-</pre></div>
-</div>
-<p>To remove the history of the template package, you need to remove the <cite>.git</cite>
-directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd project-template
-$ rm -rf .git
-</pre></div>
-</div>
-<p>Then, you need to initialize your new git repository:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git init
-$ git add .
-$ git commit -m &#39;Initial commit&#39;
-</pre></div>
-</div>
-<p>Finally, you create an online repository on GitHub and push your code online:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git remote add origin https://github.com/your_remote/your_contribution.git
-$ git push origin master
+<p>To install from source run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/scikit-learn-contrib/project-template.git
 </pre></div>
 </div>
 </div>
-<div class="section" id="develop-your-own-scikit-learn-estimators">
-<h3>2. Develop your own scikit-learn estimators<a class="headerlink" href="#develop-your-own-scikit-learn-estimators" title="Permalink to this headline">¶</a></h3>
-<p>You can modify the source files as you want. However, your custom estimators
-need to pass the <a class="reference external" href="http://scikit-learn.org/stable/modules/generated/sklearn.utils.estimator_checks.check_estimator.html#sklearn.utils.estimator_checks.check_estimator">check_estimator</a> test to be scikit-learn compatible. You can
-refer to the <a class="reference internal" href="user_guide.html#user-guide"><span class="std std-ref">User Guide</span></a> to help you create a compatible
-scikit-learn estimator.</p>
-<p>In any case, developers should endeavor to adhere to scikit-learn’s
-<a class="reference external" href="http://scikit-learn.org/stable/developers/">Contributor’s Guide</a> which promotes the use of:</p>
-<ul class="simple">
-<li><p>algorithm-specific unit tests, in addition to <code class="docutils literal notranslate"><span class="pre">check_estimator</span></code>’s common
-tests;</p></li>
-<li><p><a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">PEP8</a>-compliant code;</p></li>
-<li><p>a clearly documented API using <a class="reference external" href="https://github.com/numpy/numpydoc">NumpyDoc</a> and <a class="reference external" href="https://www.python.org/dev/peps/pep-0257/">PEP257</a>-compliant docstrings;</p></li>
-<li><p>references to relevant scientific literature in standard citation formats;</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/doctest.html">doctests</a> to provide succinct usage examples;</p></li>
-<li><p>standalone examples to illustrate the usage, model visualisation, and
-benefits/benchmarks of particular algorithms;</p></li>
-<li><p>efficient code when the need for optimization is supported by benchmarks.</p></li>
-</ul>
-</div>
-<div class="section" id="edit-the-documentation">
-<h3>3. Edit the documentation<a class="headerlink" href="#edit-the-documentation" title="Permalink to this headline">¶</a></h3>
-<p>The documentation is created using <a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx</a>. In addition, the examples are
-created using <code class="docutils literal notranslate"><span class="pre">sphinx-gallery</span></code>. Therefore, to generate locally the
-documentation, you are required to install the following packages:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install sphinx sphinx-gallery sphinx_rtd_theme matplotlib numpydoc pillow
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>Global intrinsic dimension estimators</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">skdim</span> <span class="kn">import</span> <span class="n">global_id</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="n">X</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">CorrInt</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">DANCo</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">KNN</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">Mada</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">MLE</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">global_id</span><span class="o">.</span><span class="n">TwoNN</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span>
 </pre></div>
 </div>
-<p>The documentation is made of:</p>
-<ul class="simple">
-<li><p>a home page, <code class="docutils literal notranslate"><span class="pre">doc/index.rst</span></code>;</p></li>
-<li><p>an API documentation, <code class="docutils literal notranslate"><span class="pre">doc/api.rst</span></code> in which you should add all public
-objects for which the docstring should be exposed publicly.</p></li>
-<li><p>a User Guide documentation, <code class="docutils literal notranslate"><span class="pre">doc/user_guide.rst</span></code>, containing the narrative
-documentation of your package, to give as much intuition as possible to your
-users.</p></li>
-<li><p>examples which are created in the <cite>examples/</cite> folder. Each example
-illustrates some usage of the package. the example file name should start by
-<cite>plot_*.py</cite>.</p></li>
-</ul>
-<p>The documentation is built with the following commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd doc
-$ make html
-</pre></div>
-</div>
-</div>
-<div class="section" id="setup-the-continuous-integration">
-<h3>4. Setup the continuous integration<a class="headerlink" href="#setup-the-continuous-integration" title="Permalink to this headline">¶</a></h3>
-<p>The project template already contains configuration files of the continuous
-integration system. Basically, the following systems are set:</p>
-<ul class="simple">
-<li><p>Travis CI is used to test the package in Linux. You need to activate Travis
-CI for your own repository. Refer to the Travis CI documentation.</p></li>
-<li><p>AppVeyor is used to test the package in Windows. You need to activate
-AppVeyor for your own repository. Refer to the AppVeyor documentation.</p></li>
-<li><p>Circle CI is used to check if the documentation is generated properly. You
-need to activate Circle CI for your own repository. Refer to the Circle CI
-documentation.</p></li>
-<li><p>ReadTheDocs is used to build and host the documentation. You need to activate
-ReadTheDocs for your own repository. Refer to the ReadTheDocs documentation.</p></li>
-<li><p>CodeCov for tracking the code coverage of the package. You need to activate
-CodeCov for you own repository.</p></li>
-<li><p>PEP8Speaks for automatically checking the PEP8 compliance of your project for
-each Pull Request.</p></li>
-</ul>
-</div>
-</div>
-<div class="section" id="publish-your-package">
-<h2>Publish your package<a class="headerlink" href="#publish-your-package" title="Permalink to this headline">¶</a></h2>
-<p>You can make your package available through <a class="reference external" href="https://packaging.python.org/tutorials/packaging-projects/">PyPi</a> and <a href="#id1"><span class="problematic" id="id2">conda-forge_</span></a>. Refer to
-the associated documentation to be able to upload your packages such that
-it will be installable with <code class="docutils literal notranslate"><span class="pre">pip</span></code> and <code class="docutils literal notranslate"><span class="pre">conda</span></code>. Once published, it will
-be possible to install your package with the following commands:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install your-scikit-learn-contribution
-$ conda install -c conda-forge your-scikit-learn-contribution
+<p>Local intrinsic dimension estimators</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skdim</span>
+<span class="kn">from</span> <span class="nn">skdim</span> <span class="kn">import</span> <span class="n">local_id</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="c1">#one neighborhood</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">ESS</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">FisherS</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">MOM</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">MiND_ML</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">TLE</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">local_id</span><span class="o">.</span><span class="n">lPCA</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+
+<span class="c1">#all datapoint neighborhoods</span>
+<span class="n">pw_id</span> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">commonfuncs</span><span class="o">.</span><span class="n">asPointwise</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">local_id</span><span class="o">.</span><span class="n">FisherS</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">,</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -298,10 +228,10 @@ $ conda install -c conda-forge your-scikit-learn-contribution
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="user_guide.html" class="btn btn-neutral float-right" title="User guide: create your own scikit-learn estimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="api.html" class="btn btn-neutral float-right" title="scikit-dimension API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to sklearn-template’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to scikit-dimension’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -310,7 +240,7 @@ $ conda install -c conda-forge your-scikit-learn-contribution
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Vighnesh Birodkar
+        &copy; Copyright 2020, Jonathan Bac
 
     </p>
   </div>

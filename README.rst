@@ -17,12 +17,12 @@
 .. |ReadTheDocs| image:: https://readthedocs.org/projects/sklearn-template/badge/?version=latest
 .. _ReadTheDocs: https://sklearn-template.readthedocs.io/en/latest/?badge=latest
 
-project-template - A template for scikit-learn contributions
+scikit-dimension - A template for scikit-learn contributions
 ============================================================
 
 .. _scikit-learn: https://scikit-learn.org
 
-**project-template** is a template project for scikit-learn_ compatible
+**scikit-dimension** is a template project for scikit-learn_ compatible
 extensions.
 
 It aids development of estimators that can be used in scikit-learn pipelines

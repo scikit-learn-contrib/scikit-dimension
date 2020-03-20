@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>project-template API &mdash; sklearn-template 0.0.3 documentation</title>
+  <title>scikit-dimension API &mdash; scikit-dimension 0.1 documentation</title>
   
 
   
@@ -37,8 +37,8 @@
   <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="skltemplate.TemplateEstimator" href="generated/skltemplate.TemplateEstimator.html" />
-    <link rel="prev" title="User guide: create your own scikit-learn estimator" href="user_guide.html" /> 
+    <link rel="next" title="skdim.local_id.ESS" href="generated/skdim.local_id.ESS.html" />
+    <link rel="prev" title="Quick Start with scikit-dimension" href="quick_start.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -52,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> sklearn-template
+            <a href="index.html" class="icon icon-home"> scikit-dimension
           
 
           
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.0.3
+                0.1
               </div>
             
           
@@ -88,22 +88,27 @@
             
               <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start with the project-template</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide: create your own scikit-learn estimator</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">project-template API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#estimator">Estimator</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/skltemplate.TemplateEstimator.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skltemplate</span></code>.TemplateEstimator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">scikit-dimension API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#local-id">local_id</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.ESS.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.ESS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.FisherS.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.FisherS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.lPCA.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.lPCA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.MiND_ML.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.MiND_ML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.MOM.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.MOM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.local_id.TLE.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.TLE</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#transformer">Transformer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/skltemplate.TemplateTransformer.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skltemplate</span></code>.TemplateTransformer</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#predictor">Predictor</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generated/skltemplate.TemplateClassifier.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skltemplate</span></code>.TemplateClassifier</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#global-id">global_id</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.CorrInt.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.CorrInt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.DANCo.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.DANCo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.KNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.KNN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.Mada.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.Mada</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.MLE.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.MLE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/skdim.global_id.TwoNN.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.TwoNN</a></li>
 </ul>
 </li>
 </ul>
@@ -126,7 +131,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">sklearn-template</a>
+          <a href="index.html">scikit-dimension</a>
         
       </nav>
 
@@ -157,7 +162,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>project-template API</li>
+      <li>scikit-dimension API</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -176,47 +181,144 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="project-template-api">
-<h1>project-template API<a class="headerlink" href="#project-template-api" title="Permalink to this headline">¶</a></h1>
-<p>This is an example on how to document the API of your own project.</p>
-<div class="section" id="estimator">
-<h2>Estimator<a class="headerlink" href="#estimator" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="scikit-dimension-api">
+<h1>scikit-dimension API<a class="headerlink" href="#scikit-dimension-api" title="Permalink to this headline">¶</a></h1>
+<p>The module global_id provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module local_id contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).</p>
+<p>#.. currentmodule:: skdim.local_id</p>
+<div class="section" id="local-id">
+<h2>local_id<a class="headerlink" href="#local-id" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/skltemplate.TemplateEstimator.html#skltemplate.TemplateEstimator" title="skltemplate.TemplateEstimator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemplateEstimator</span></code></a>([demo_param])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.ESS.html#skdim.local_id.ESS" title="skdim.local_id.ESS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.ESS</span></code></a>([ver, d, random_state])</p></td>
+<td><p>Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS" title="skdim.local_id.FisherS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.FisherS</span></code></a>([ConditionalNumber, …])</p></td>
+<td><p>Intrinsic dimension estimation using the FisherS algorithm.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA" title="skdim.local_id.lPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.lPCA</span></code></a>([ver, alphaRatio, …])</p></td>
+<td><p>Intrinsic dimension estimation using local PCA.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML" title="skdim.local_id.MiND_ML"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.MiND_ML</span></code></a>([k, D, ver])</p></td>
+<td><p>Intrinsic dimension estimation with the MiND_MLx algorithms.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.MOM.html#skdim.local_id.MOM" title="skdim.local_id.MOM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.MOM</span></code></a>([k])</p></td>
+<td><p>Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.TLE.html#skdim.local_id.TLE" title="skdim.local_id.TLE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.TLE</span></code></a>([k, epsilon])</p></td>
+<td><p>Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="global-id">
+<h2>global_id<a class="headerlink" href="#global-id" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.CorrInt.html#skdim.global_id.CorrInt" title="skdim.global_id.CorrInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.CorrInt</span></code></a>([k1, k2, DM])</p></td>
 <td><p>A template estimator to be used as a reference implementation.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="transformer">
-<h2>Transformer<a class="headerlink" href="#transformer" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/skltemplate.TemplateTransformer.html#skltemplate.TemplateTransformer" title="skltemplate.TemplateTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemplateTransformer</span></code></a>([demo_param])</p></td>
-<td><p>An example transformer that returns the element-wise square root.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.DANCo.html#skdim.global_id.DANCo" title="skdim.global_id.DANCo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.DANCo</span></code></a>([k, D, …])</p></td>
+<td><p>Intrinsic dimension estimation with the DANCo (Ceruti et al.</p></td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="predictor">
-<h2>Predictor<a class="headerlink" href="#predictor" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/skltemplate.TemplateClassifier.html#skltemplate.TemplateClassifier" title="skltemplate.TemplateClassifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TemplateClassifier</span></code></a>([demo_param])</p></td>
-<td><p>An example classifier which implements a 1-NN algorithm.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.KNN.html#skdim.global_id.KNN" title="skdim.global_id.KNN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.KNN</span></code></a>([k, ps, M, gamma])</p></td>
+<td><p>This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.Mada.html#skdim.global_id.Mada" title="skdim.global_id.Mada"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.Mada</span></code></a>([k, comb, DM, local])</p></td>
+<td><p>A template estimator to be used as a reference implementation.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.MLE.html#skdim.global_id.MLE" title="skdim.global_id.MLE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.MLE</span></code></a>([mode, k, dnoise, …])</p></td>
+<td><p>Intrinsic dimension estimation with the Maximum Likelihood method.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN" title="skdim.global_id.TwoNN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.TwoNN</span></code></a>([return_xy, …])</p></td>
+<td><p>Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -231,10 +333,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="generated/skltemplate.TemplateEstimator.html" class="btn btn-neutral float-right" title="skltemplate.TemplateEstimator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="generated/skdim.local_id.ESS.html" class="btn btn-neutral float-right" title="skdim.local_id.ESS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="user_guide.html" class="btn btn-neutral float-left" title="User guide: create your own scikit-learn estimator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="quick_start.html" class="btn btn-neutral float-left" title="Quick Start with scikit-dimension" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -243,7 +345,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Vighnesh Birodkar
+        &copy; Copyright 2020, Jonathan Bac
 
     </p>
   </div>

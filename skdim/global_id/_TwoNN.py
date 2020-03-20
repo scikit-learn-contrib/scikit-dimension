@@ -1,32 +1,31 @@
-#Original Author: Francesco Mottes
-#https://github.com/fmottes/TWO-NN
-#MIT License
+# Original Author: Francesco Mottes
+# https://github.com/fmottes/TWO-NN
+# MIT License
 #
-#Copyright (c) 2019 fmottes
+# Copyright (c) 2019 fmottes
 #
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
 #
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
 #
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
-#Author of the speed modifications (with sklearn dependencies): Jonathan Bac
-#Date  : 02-Jan-2020
-#-----------------------------
-import sys
-sys.path.append('..')
+# Author of the speed modifications (with sklearn dependencies): Jonathan Bac
+# Date  : 02-Jan-2020
+# -----------------------------
+
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
@@ -34,13 +33,13 @@ from sklearn.utils.validation import check_array
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances_chunked
 from sklearn.linear_model import LinearRegression
-from _commonfuncs import get_nn
+from .._commonfuncs import get_nn
 
 
 class TwoNN(BaseEstimator):
     """
     Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.
-    
+
     -----------
     Parameters:
     return_xy : bool (default=False)
@@ -51,28 +50,27 @@ class TwoNN(BaseEstimator):
         Whether data is a precomputed distance matrix
     -----------
     Returns:
-    
+
     d : int
         Intrinsic dimension of the dataset according to TWO-NN.
     x : 1d array (optional)
         Array with the -log(mu) values.
     y : 1d array (optional)
         Array with the -log(F(mu_{sigma(i)})) values.
-        
+
     -----------
     References:
-    
+
     [1] E. Facco, M. d’Errico, A. Rodriguez & A. Laio
         Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
     """
-    
-    
-    def __init__(self,return_xy=False, discard_fraction = 0.1, dist = False):
+
+    def __init__(self, return_xy=False, discard_fraction=0.1, dist=False):
         self.return_xy = return_xy
         self.discard_fraction = discard_fraction
         self.dist = dist
-        
-    def fit(self,X,y=None):
+
+    def fit(self, X, y=None):
         """A reference implementation of a fitting function.
         Parameters
         ----------
@@ -88,22 +86,21 @@ class TwoNN(BaseEstimator):
         X = check_array(X, accept_sparse=False)
         if len(X) == 1:
             raise ValueError("Can't fit with 1 sample")
-        if X.shape[1]==1:
+        if X.shape[1] == 1:
             raise ValueError("Can't fit with n_features = 1")
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
-        
+
         if self.return_xy:
             self.dimension_, self.x_, self.y_ = self._twonn(X)
-        else: 
+        else:
             self.dimension_ = self._twonn(X)
-        
+
         self.is_fitted_ = True
         # `fit` should always return `self`
-        return self        
+        return self
 
-
-    def _twonn(self,X):
+    def _twonn(self, X):
         """
         Calculates intrinsic dimension of the provided data points with the TWO-NN algorithm.
 
@@ -135,44 +132,46 @@ class TwoNN(BaseEstimator):
             Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
         """
 
-
         N = len(X)
 
         if self.dist:
-            r1,r2 = dists[:,0],dists[:,1]
+            r1, r2 = dists[:, 0], dists[:, 1]
             _mu = r2/r1
-            mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]] #discard the largest distances
+            # discard the largest distances
+            mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
 
-        else:    
+        else:
             # mu = r2/r1 for each data point
-            if X.shape[1] > 25: #relatively high dimensional data, use distance matrix generator
+            if X.shape[1] > 25:  # relatively high dimensional data, use distance matrix generator
                 distmat_chunks = pairwise_distances_chunked(X)
                 _mu = np.zeros((len(X)))
                 i = 0
                 for x in distmat_chunks:
-                    x = np.sort(x,axis=1)
-                    r1, r2 = x[:,1], x[:,2]
+                    x = np.sort(x, axis=1)
+                    r1, r2 = x[:, 1], x[:, 2]
                     _mu[i:i+len(x)] = (r2/r1)
                     i += len(x)
 
-                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]] #discard the largest distances
+                # discard the largest distances
+                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
 
-            else: #relatively low dimensional data, search nearest neighbors directly
-                dists, _ = get_nn(X,k=2)
-                r1,r2 = dists[:,0],dists[:,1]
+            else:  # relatively low dimensional data, search nearest neighbors directly
+                dists, _ = get_nn(X, k=2)
+                r1, r2 = dists[:, 0], dists[:, 1]
                 _mu = r2/r1
-                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]] #discard the largest distances
+                # discard the largest distances
+                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
 
         # Empirical cumulate
         Femp = np.arange(int(N*(1-self.discard_fraction)))/N
 
         # Fit line
         lr = LinearRegression(fit_intercept=False)
-        lr.fit(np.log(mu).reshape(-1,1), -np.log(1-Femp).reshape(-1,1))
+        lr.fit(np.log(mu).reshape(-1, 1), -np.log(1-Femp).reshape(-1, 1))
 
-        d = lr.coef_[0][0] # extract slope
+        d = lr.coef_[0][0]  # extract slope
 
         if self.return_xy:
             return d, x, y
-        else: 
+        else:
             return d
