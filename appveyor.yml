@@ -3,6 +3,13 @@ build: false
 environment:
   matrix:
     - PYTHON: "C:\\Miniconda3-x64"
+      PYTHON_VERSION: "3.6.x"
+      PYTHON_ARCH: "64"
+      NUMPY_VERSION: "*"
+      SCIPY_VERSION: "*"
+      SKLEARN_VERSION: "*"
+      
+    - PYTHON: "C:\\Miniconda3-x64"
       PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "64"
       NUMPY_VERSION: "*"
