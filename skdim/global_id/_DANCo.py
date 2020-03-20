@@ -13,7 +13,6 @@ from sklearn.utils.validation import check_array, check_random_state
 import sys
 import warnings
 import numpy as np
-import pickle
 from scipy.optimize import minimize
 from scipy.special import i0,i1,digamma
 from scipy.interpolate import interp1d
