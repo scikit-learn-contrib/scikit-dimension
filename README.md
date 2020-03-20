@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/j-bac/skcontrib-id-estimators.svg?token=St4VFQxgQ93UPzzi8TFA&branch=master)](https://travis-ci.com/j-bac/skcontrib-id-estimators)
 [![Build status](https://ci.appveyor.com/api/projects/status/5ei9489c5ailhu2a/branch/master?svg=true)](https://ci.appveyor.com/project/j-bac/skcontrib-id-estimators/branch/master)
 [![codecov](https://codecov.io/gh/j-bac/skcontrib-id-estimators/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/skcontrib-id-estimators)
-[![CircleCI](https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=svg)](https://circleci.com/gh/j-bac/scikit-dimension/tree/master)
+[![CircleCI](https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield)](https://circleci.com/gh/j-bac/scikit-dimension/tree/master)
 
 
 # Implementation of intrinsic dimension estimators in Python.
