@@ -28,8 +28,10 @@ def data():
 
 
 # test all estimators pass check_estimator
-local_class_list = [o[1] for o in getmembers(local_id) if isclass(o[1])]
-global_class_list = [o[1] for o in getmembers(global_id) if isclass(o[1])]
+local_class_list = [o[1]
+                    for o in getmembers(local_id) if isclass(o[1])]
+global_class_list = [o[1]
+                     for o in getmembers(global_id) if isclass(o[1])]
 estimators = local_class_list+global_class_list
 
 

@@ -43,7 +43,8 @@ class Mada(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
         if self.k >= len(X):
-            warnings.warn('k larger or equal to len(X), using len(X)-1')
+            warnings.warn(
+                'k larger or equal to len(X), using len(X)-1')
 
         self._k = len(X)-1 if self.k >= len(X) else self.k
 
@@ -63,7 +64,8 @@ class Mada(BaseEstimator):
         n = len(distmat)
 
         if (self.local == False and n > 10000):
-            ID = np.random.choice(n, size=int(np.round(n/2)), replace=False)
+            ID = np.random.choice(n, size=int(
+                np.round(n/2)), replace=False)
             tmpD = distmat[ID, :]
             tmpD[tmpD == 0] = np.max(tmpD)
 

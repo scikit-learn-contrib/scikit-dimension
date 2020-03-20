@@ -138,11 +138,13 @@ class TwoNN(BaseEstimator):
             r1, r2 = dists[:, 0], dists[:, 1]
             _mu = r2/r1
             # discard the largest distances
-            mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
+            mu = _mu[np.argsort(
+                _mu)[:int(N*(1-self.discard_fraction))]]
 
         else:
             # mu = r2/r1 for each data point
-            if X.shape[1] > 25:  # relatively high dimensional data, use distance matrix generator
+            # relatively high dimensional data, use distance matrix generator
+            if X.shape[1] > 25:
                 distmat_chunks = pairwise_distances_chunked(X)
                 _mu = np.zeros((len(X)))
                 i = 0
@@ -153,21 +155,24 @@ class TwoNN(BaseEstimator):
                     i += len(x)
 
                 # discard the largest distances
-                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
+                mu = _mu[np.argsort(
+                    _mu)[:int(N*(1-self.discard_fraction))]]
 
             else:  # relatively low dimensional data, search nearest neighbors directly
                 dists, _ = get_nn(X, k=2)
                 r1, r2 = dists[:, 0], dists[:, 1]
                 _mu = r2/r1
                 # discard the largest distances
-                mu = _mu[np.argsort(_mu)[:int(N*(1-self.discard_fraction))]]
+                mu = _mu[np.argsort(
+                    _mu)[:int(N*(1-self.discard_fraction))]]
 
         # Empirical cumulate
         Femp = np.arange(int(N*(1-self.discard_fraction)))/N
 
         # Fit line
         lr = LinearRegression(fit_intercept=False)
-        lr.fit(np.log(mu).reshape(-1, 1), -np.log(1-Femp).reshape(-1, 1))
+        lr.fit(np.log(mu).reshape(-1, 1), -
+               np.log(1-Femp).reshape(-1, 1))
 
         d = lr.coef_[0][0]  # extract slope
 

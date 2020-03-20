@@ -56,7 +56,8 @@ class TLE(BaseEstimator):
 
         self.dimension_ = np.zeros(len(X))
         for i in range(len(X)):
-            self.dimension_[i] = self._idtle(X[inds[i, :]], dists[[i], :])
+            self.dimension_[i] = self._idtle(
+                X[inds[i, :]], dists[[i], :])
 
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -80,8 +81,10 @@ class TLE(BaseEstimator):
                  ** 0.5 - (Di**2 + V**2 - Dj**2)) / (2*(r**2 - Di**2))
         T = r * (((Di**2 + Z2 - Dj**2)**2 + 4*Z2 * (r**2 - Di**2))
                  ** 0.5 - (Di**2 + Z2 - Dj**2)) / (2*(r**2 - Di**2))
-        Dr = (dists == r).squeeze()  # handle case of repeating k-NN distances
-        S[Dr, :] = r * V[Dr, :]**2 / (r**2 + V[Dr, :]**2 - Dj[Dr, :]**2)
+        # handle case of repeating k-NN distances
+        Dr = (dists == r).squeeze()
+        S[Dr, :] = r * V[Dr, :]**2 / \
+            (r**2 + V[Dr, :]**2 - Dj[Dr, :]**2)
         T[Dr, :] = r * Z2[Dr, :] / (r**2 + Z2[Dr, :] - Dj[Dr, :]**2)
         # Boundary case 2: If $u_i = 0$, then for all $1\leq j\leq k$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $u_j$.
         Di0 = (Di == 0).squeeze()

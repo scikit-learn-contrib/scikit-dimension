@@ -57,9 +57,11 @@ class CorrInt(BaseEstimator):
             raise ValueError("X contains inf or NaN")
 
         if self.k2 >= len(X):
-            warnings.warn('k2 larger or equal to len(X), using len(X)-1')
+            warnings.warn(
+                'k2 larger or equal to len(X), using len(X)-1')
         if self.k1 >= len(X):
-            warnings.warn('k1 larger or equal to len(X), using len(X)-2')
+            warnings.warn(
+                'k1 larger or equal to len(X), using len(X)-2')
 
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True

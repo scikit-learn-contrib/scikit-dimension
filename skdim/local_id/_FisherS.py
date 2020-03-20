@@ -225,7 +225,8 @@ class FisherS(BaseEstimator):
             leng[k:e] = np.diag(xy)[:, None]
             xy = xy - np.diag(leng[k:e].squeeze())
             xy = xy / leng[k:e]
-            counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, alphas)
+            counts[k:e, :] = counts[k:e, :] + \
+                self._histc(xy.T, alphas)
             # Calculate nondiagonal part
             for kk in range(0, n, nP):
                 # Ignore diagonal part
@@ -237,7 +238,8 @@ class FisherS(BaseEstimator):
 
                 xy = data[k:e, :] @ data[kk:ee, :].T
                 xy = xy / leng[k:e]
-                counts[k:e, :] = counts[k:e, :] + self._histc(xy.T, alphas)
+                counts[k:e, :] = counts[k:e, :] + \
+                    self._histc(xy.T, alphas)
 
         # Calculate cumulative sum
         counts = np.cumsum(counts[:, ::-1], axis=1)[:, ::-1]
@@ -291,7 +293,8 @@ class FisherS(BaseEstimator):
                 p = py[i]
                 a2 = self._alphas[0, i]**2
                 w = np.log(1-a2)
-                n[i] = np.real(lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
+                n[i] = np.real(
+                    lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
 
         n[n == np.inf] = float('nan')
         # Find indices of alphas which are not completely separable
@@ -370,9 +373,11 @@ class FisherS(BaseEstimator):
         '''
 
         if idx == 'all_inseparable':  # all points are inseparable
-            selected_idx = np.argwhere(np.all(self.p_alpha != 0, axis=1)).max()
+            selected_idx = np.argwhere(
+                np.all(self.p_alpha != 0, axis=1)).max()
         elif idx == 'selected':  # globally selected alpha
-            selected_idx = (self.n_alpha == self.n_single).tolist().index(True)
+            selected_idx = (
+                self.n_alpha == self.n_single).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
@@ -383,7 +388,8 @@ class FisherS(BaseEstimator):
         alpha_selected = self._alphas[0, selected_idx]
 
         py = palpha_selected.copy()
-        _alphas = np.repeat(alpha_selected, len(palpha_selected))[None]
+        _alphas = np.repeat(
+            alpha_selected, len(palpha_selected))[None]
 
         if force_definite_dim:
             py[py == 0] = 1/len(py)
@@ -406,7 +412,8 @@ class FisherS(BaseEstimator):
                 p = py[i]
                 a2 = _alphas[0, i]**2
                 w = np.log(1-a2)
-                n[i] = np.real(lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
+                n[i] = np.real(
+                    lambertw(-(w/(2*np.pi*p*p*a2*(1-a2)))))/(-w)
 
         n[n == np.inf] = float('nan')
 
@@ -450,7 +457,8 @@ class FisherS(BaseEstimator):
         # Preprocess data
         Xp = self._preprocessing(X, 1, 1, 1)
         # Check separability
-        separable_fraction, p_alpha = self._checkSeparabilityMultipleAlpha(Xp)
+        separable_fraction, p_alpha = self._checkSeparabilityMultipleAlpha(
+            Xp)
         # Calculate mean fraction of separable points for each alpha.
         py_mean = np.mean(p_alpha, axis=1)
         n_alpha, n_single, alpha_single = self._dimension_uniform_sphere(
@@ -500,7 +508,8 @@ class FisherS(BaseEstimator):
                         self._alphas[0, j], ns[k])
 
             for i in range(len(pteor[:, 0])):
-                plt.semilogy(self._alphas[0, :], pteor[i, :], '-', color='r')
+                plt.semilogy(
+                    self._alphas[0, :], pteor[i, :], '-', color='r')
             plt.xlim(min(self._alphas[0, :]), 1)
             if True in np.isnan(n_alpha):
                 plt.semilogy(self._alphas[0, :np.where(np.isnan(n_alpha))[

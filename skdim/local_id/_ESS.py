@@ -60,7 +60,8 @@ class ESS(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
 
-        self.random_generator_ = check_random_generator(self.random_generator)
+        self.random_generator_ = check_random_generator(
+            self.random_generator)
 
         self.dimension_, self.essval_ = self._essLocalDimEst(X)
 
@@ -80,7 +81,8 @@ class ESS(BaseEstimator):
                 (self.ver == 'b' and essval < dimvals[maxdim-1])):
             mindim = maxdim + 1
             maxdim = 2*(maxdim-1)
-            dimvals = np.append(dimvals, self._essReference(maxdim, mindim))
+            dimvals = np.append(
+                dimvals, self._essReference(maxdim, mindim))
 
         if (self.ver == 'a'):
             i = bisect.bisect(dimvals[mindim-1:maxdim], essval)
@@ -119,7 +121,8 @@ class ESS(BaseEstimator):
         #    groups = groups[np.random.choice(range(len(groups)),size=5000, replace=False),:]
 
 #         if len(vectors)>100: #sample 5000 combinations
-        groups = efficient_indnComb(len(vectors), p, self.random_generator_)
+        groups = efficient_indnComb(
+            len(vectors), p, self.random_generator_)
 #         else: #generate all combs with the original function
 #             groups = indnComb(len(vectors), p)
 
@@ -144,7 +147,8 @@ class ESS(BaseEstimator):
                         for vecgr in Alist]
                 return(np.sum(proj)/np.sum(weight))
             else:
-                raise ValueError('For ver == "b", d > 1 is not supported.')
+                raise ValueError(
+                    'For ver == "b", d > 1 is not supported.')
 
         else:
             raise ValueError('Not a valid version')
@@ -176,7 +180,8 @@ class ESS(BaseEstimator):
         NN = len(points)
         ind_groups = indnComb(NN, n_group)
         reshape_ind_groups = ind_groups.reshape((n_group, -1))
-        point_groups = points[reshape_ind_groups, :].reshape((-1, n_group))
+        point_groups = points[reshape_ind_groups, :].reshape(
+            (-1, n_group))
         group_centers = np.array(
             [points[ind_group, :].mean(axis=0) for ind_group in ind_groups])
         centers = group_centers[np.repeat(
@@ -259,6 +264,7 @@ class ESS(BaseEstimator):
 
                 return(ID[mindim-1:maxdim] * 2/np.sqrt(np.pi)/np.array(range(mindim, maxdim+1)))
 
-            raise ValueError('For ver == "b", d > 1 is not supported.')
+            raise ValueError(
+                'For ver == "b", d > 1 is not supported.')
 
         raise ValueError('Not a valid version')

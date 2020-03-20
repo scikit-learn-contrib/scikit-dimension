@@ -56,7 +56,8 @@ class MLE(BaseEstimator):
                  neighborhood_aggregation='maximum.likelihood',
                  iterations=5, K=5):
 
-        args, _, _, values = inspect.getargvalues(inspect.currentframe())
+        args, _, _, values = inspect.getargvalues(
+            inspect.currentframe())
         values.pop("self")
 
         for arg, val in values.items():
@@ -124,7 +125,8 @@ class MLE(BaseEstimator):
 
         else:
             dist, idx = get_nn(X, min(self.K, len(X)-1))
-            Rs = np.sort(np.array(list(set(dist.flatten(order='F')))))[:self.k]
+            Rs = np.sort(np.array(list(set(dist.flatten(order='F')))))[
+                :self.k]
             # Since distances between points are used, noise is
             de = self._maxLikDimEstFromR(Rs, np.sqrt(2)*sigma)
             # added at both ends, i.e. variance is doubled.
@@ -169,7 +171,8 @@ class MLE(BaseEstimator):
             self.dnoise = self._dnoiseGaussH
 
         if not self.integral_approximation == 'Haro' and self.dnoise is not None:
-            self.dnoise = lambda r, s, sigma, k: r*self.dnoise(r, s, sigma, k)
+            self.dnoise = lambda r, s, sigma, k: r * \
+                self.dnoise(r, s, sigma, k)
 
         de = self._maxLikDimEstFromR_haro_approx(Rs, self.sigma)
         if (self.integral_approximation == 'iteration'):
@@ -196,7 +199,9 @@ class MLE(BaseEstimator):
         numerator = np.repeat(np.nan, k - 1)
         denominator = np.repeat(np.nan, k - 1)
 
-        def numInt(x): return self.dnoise(x, Rj, sigma, n) * np.log(Rk/x)
+        def numInt(x): return self.dnoise(
+            x, Rj, sigma, n) * np.log(Rk/x)
+
         def denomInt(x): return self.dnoise(x, Rj, sigma, n)
 
         for j in range(k-1):
