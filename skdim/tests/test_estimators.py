@@ -68,7 +68,7 @@ def test_all_estimators(Estimator):
 def test_fisher_params(data):
     x = local_id.FisherS().fit(data)
     x = local_id.FisherS(ConditionalNumber=2).fit(data)
-    x = local_id.FisherS(ProducePlots=True).fit(data)
+    #x = local_id.FisherS(ProducePlots=True).fit(data)
     x = local_id.FisherS(ProjectOnSphere=False).fit(data)
     x = local_id.FisherS(ncomp=True).fit(data)
     x = local_id.FisherS(limit_maxdim=True).fit(data)
