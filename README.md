@@ -7,24 +7,24 @@
 [![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
 
 
-# Implementation of intrinsic dimension estimators in Python.
+# Intrinsic dimension estimators in Python
 
-## Credits and links to the original implementations:
+### Credits and links to original implementations:
 
-### R
+#### R
 - Kerstin Johnsson
 https://cran.r-project.org/web/packages/intrinsicDimension/index.html
 
 - Hideitsu Hino
 https://cran.r-project.org/web/packages/ider/index.html
 
-### MATLAB
+#### MATLAB
 - Gabriele Lombardi https://fr.mathworks.com/matlabcentral/fileexchange/40112-intrinsic-dimensionality-estimation-techniques
 - Miloš Radovanović https://perun.pmf.uns.ac.rs/radovanovic/tle/
 
-### C++ TwoNN
+#### C++ TwoNN
 - Elena Facco https://github.com/efacco/TWO-NN
 
-### Python TwoNN 
+#### Python TwoNN 
 - Francesco Mottes https://github.com/fmottes/TWO-NN 
 and my modified fork https://github.com/j-bac/TWO-NN
