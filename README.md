@@ -33,11 +33,15 @@ Local and global estimators can be used in this way:
 import skdim
 import numpy as np
 
+#generate data
 data = np.random.random((100,10))
-ess = skdim.local_id.ESS().fit(data)
-danco = skdim.global_id.DANCo().fit(data)
 
-#to apply an estimator in neighborhoods of each point:
+#fit a global estimator
+danco = skdim.global_id.DANCo().fit(data)
+#fit a local estimator (local estimators assume input data  comes from a local data neighborhood)
+ess = skdim.local_id.ESS().fit(data)
+
+#to apply a global or local estimator in neighborhoods of each point:
 ess_pw = skdim.asPointwise(data,skdim.local_id.ESS().fit,n_neighbors=100,n_cores=1)
 ```
 
