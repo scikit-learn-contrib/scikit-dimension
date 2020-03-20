@@ -3,7 +3,7 @@ import warnings
 from .._commonfuncs import get_nn
 from scipy.optimize import minimize
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array, check_random_state
+from sklearn.utils.validation import check_array
 
 
 class MiND_ML(BaseEstimator):
