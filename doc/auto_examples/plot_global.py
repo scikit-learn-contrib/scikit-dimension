@@ -7,7 +7,7 @@ from skdim import global_id
 import numpy as np
 from matplotlib import pyplot as plt
 
-X=np.random.random((1000,10))
+X = np.random.random((1000, 10))
 
 res = global_id.CorrInt().fit(X).dimension_
 res = global_id.DANCo().fit(X).dimension_
