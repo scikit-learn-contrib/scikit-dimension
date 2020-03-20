@@ -40,7 +40,7 @@ install:
   # create the testing environment
   - conda create -n testenv --yes pip
   - source activate testenv
-  - conda install -y numpy scipy scikit-learn cython nose r rpy2 numba matplotlib pytest pytest-cov
+  - conda install -y numpy scipy scikit-learn cython nose numba matplotlib pytest pytest-cov
   - pip install codecov
   - pip install .
 
