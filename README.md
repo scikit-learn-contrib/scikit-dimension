@@ -7,7 +7,38 @@
 [![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
 
 
-# Intrinsic dimension estimators in Python
+# scikit-dimension
+
+scikit-learn is a Python module for intrinsic dimension estimation built according to the [sscikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
+
+### Installation
+
+Using pip:
+```bash
+pip install git+https://github.com/j-bac/scikit-dimension.git
+```
+
+From source:
+```bash
+git clone https://github.com/j-bac/scikit-dimension
+cd scikit-dimension
+pip install .
+```
+
+### Quick start
+
+Local and global estimators can be used in this way:
+
+```python
+import skdim
+import numpy as np
+
+data = np.random.random((100,10))
+ess = skdim.local_id.ESS().fit(data)
+danco = skdim.global_id.DANCo().fit(data)
+```
+
+Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API and examples.
 
 ### Credits and links to original implementations:
 
