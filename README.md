@@ -9,7 +9,7 @@
 
 # scikit-dimension
 
-scikit-learn is a Python module for intrinsic dimension estimation built according to the [sscikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
+scikit-learn is a Python module for intrinsic dimension estimation built according to the [scikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
 
 ### Installation
 
