@@ -4,8 +4,6 @@ scikit-dimension API
 
 The module global_id provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module local_id contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).
 
-#.. currentmodule:: skdim.local_id
-
 local_id
 =========
 

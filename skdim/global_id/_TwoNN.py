@@ -1,8 +1,7 @@
-# Original Author: Francesco Mottes
-# https://github.com/fmottes/TWO-NN
+#
 # MIT License
 #
-# Copyright (c) 2019 fmottes
+# Copyright (c) 2020 Jonathan Bac
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
 
 # Author of the speed modifications (with sklearn dependencies): Jonathan Bac
 # Date  : 02-Jan-2020
