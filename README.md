@@ -45,7 +45,7 @@ Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for
 
 ### Credits and links to original implementations:
 
-#### R
+##### R
 - Kerstin Johnsson
 https://cran.r-project.org/web/packages/intrinsicDimension/index.html
 
