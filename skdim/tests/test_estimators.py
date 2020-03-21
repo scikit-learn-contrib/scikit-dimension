@@ -141,7 +141,7 @@ def test_twonn_params(data):
     
 #test auxiliary functions
 def test_get_estimators(data):
-    assert get_estimators() == ({'ESS': skdim.local_id._ESS.ESS,
+    assert skdim.get_estimators() == ({'ESS': skdim.local_id._ESS.ESS,
                                  'FisherS': skdim.local_id._FisherS.FisherS,
                                  'MOM': skdim.local_id._MOM.MOM,
                                  'MiND_ML': skdim.local_id._MiND_ML.MiND_ML,
