@@ -52,8 +52,11 @@ def data():
     return X
 
 #test all estimators pass check_estimator
-local_estimators, global_estimators = get_estimators()
-estimators = local_estimators+global_estimators
+local_class_list = [o[1]
+                    for o in getmembers(local_id) if isclass(o[1])]
+global_class_list = [o[1]
+                     for o in getmembers(global_id) if isclass(o[1])]
+estimators = local_class_list+global_class_list
 
 @pytest.mark.parametrize("Estimator", estimators)
 def test_all_estimators(Estimator):
@@ -136,7 +139,24 @@ def test_twonn_params(data):
     x = global_id.TwoNN(return_xy=True)
     x = global_id.TwoNN(discard_fraction=0.05)
     
+#test auxiliary functions
+def test_get_estimators(data):
+    assert get_estimators() == ({'ESS': skdim.local_id._ESS.ESS,
+                                 'FisherS': skdim.local_id._FisherS.FisherS,
+                                 'MOM': skdim.local_id._MOM.MOM,
+                                 'MiND_ML': skdim.local_id._MiND_ML.MiND_ML,
+                                 'TLE': skdim.local_id._TLE.TLE,
+                                 'lPCA': skdim.local_id._PCA.lPCA},
+                                {'CorrInt': skdim.global_id._CorrInt.CorrInt,
+                                 'DANCo': skdim.global_id._DANCo.DANCo,
+                                 'KNN': skdim.global_id._KNN.KNN,
+                                 'MLE': skdim.global_id._MLE.MLE,
+                                 'Mada': skdim.global_id._Mada.Mada,
+                                 'TwoNN': skdim.global_id._TwoNN.TwoNN})
 
+def test_aspointwise(data):   
+    x = asPointwise(data,local_id.lPCA())
+    assert len(x) == len(data)
 
 ##test equality with R version#
 # def test_ess(data):
