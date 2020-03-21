@@ -105,6 +105,6 @@ class Mada(BaseEstimator):
             return(ests)
 
         if (self.comb == "average"):
-            return np.mean(ests)
+            return np.array(np.mean(ests))
         elif (self.comb == "median"):
-            return np.median(ests)
+            return np.array(np.median(ests))

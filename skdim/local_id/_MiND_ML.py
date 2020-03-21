@@ -110,14 +110,14 @@ class MiND_ML(BaseEstimator):
     @staticmethod
     def _MiND_ML1(nbh_data):
         n = len(nbh_data)
-        # need only squared dists to first 2 neighbors
+        #need only squared dists to first 2 neighbors
         dists2 = nbh_data[:, :2]**2
         s = np.sum(np.log(dists2[:, 0]/dists2[:, 1]))
         ID = -2/(s/n)
         return ID
 
     def _MiND_MLi(self, rhos):
-        # MIND MLI MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER
+        #MiND MLi MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER
         N = len(rhos)
         d_lik = np.array([np.nan]*self.D)
         for d in range(self.D):
@@ -125,7 +125,7 @@ class MiND_ML(BaseEstimator):
         return(np.argmax(d_lik))
 
     def _MiND_MLk(self, rhos, dinit):
-        # MIND MLI MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER
+        #MiND MLi MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER
         res = minimize(fun=self._nlld,
                        x0=np.array([dinit]),
                        jac=self._nlld_gr,

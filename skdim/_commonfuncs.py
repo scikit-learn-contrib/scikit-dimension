@@ -31,16 +31,16 @@ from inspect import getmembers, isclass
 import skdim
 
 
-def get_classes_dicts():
+def get_estimators():
     local_class_list = [o[1]
                         for o in getmembers(skdim.local_id) if isclass(o[1])]
     global_class_list = [o[1]
                          for o in getmembers(skdim.global_id) if isclass(o[1])]
 
     local_estimators = dict(
-        zip([str(e).split('.')[2][:-2] for e in local_class_list], local_class_list))
+        zip([str(e).split('.')[-1][:-2] for e in local_class_list], local_class_list))
     global_estimators = dict(
-        zip([str(e).split('.')[2][:-2] for e in global_class_list], global_class_list))
+        zip([str(e).split('.')[-1][:-2] for e in global_class_list], global_class_list))
 
     return local_estimators, global_estimators
 
@@ -90,17 +90,17 @@ def lens(vectors):
     return np.sqrt(np.sum(vectors**2, axis=1))
 
 
-def randsphere(n_points, ndim, radius, center=[], random_state=None):
+def randball(n_points, n_dim, radius, center=[], random_state=None):
     random_state_ = check_random_state(random_state)
     if center == []:
-        center = np.array([0]*ndim)
+        center = np.array([0]*n_dim)
     r = radius
-    x = random_state_.normal(size=(n_points, ndim))
+    x = random_state_.normal(size=(n_points, n_dim))
     ssq = np.sum(x**2, axis=1)
-    fr = r*gammainc(ndim/2, ssq/2)**(1/ndim)/np.sqrt(ssq)
-    frtiled = np.tile(fr.reshape(n_points, 1), (1, ndim))
+    fr = r*gammainc(n_dim/2, ssq/2)**(1/n_dim)/np.sqrt(ssq)
+    frtiled = np.tile(fr.reshape(n_points, 1), (1, n_dim))
     p = center + np.multiply(x, frtiled)
-    return p, center
+    return p
 
 
 def proxy(tup):
@@ -115,7 +115,7 @@ def get_nn(X, k, n_jobs=1):
     return dists, inds
 
 
-def asPointwise(data, function, precomputed_knn=None, n_neighbors=100, n_jobs=1):
+def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
     '''Use a global estimator as a pointwise one by creating kNN neighborhoods'''
     if precomputed_knn is not None:
         knn = precomputed_knn
@@ -125,11 +125,11 @@ def asPointwise(data, function, precomputed_knn=None, n_neighbors=100, n_jobs=1)
     if n_jobs > 1:
         pool = mp.Pool(n_jobs)
         results = pool.map(
-            proxy, [(function, data[i, :], params) for i in knn])
+            proxy, [(class_instance.fit, data[i, :], params) for i in knn])
         pool.close()
         return results
     else:
-        return [function(data[i, :]).dimension_ for i in knn]
+        return [class_instance.fit(data[i, :]).dimension_ for i in knn]
 
 
 def binom_coeff(n, k):

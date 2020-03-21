@@ -123,4 +123,4 @@ class KNN(BaseEstimator):
             # sum(matr) is the sum of all elements in the matrix matr
 
         de = np.argmin(epsilon)+1  # Missing values are discarded
-        return de, epsilon[de-1]
+        return np.array(de), epsilon[de-1]

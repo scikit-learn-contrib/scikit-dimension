@@ -43,8 +43,8 @@ class MLE(BaseEstimator):
         Whether to compute 'global', 'local' or 'pointwise' intrinsic dimension
     k : int
         Number of neighbors used for each dimension estimation.
-    dnoise : function
-        Vector valued function giving the transition density.
+    dnoise : None or 'dnoiseGaussH'
+        Vector valued function giving the transition density. 'dnoiseGaussH' is the one used in Haro
     sigma : float, default=0
         Estimated standard deviation for the noise.
     n : int, default='None'
@@ -52,7 +52,9 @@ class MLE(BaseEstimator):
     integral.approximation : str, default='Haro'
         Can take values 'Haro', 'guaranteed.convergence', 'iteration'
     neighborhood.based : bool, default='True'
-        means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
+        Means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
+    neighborhood_aggregation : str, default='maximum.likelihood'
+        How to aggregate the pointwise estimates. Possible values 'maximum.likelihood', 'mean', 'median'
     K : int, default=5
         Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
 
@@ -76,8 +78,7 @@ class MLE(BaseEstimator):
     def __init__(self, mode='global', k=20, dnoise=None, sigma=0, n=None,
                  integral_approximation='Haro', unbiased=False,
                  neighborhood_based=True,
-                 neighborhood_aggregation='maximum.likelihood',
-                 iterations=5, K=5):
+                 neighborhood_aggregation='maximum.likelihood', K=5):
 
         args, _, _, values = inspect.getargvalues(
             inspect.currentframe())
@@ -139,7 +140,6 @@ class MLE(BaseEstimator):
 
             if self.neighborhood_aggregation == 'maximum.likelihood':
                 de = 1/np.mean(1/mi)
-
             elif self.neighborhood_aggregation == 'mean':
                 de = np.mean(mi)
             elif self.neighborhood_aggregation == 'median':

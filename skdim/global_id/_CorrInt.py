@@ -114,4 +114,4 @@ class CorrInt(BaseEstimator):
 
         Cr = np.array([s1/n_elements, s2/n_elements])
         estq = np.diff(np.log(Cr))/np.log(r2/r1)
-        return(estq)
+        return np.array(estq)

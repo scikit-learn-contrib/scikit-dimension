@@ -39,18 +39,18 @@ class FisherS(BaseEstimator):
 
     -----------
     Attributes
-    ConditionalNumber : - a positive real value used to select the top
+    conditional_number : - a positive real value used to select the top
             princinpal components. We consider only PCs with eigen values
             which are not less than the maximal eigenvalue divided by
-            ConditionalNumber Default value is 10.
-    ProjectOnSphere :  a boolean value indicating if projecting on a
+            conditional_number Default value is 10.
+    project_on_sphere :  a boolean value indicating if projecting on a
             sphere should be performed. Default value is true.
     test_alphas : 2D np.array, float
         A row vector of floats, with alpha range, the values must be given increasing
             within (0,1) interval. Default is np.arange(.6,1,.02)[None].
-    ProducePlots : bool, default=False
+    produce_plots : bool, default=False
         A boolean value indicating if the standard plots need to be drawn.
-    ncomp : bool
+    verbose : bool
         Whether to print number of retained principal components
     limit_maxdim : bool
         Whether to cap estimated maxdim to the embedding dimension
@@ -72,15 +72,15 @@ class FisherS(BaseEstimator):
     References
     """
 
-    def __init__(self, ConditionalNumber=10, ProjectOnSphere=1,
-                 alphas=None, ProducePlots=False,
-                 ncomp=0, limit_maxdim=False):
+    def __init__(self, conditional_number=10, project_on_sphere=1,
+                 alphas=None, produce_plots=False,
+                 verbose=0, limit_maxdim=False):
 
-        self.ConditionalNumber = ConditionalNumber
-        self.ProjectOnSphere = ProjectOnSphere
+        self.conditional_number = conditional_number
+        self.project_on_sphere = project_on_sphere
         self.alphas = alphas
-        self.ProducePlots = ProducePlots
-        self.ncomp = ncomp
+        self.produce_plots = produce_plots
+        self.verbose = verbose
         self.limit_maxdim = limit_maxdim
 
     def fit(self, X, y=None):
@@ -134,15 +134,15 @@ class FisherS(BaseEstimator):
         %   X is n-by-d data matrix with n d-dimensional datapoints.
         %   center is boolean. True means subtraction of mean vector.
         %   dimred is boolean. True means applying of dimensionality reduction with
-        %       PCA. Number of used PCs is defined by ConditionalNumber argument.
+        %       PCA. Number of used PCs is defined by conditional_number argument.
         %   whiten is boolean. True means applying of whitenning. True whiten
         %       automatically caused true dimred.
-        %   projectonsphere is boolean. True means projecting data onto unit sphere
+        %   project_on_sphere is boolean. True means projecting data onto unit sphere
         %   varargin contains Name Value pairs. One possible value can be:
-        %       'ConditionalNumber' - a positive real value used to select the top
+        %       'conditional_number' - a positive real value used to select the top
         %           principal components. We consider only PCs with eigen values
         %           which are not less than the maximal eigenvalue divided by
-        %           ConditionalNumber Default value is 10. 
+        %           conditional_number Default value is 10. 
         %
         %Outputs:
         %   X is preprocessed data matrix.'''
@@ -158,11 +158,11 @@ class FisherS(BaseEstimator):
             v = pca.components_.T
             s = pca.explained_variance_
             sc = s/s[0]
-            ind = np.where(sc > 1/self.ConditionalNumber)[0]
+            ind = np.where(sc > 1/self.conditional_number)[0]
             X = X @ v[:, ind]
-            if self.ncomp:
+            if self.verbose:
                 print('%i components are retained using factor %2.2f' %
-                      (len(ind), self.ConditionalNumber))
+                      (len(ind), self.conditional_number))
 
         # whitening
         if whiten:
@@ -170,7 +170,7 @@ class FisherS(BaseEstimator):
             st = np.std(X, axis=0, ddof=1)
             X = X/st
         # #project on sphere (scale each vector to unit length)
-        if self.ProjectOnSphere:
+        if self.project_on_sphere:
             st = np.sqrt(np.sum(X**2, axis=1))
             st = np.array([st]).T
             X = X/st
@@ -454,17 +454,17 @@ class FisherS(BaseEstimator):
         %Inputs:
         %   X  - is a data matrix with one data point in each row.
         %   Optional arguments in varargin form Name, Value pairs. Possible names:
-        %       'ConditionalNumber' - a positive real value used to select the top
+        %       'conditional_number' - a positive real value used to select the top
         %           princinpal components. We consider only PCs with eigen values
         %           which are not less than the maximal eigenvalue divided by
-        %           ConditionalNumber Default value is 10.
-        %       'ProjectOnSphere' - a boolean value indicating if projecting on a
+        %           conditional_number Default value is 10.
+        %       'project_on_sphere' - a boolean value indicating if projecting on a
         %           sphere should be performed. Default value is true.
         %       'Alphas' - a real vector, with alpha range, the values must be given increasing
         %           within (0,1) interval. Default is [0.6,0.62,...,0.98].
-        %       'ProducePlots' - a boolean value indicating if the standard plots
+        %       'produce_plots' - a boolean value indicating if the standard plots
         %           need to be drawn. Default is true.
-        %       'ncomp' - bool, whether to print number of retained principal components
+        %       'verbose' - bool, whether to print number of retained principal components
         %       'limit_maxdim' bool, whether to cap estimated maxdim to the embedding dimension
         %Outputs:
         %   n_alpha - effective dimension profile as a function of alpha
@@ -492,7 +492,7 @@ class FisherS(BaseEstimator):
         if self.limit_maxdim:
             n_single = np.clip(n_single, None, X.shape[1])
 
-        if self.ProducePlots:
+        if self.produce_plots:
             # Define the minimal and maximal dimensions for theoretical graph with
             # two dimensions in each side
             n_min = np.floor(min(n_alpha))-2
@@ -517,7 +517,7 @@ class FisherS(BaseEstimator):
 
             plt.figure()
             plt.hist(p_alpha[alpha_ind_selected, :][0], bins=nbins)
-            plt.xlabel('inseparability prob.p for \u03B1=%2.2f' %
+            plt.xlabel('Inseparability prob. for \u03B1=%2.2f' %
                        (self._alphas[0, alpha_ind_selected]), fontsize=16)
             plt.ylabel('Number of values')
             plt.show()
@@ -545,5 +545,8 @@ class FisherS(BaseEstimator):
             plt.ylabel('Mean inseparability prob.', fontsize=16)
             plt.title('Theor.curves for n=%i:%i' % (n_min, n_max))
             plt.show()
-
-        return n_alpha, n_single, p_alpha, self._alphas, separable_fraction, Xp
+        
+        if len(n_single) > 1:
+            print('FisherS selected several dimensions as equally probable. Taking the maximum')
+            
+        return n_alpha, n_single.max(), p_alpha, self._alphas, separable_fraction, Xp

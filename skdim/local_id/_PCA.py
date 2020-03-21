@@ -115,18 +115,19 @@ class lPCA(BaseEstimator):
         de = sum(explained_var > (self.alphaFO*explained_var[0]))
         gaps = explained_var[:-1]/explained_var[1:]
 
-        try:
+        if de-1 < len(gaps):
             return de, gaps[de-1]
-        except:
+        else:
             return de, gaps[-1]
 
     @staticmethod
     def _maxgap(explained_var):
         gaps = explained_var[:-1]/explained_var[1:]
         de = np.argmax(gaps)+1
-        try:
+        
+        if de-1 < len(gaps):
             return de, gaps[de-1]
-        except:
+        else:
             return de, gaps[-1]
 
     def _ratio(self, explained_var):
@@ -148,9 +149,9 @@ class lPCA(BaseEstimator):
         gaps = explained_var[:-1]/explained_var[1:]
         de = 1 + np.min(np.concatenate((np.where(gaps > self.alphaFan)[0],
                                         np.where((np.cumsum(explained_var)/sum(explained_var)) > self.betaFan)[0])))
-        try:
+        if de-1 < len(gaps):
             return de, gaps[de-1]
-        except:
+        else:
             return de, gaps[-1]
 
 

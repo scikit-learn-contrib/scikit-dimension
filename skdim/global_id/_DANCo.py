@@ -36,7 +36,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import i0, i1, digamma
 from scipy.interpolate import interp1d
-from .._commonfuncs import binom_coeff, get_nn, randsphere, lens, indnComb
+from .._commonfuncs import binom_coeff, get_nn, randball, lens, indnComb
 
 
 class DANCo(BaseEstimator):
@@ -253,7 +253,7 @@ class DANCo(BaseEstimator):
     def _increaseMaxDimByOne(self, dancoCalDat):
         newdim = dancoCalDat['maxdim'] + 1
         MIND_MLx_maxdim = newdim*2+5
-        dancoCalDat['calibration_data'].append(self._dancoDimEstNoCalibration(randsphere(dancoCalDat['N'], newdim, 1, center=[0]*newdim, random_state=self.random_state_)[0],
+        dancoCalDat['calibration_data'].append(self._dancoDimEstNoCalibration(randball(dancoCalDat['N'], newdim, 1, center=[0]*newdim, random_state=self.random_state_),
                                                                               dancoCalDat['k'],
                                                                               MIND_MLx_maxdim))
         dancoCalDat['maxdim'] = newdim
@@ -337,6 +337,6 @@ class DANCo(BaseEstimator):
             # Locating the minima:
             de_fractal = minimize(
                 f, de, bounds=[(1, self.D+1)], tol=1e-3)['x']
-            return de_fractal, kl[de-1], cal
+            return de_fractal[0], kl[de-1], cal
         else:
-            return de, kl[de-1], cal
+            return de[0], kl[de-1], cal
