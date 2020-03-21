@@ -45,16 +45,16 @@ def get_estimators():
     return local_estimators, global_estimators
 
 
-def indComb(NN):
-    pt1 = np.tile(range(NN), NN)
-    pt2 = np.repeat(range(NN), NN)
-
-    un = pt1 > pt2
-
-    pt1 = pt1[un]
-    pt2 = pt2[un]
-
-    return pt1, pt2, np.hstack((pt2[:, None], pt1[:, None]))
+#def indComb(NN):
+#    pt1 = np.tile(range(NN), NN)
+#    pt2 = np.repeat(range(NN), NN)
+#
+#    un = pt1 > pt2
+#
+#    pt1 = pt1[un]
+#    pt2 = pt2[un]
+#
+#    return pt1, pt2, np.hstack((pt2[:, None], pt1[:, None]))
 
 
 def indnComb(NN, n):

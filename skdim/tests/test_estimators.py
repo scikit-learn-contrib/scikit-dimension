@@ -23,7 +23,7 @@
 #
 import pytest
 import numpy as np
-from skdim import local_id, global_id, randball
+from skdim import get_estimators, local_id, global_id, randball, asPointwise
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
@@ -52,11 +52,8 @@ def data():
     return X
 
 #test all estimators pass check_estimator
-local_class_list = [o[1]
-                    for o in getmembers(local_id) if isclass(o[1])]
-global_class_list = [o[1]
-                     for o in getmembers(global_id) if isclass(o[1])]
-estimators = local_class_list+global_class_list
+local_estimators, global_estimators = get_estimators()
+estimators = local_estimators+global_estimators
 
 @pytest.mark.parametrize("Estimator", estimators)
 def test_all_estimators(Estimator):
