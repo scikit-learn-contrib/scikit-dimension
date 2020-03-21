@@ -35,14 +35,12 @@ with open(ver_file) as f:
     exec(f.read())
 
 DISTNAME = 'skdim'
-DESCRIPTION = 'A template for scikit-learn compatible packages.'
-with codecs.open('README.rst', encoding='utf-8-sig') as f:
-    LONG_DESCRIPTION = f.read()
+DESCRIPTION = 'scikit-dimension is a Python module for intrinsic dimension estimation built according to the scikit-learn API and distributed under the 3-Clause BSD license..'
 MAINTAINER = 'Jonathan Bac'
 MAINTAINER_EMAIL = 'jonathan.bac@cri-paris.org'
-URL = 'https://github.com/j-bac/skcontrib-id-estimators'
+URL = 'https://github.com/j-bac/scikit-dimension'
 LICENSE = 'new BSD'
-DOWNLOAD_URL = 'https://github.com/j-bac/skcontrib-id-estimators'
+DOWNLOAD_URL = 'https://github.com/j-bac/scikit-dimension'
 VERSION = __version__
 INSTALL_REQUIRES = ['numpy', 'scipy', 'scikit-learn']
 CLASSIFIERS = ['Intended Audience :: Science/Research',
@@ -78,7 +76,6 @@ setup(name=DISTNAME,
       url=URL,
       version=VERSION,
       download_url=DOWNLOAD_URL,
-      long_description=LONG_DESCRIPTION,
       zip_safe=False,  # the package can run out of an .egg file
       classifiers=CLASSIFIERS,
       packages=find_packages(),
