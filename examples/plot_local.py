@@ -42,5 +42,5 @@ lpca = local_id.lPCA().fit(X)
 
 
 # all datapoint neighborhoods
-pw_id = asPointwise(X, local_id.FisherS().fit,
+pw_id = asPointwise(X, local_id.FisherS(),
                     n_neighbors=100, n_jobs=1)
