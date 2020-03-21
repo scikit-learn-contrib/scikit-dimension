@@ -26,7 +26,8 @@ import numpy as np
 from skdim import local_id, global_id, randball
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
-from sklearn.utils.estimator_checks import check_estimator, check_random_state
+from sklearn.utils.estimator_checks import check_estimator
+from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import (assert_equal,
                                    assert_array_equal,
                                    assert_array_almost_equal,
@@ -44,12 +45,12 @@ from sklearn.utils.testing import (assert_equal,
 #ider = intdimr = rpackages.importr('ider')
 # rpy2.robjects.numpy2ri.activate()
 
-
 @pytest.fixture
 def data():
-    X = np.zeros((1000,10))
-    X[:,:5] = randball(n_points = 1000, n_dim = 5, radius = 1, random_state = 0)
+    X = np.zeros((100,10))
+    X[:,:5] = randball(n_points = 100, n_dim = 5, radius = 1, random_state = 0)
     return X
+
 #test all estimators pass check_estimator
 local_class_list = [o[1]
                     for o in getmembers(local_id) if isclass(o[1])]
@@ -94,7 +95,7 @@ def test_lpca_params(data):
     
 def test_tle_params(data):
     x = local_id.TLE().fit(data)
-    x = local_id.TLE(eps=.01).fit(data)
+    x = local_id.TLE(epsilon=.01).fit(data)
     
 def test_corrint_params(data):
     x = global_id.CorrInt().fit(data)

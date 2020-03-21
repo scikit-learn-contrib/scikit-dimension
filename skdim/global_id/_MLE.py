@@ -151,7 +151,7 @@ class MLE(BaseEstimator):
             Rs = np.sort(np.array(list(set(dist.flatten(order='F')))))[
                 :self.k]
             # Since distances between points are used, noise is
-            de = self._maxLikDimEstFromR(Rs, np.sqrt(2)*sigma)
+            de = self._maxLikDimEstFromR(Rs, np.sqrt(2)*self.sigma)
             # added at both ends, i.e. variance is doubled.
             #likelihood = np.nan
             return(de)
@@ -223,9 +223,9 @@ class MLE(BaseEstimator):
         denominator = np.repeat(np.nan, k - 1)
 
         def numInt(x): return self.dnoise(
-            x, Rj, sigma, n) * np.log(Rk/x)
+            x, Rj, sigma, self.n) * np.log(Rk/x)
 
-        def denomInt(x): return self.dnoise(x, Rj, sigma, n)
+        def denomInt(x): return self.dnoise(x, Rj, sigma, self.n)
 
         for j in range(k-1):
             Rj = Rs[j]
