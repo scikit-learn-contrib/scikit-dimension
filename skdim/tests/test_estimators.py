@@ -23,7 +23,7 @@
 #
 import pytest
 import numpy as np
-from skdim import get_estimators, local_id, global_id, randball, asPointwise
+import skdim
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
@@ -48,7 +48,7 @@ from sklearn.utils.testing import (assert_equal,
 @pytest.fixture
 def data():
     X = np.zeros((100,10))
-    X[:,:5] = randball(n_points = 100, n_dim = 5, radius = 1, random_state = 0)
+    X[:,:5] = skdim.randball(n_points = 100, n_dim = 5, radius = 1, random_state = 0)
     return X
 
 #test all estimators pass check_estimator
@@ -64,80 +64,80 @@ def test_all_estimators(Estimator):
 
 #test default and non-default parameters 
 def test_ess_params(data):
-    x = local_id.ESS().fit(data)
-    x = local_id.ESS(ver='b').fit(data)
-    x = local_id.ESS(d=2).fit(data)
+    x = skdim.local_id.ESS().fit(data)
+    x = skdim.local_id.ESS(ver='b').fit(data)
+    x = skdim.local_id.ESS(d=2).fit(data)
     
 def test_fisher_params(data):
-    x = local_id.FisherS().fit(data)
-    x = local_id.FisherS(conditional_number=2).fit(data)
-    #x = local_id.FisherS(produce_plots=True).fit(data) #travis ci macosx stuck when producing plots 
-    x = local_id.FisherS(project_on_sphere=False).fit(data)
-    x = local_id.FisherS(verbose=True).fit(data)
-    x = local_id.FisherS(limit_maxdim=True).fit(data)
+    x = skdim.local_id.FisherS().fit(data)
+    x = skdim.local_id.FisherS(conditional_number=2).fit(data)
+    #x = skdim.local_id.FisherS(produce_plots=True).fit(data) #travis ci macosx stuck when producing plots 
+    x = skdim.local_id.FisherS(project_on_sphere=False).fit(data)
+    x = skdim.local_id.FisherS(verbose=True).fit(data)
+    x = skdim.local_id.FisherS(limit_maxdim=True).fit(data)
 
 def test_mind_ml_params(data):
-    x = local_id.MiND_ML()
-    x = local_id.MiND_ML(ver='MLi')
-    x = local_id.MiND_ML(ver='ML1')
-    x = local_id.MiND_ML(D=5)
-    x = local_id.MiND_ML(k=5)
+    x = skdim.local_id.MiND_ML()
+    x = skdim.local_id.MiND_ML(ver='MLi')
+    x = skdim.local_id.MiND_ML(ver='ML1')
+    x = skdim.local_id.MiND_ML(D=5)
+    x = skdim.local_id.MiND_ML(k=5)
     
 def test_mom_params(data):
-    x = local_id.MOM()
-    x = local_id.MOM(k=5)
+    x = skdim.local_id.MOM()
+    x = skdim.local_id.MOM(k=5)
     
 def test_lpca_params(data):
-    x = local_id.lPCA().fit(data)
-    x = local_id.lPCA(ver='fan').fit(data)
-    x = local_id.lPCA(ver='ratio').fit(data)
-    x = local_id.lPCA(ver='maxgap').fit(data)
+    x = skdim.local_id.lPCA().fit(data)
+    x = skdim.local_id.lPCA(ver='fan').fit(data)
+    x = skdim.local_id.lPCA(ver='ratio').fit(data)
+    x = skdim.local_id.lPCA(ver='maxgap').fit(data)
     
 def test_tle_params(data):
-    x = local_id.TLE().fit(data)
-    x = local_id.TLE(epsilon=.01).fit(data)
+    x = skdim.local_id.TLE().fit(data)
+    x = skdim.local_id.TLE(epsilon=.01).fit(data)
     
 def test_corrint_params(data):
-    x = global_id.CorrInt().fit(data)
-    x = global_id.CorrInt(k1=5,k2=15).fit(data)
+    x = skdim.global_id.CorrInt().fit(data)
+    x = skdim.global_id.CorrInt(k1=5,k2=15).fit(data)
     
 def test_danco_params(data):
-    x = global_id.DANCo().fit(data)
-    x = global_id.DANCo(fractal=False).fit(data)
-    x = global_id.DANCo(D=5).fit(data)
-    x = global_id.DANCo(k=5).fit(data)
-    x = global_id.DANCo(ver='M').fit(data)
+    x = skdim.global_id.DANCo().fit(data)
+    x = skdim.global_id.DANCo(fractal=False).fit(data)
+    x = skdim.global_id.DANCo(D=5).fit(data)
+    x = skdim.global_id.DANCo(k=5).fit(data)
+    x = skdim.global_id.DANCo(ver='M').fit(data)
     
 def test_danco_params(data):
-    x = global_id.CorrInt().fit(data)
-    x = global_id.CorrInt(k1=5,k2=15).fit(data)
+    x = skdim.global_id.CorrInt().fit(data)
+    x = skdim.global_id.CorrInt(k1=5,k2=15).fit(data)
 
 def test_knn_params(data):
-    x = global_id.KNN().fit(data)
-    x = global_id.KNN(k=5).fit(data)
-    x = global_id.KNN(ps=np.arange(30,32)).fit(data)
-    x = global_id.KNN(M=2).fit(data)
-    x = global_id.KNN(gamma=3).fit(data)
+    x = skdim.global_id.KNN().fit(data)
+    x = skdim.global_id.KNN(k=5).fit(data)
+    x = skdim.global_id.KNN(ps=np.arange(30,32)).fit(data)
+    x = skdim.global_id.KNN(M=2).fit(data)
+    x = skdim.global_id.KNN(gamma=3).fit(data)
 
 def test_mada_params(data):
-    x = global_id.Mada().fit(data)
-    x = global_id.Mada(k=5).fit(data)
-    x = global_id.Mada(comb='mean').fit(data)
-    x = global_id.Mada(comb='median').fit(data)
-    x = global_id.Mada(local=True).fit(data)
+    x = skdim.global_id.Mada().fit(data)
+    x = skdim.global_id.Mada(k=5).fit(data)
+    x = skdim.global_id.Mada(comb='mean').fit(data)
+    x = skdim.global_id.Mada(comb='median').fit(data)
+    x = skdim.global_id.Mada(local=True).fit(data)
 
 def test_mle_params(data):
-    x = global_id.MLE().fit(data)
-    x = global_id.MLE(k=5).fit(data)
-    x = global_id.MLE(n = 20, sigma=.1, dnoise='dnoiseGaussH').fit(data)
-    x = global_id.MLE(unbiased=True).fit(data)
-    x = global_id.MLE(K=10, neighborhood_based=False).fit(data)
-    x = global_id.MLE(neighborhood_aggregation='mean').fit(data)
-    x = global_id.MLE(neighborhood_aggregation='median').fit(data)
+    x = skdim.global_id.MLE().fit(data)
+    x = skdim.global_id.MLE(k=5).fit(data)
+    x = skdim.global_id.MLE(n = 20, sigma=.1, dnoise='dnoiseGaussH').fit(data)
+    x = skdim.global_id.MLE(unbiased=True).fit(data)
+    x = skdim.global_id.MLE(K=10, neighborhood_based=False).fit(data)
+    x = skdim.global_id.MLE(neighborhood_aggregation='mean').fit(data)
+    x = skdim.global_id.MLE(neighborhood_aggregation='median').fit(data)
     
 def test_twonn_params(data):
-    x = global_id.TwoNN(return_xy=True)
-    x = global_id.TwoNN(discard_fraction=0.05)
+    x = skdim.global_id.TwoNN(return_xy=True)
+    x = skdim.global_id.TwoNN(discard_fraction=0.05)
     
 #test auxiliary functions
 def test_get_estimators(data):
@@ -155,7 +155,7 @@ def test_get_estimators(data):
                                  'TwoNN': skdim.global_id._TwoNN.TwoNN})
 
 def test_aspointwise(data):   
-    x = asPointwise(data,local_id.lPCA())
+    x = skdim.asPointwise(data,skdim.local_id.lPCA(),n_neighbors=50)
     assert len(x) == len(data)
 
 ##test equality with R version#
