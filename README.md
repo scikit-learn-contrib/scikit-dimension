@@ -33,7 +33,7 @@ Local and global estimators can be used in this way:
 import skdim
 import numpy as np
 
-#generate data: np.array (n_points x n_dim)
+#generate data : np.array (n_points x n_dim). Here a uniformly sampled 5-ball embedded in 10 dimensions
 data = np.zeros((1000,10))
 data[:,:5] = skdim.randball(n_points = 1000, n_dim = 5, radius = 1, random_state = 0)
 

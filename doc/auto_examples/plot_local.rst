@@ -20,32 +20,29 @@ Local ID example
 
 .. code-block:: default
 
-    import skdim
-    from skdim import local_id
+    from skdim import local_id, asPointwise
     import numpy as np
-    from matplotlib import pyplot as plt
 
-    X = np.random.random((1000,10))
-
-
-    #one neighborhood
-    res = local_id.ESS().fit(X)
-    res = local_id.FisherS().fit(X)
-    res = local_id.MOM().fit(X)
-    res = local_id.MiND_ML().fit(X)
-    res = local_id.TLE().fit(X)
-    res = local_id.lPCA().fit(X)
+    X = np.random.random((1000, 10))
 
 
-    #all datapoint neighborhoods
-    pw_id = skdim.asPointwise(X,local_id.FisherS().fit,n_neighbors=100,n_jobs=1)
+    # one neighborhood
+    ess = local_id.ESS().fit(X)
+    fishers = local_id.FisherS().fit(X)
+    mom = local_id.MOM().fit(X)
+    mind_ml = local_id.MiND_ML().fit(X)
+    tle = local_id.TLE().fit(X)
+    lpca = local_id.lPCA().fit(X)
 
 
+    # all datapoint neighborhoods
+    pw_id = asPointwise(X, local_id.FisherS(),
+                        n_neighbors=100, n_jobs=1)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.782 seconds)
+   **Total running time of the script:** ( 0 minutes  4.491 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_local.py:

@@ -182,26 +182,26 @@
 <h1><a class="reference internal" href="../index.html#module-skdim.local_id" title="skdim.local_id"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code></a>.FisherS<a class="headerlink" href="#skdim-local-id-fishers" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="skdim.local_id.FisherS">
-<em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">FisherS</code><span class="sig-paren">(</span><em class="sig-param">ConditionalNumber=10</em>, <em class="sig-param">ProjectOnSphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">ProducePlots=False</em>, <em class="sig-param">ncomp=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">FisherS</code><span class="sig-paren">(</span><em class="sig-param">conditional_number=10</em>, <em class="sig-param">project_on_sphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">produce_plots=False</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Intrinsic dimension estimation using the FisherS algorithm.</p>
 <p>Attributes
-ConditionalNumber : - a positive real value used to select the top</p>
+conditional_number : - a positive real value used to select the top</p>
 <blockquote>
 <div><p>princinpal components. We consider only PCs with eigen values
 which are not less than the maximal eigenvalue divided by
-ConditionalNumber Default value is 10.</p>
+conditional_number Default value is 10.</p>
 </div></blockquote>
 <dl class="simple">
-<dt>ProjectOnSphere<span class="classifier">a boolean value indicating if projecting on a</span></dt><dd><p>sphere should be performed. Default value is true.</p>
+<dt>project_on_sphere<span class="classifier">a boolean value indicating if projecting on a</span></dt><dd><p>sphere should be performed. Default value is true.</p>
 </dd>
 <dt>test_alphas<span class="classifier">2D np.array, float</span></dt><dd><dl class="simple">
 <dt>A row vector of floats, with alpha range, the values must be given increasing</dt><dd><p>within (0,1) interval. Default is np.arange(.6,1,.02)[None].</p>
 </dd>
 </dl>
 </dd>
-<dt>ProducePlots<span class="classifier">bool, default=False</span></dt><dd><p>A boolean value indicating if the standard plots need to be drawn.</p>
+<dt>produce_plots<span class="classifier">bool, default=False</span></dt><dd><p>A boolean value indicating if the standard plots need to be drawn.</p>
 </dd>
-<dt>ncomp<span class="classifier">bool</span></dt><dd><p>Whether to print number of retained principal components</p>
+<dt>verbose<span class="classifier">bool</span></dt><dd><p>Whether to print number of retained principal components</p>
 </dd>
 <dt>limit_maxdim<span class="classifier">bool</span></dt><dd><p>Whether to cap estimated maxdim to the embedding dimension</p>
 </dd>
@@ -222,7 +222,7 @@ ConditionalNumber Default value is 10.</p>
 <p>References</p>
 <dl class="method">
 <dt id="skdim.local_id.FisherS.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ConditionalNumber=10</em>, <em class="sig-param">ProjectOnSphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">ProducePlots=False</em>, <em class="sig-param">ncomp=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">conditional_number=10</em>, <em class="sig-param">project_on_sphere=1</em>, <em class="sig-param">alphas=None</em>, <em class="sig-param">produce_plots=False</em>, <em class="sig-param">verbose=0</em>, <em class="sig-param">limit_maxdim=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_FisherS.html#FisherS.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.FisherS.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 

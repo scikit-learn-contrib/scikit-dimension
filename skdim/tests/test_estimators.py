@@ -156,6 +156,7 @@ def test_get_estimators(data):
 
 def test_aspointwise(data):   
     x = skdim.asPointwise(data,skdim.local_id.lPCA(),n_neighbors=50)
+    x = skdim.asPointwise(data,skdim.local_id.lPCA(),n_neighbors=50,n_jobs=2)
     assert len(x) == len(data)
 
 ##test equality with R version#

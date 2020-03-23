@@ -158,21 +158,44 @@
            <div itemprop="articleBody">
             
   <h1>Source code for skdim.local_id._MiND_ML</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># MIT License</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020 Jonathan Bac</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">.._commonfuncs</span> <span class="kn">import</span> <span class="n">get_nn</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span><span class="p">,</span> <span class="n">check_random_state</span>
+<span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span>
 
 
 <div class="viewcode-block" id="MiND_ML"><a class="viewcode-back" href="../../../generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML">[docs]</a><span class="k">class</span> <span class="nc">MiND_ML</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Intrinsic dimension estimation with the MiND_MLx algorithms.</span>
-<span class="sd">    </span>
+
 <span class="sd">    -----------</span>
 <span class="sd">    Attributes</span>
-<span class="sd">    </span>
+
 <span class="sd">    k : int, default=20</span>
 <span class="sd">        Neighborhood parameter for ver=&#39;MLk&#39; or ver=&#39;MLi&#39;. ver=&#39;ML1&#39; uses the first two neighbor distances.</span>
 <span class="sd">    ver : str</span>
@@ -180,26 +203,25 @@
 
 <span class="sd">    -----------</span>
 <span class="sd">    Returns</span>
-<span class="sd">    </span>
+
 <span class="sd">    dimension_ : int</span>
 <span class="sd">        Intrinsic dimension of the dataset</span>
 
 <span class="sd">    -----------</span>
 <span class="sd">    References</span>
-<span class="sd">    </span>
+
 <span class="sd">    Rozza, A., Lombardi, G., Ceruti, C., Casiraghi, E., &amp; Campadelli, P. (2012). Novel high intrinsic dimensionality estimators. </span>
 <span class="sd">    Machine Learning, 89(1-2), 37–65. doi:10.1007/s10994-012-5294-7 </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    
-<div class="viewcode-block" id="MiND_ML.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="s1">&#39;MLk&#39;</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiND_ML.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">D</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">ver</span><span class="o">=</span><span class="s1">&#39;MLk&#39;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">D</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">=</span> <span class="n">ver</span></div>
-        
-<div class="viewcode-block" id="MiND_ML.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MiND_ML.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.MiND_ML.html#skdim.local_id.MiND_ML.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A reference implementation of a fitting function.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : {array-like}, shape (n_samples, n_features)</span>
@@ -214,26 +236,26 @@
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with 1 sample&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with n_features = 1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">):</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;k+1 &gt;= len(X), using k+1 = len(X)-1&#39;</span><span class="p">)</span>
-                
+
         <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MiND_MLx</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
-        <span class="k">return</span> <span class="bp">self</span>  </div>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_MiND_MLx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="n">nbh_data</span><span class="p">,</span><span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">nbh_data</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;ML1&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MiND_ML1</span><span class="p">(</span><span class="n">nbh_data</span><span class="p">)</span>
 
-        <span class="n">rhos</span> <span class="o">=</span> <span class="n">nbh_data</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">nbh_data</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">rhos</span> <span class="o">=</span> <span class="n">nbh_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">nbh_data</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="n">d_MIND_MLi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_MiND_MLi</span><span class="p">(</span><span class="n">rhos</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;MLi&#39;</span><span class="p">):</span>
@@ -248,13 +270,14 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_MiND_ML1</span><span class="p">(</span><span class="n">nbh_data</span><span class="p">):</span>
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nbh_data</span><span class="p">)</span>
-        <span class="n">dists2</span> <span class="o">=</span> <span class="n">nbh_data</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># need only squared dists to first 2 neighbors</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dists2</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">dists2</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="c1">#need only squared dists to first 2 neighbors</span>
+        <span class="n">dists2</span> <span class="o">=</span> <span class="n">nbh_data</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">dists2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">dists2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
         <span class="n">ID</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">s</span><span class="o">/</span><span class="n">n</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ID</span>
 
     <span class="k">def</span> <span class="nf">_MiND_MLi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhos</span><span class="p">):</span>
-        <span class="c1">#MIND MLI MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER</span>
+        <span class="c1">#MiND MLi MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER</span>
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rhos</span><span class="p">)</span>
         <span class="n">d_lik</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">):</span>
@@ -262,26 +285,26 @@
         <span class="k">return</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">d_lik</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_MiND_MLk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">dinit</span><span class="p">):</span>
-        <span class="c1">#MIND MLI MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER</span>
+        <span class="c1">#MiND MLi MLK REVERSED COMPARED TO R TO CORRESPOND TO PAPER</span>
         <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nlld</span><span class="p">,</span>
-                <span class="n">x0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dinit</span><span class="p">]),</span>
-                <span class="n">jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nlld_gr</span><span class="p">,</span>
-                <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">rhos</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rhos</span><span class="p">)),</span>
-                <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span>
-                <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)])</span>
+                       <span class="n">x0</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dinit</span><span class="p">]),</span>
+                       <span class="n">jac</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_nlld_gr</span><span class="p">,</span>
+                       <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">rhos</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rhos</span><span class="p">)),</span>
+                       <span class="n">method</span><span class="o">=</span><span class="s1">&#39;L-BFGS-B&#39;</span><span class="p">,</span>
+                       <span class="n">bounds</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">)])</span>
 
-        <span class="k">return</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>  
-    
+        <span class="k">return</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+
     <span class="k">def</span> <span class="nf">_nlld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="k">return</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_lld</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_lld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_lld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">return</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1e30</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">N</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">d</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">rhos</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">rhos</span><span class="o">**</span><span class="n">d</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_nlld_gr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_nlld_gr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">rhos</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="k">return</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1e30</span><span class="p">]))</span>
         <span class="k">else</span><span class="p">:</span>

@@ -33,12 +33,17 @@ Welcome to scikit-dimension's documentation!
 `Getting started <quick_start.html>`_
 -------------------------------------
 
-Information regarding this template and how to modify it for your own project.
+How to install the package and a quick start example.
+
+`User guide <user_guide.html>`_
+-------------------------------
+
+An introduction to the concept of intrinsic dimensionality and the organization of this package.
 
 `API Documentation <api.html>`_
 -------------------------------
 
-An example of API documentation.
+The layout of available classes and functions.
 
 `Examples <auto_examples/index.html>`_
 --------------------------------------

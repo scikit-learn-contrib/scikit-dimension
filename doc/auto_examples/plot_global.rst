@@ -22,20 +22,20 @@ Global ID example
 
     from skdim import global_id
     import numpy as np
-    from matplotlib import pyplot as plt
 
-    X=np.random.random((1000,10))
+    X = np.random.random((1000, 10))
 
-    res = global_id.CorrInt().fit(X).dimension_
-    res = global_id.DANCo().fit(X).dimension_
-    res = global_id.KNN().fit(X).dimension_
-    res = global_id.Mada().fit(X).dimension_
-    res = global_id.MLE().fit(X).dimension_
-    res = global_id.TwoNN().fit(X).dimension_
+    corrint = global_id.CorrInt().fit(X).dimension_
+    danco = global_id.DANCo().fit(X).dimension_
+    knn = global_id.KNN().fit(X).dimension_
+    mada = global_id.Mada().fit(X).dimension_
+    mle = global_id.MLE().fit(X).dimension_
+    twonn = global_id.TwoNN().fit(X).dimension_
+
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.478 seconds)
+   **Total running time of the script:** ( 0 minutes  3.615 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_global.py:

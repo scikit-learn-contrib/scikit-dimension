@@ -158,29 +158,53 @@
            <div itemprop="articleBody">
             
   <h1>Source code for skdim.global_id._MLE</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">inspect</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># MIT License</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020 Jonathan Bac</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">scipy.integrate</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">.._commonfuncs</span> <span class="kn">import</span> <span class="n">lens</span><span class="p">,</span> <span class="n">get_nn</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span>
 
-<div class="viewcode-block" id="MLE"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE">[docs]</a><span class="k">class</span> <span class="nc">MLE</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>    
+
+<div class="viewcode-block" id="MLE"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE">[docs]</a><span class="k">class</span> <span class="nc">MLE</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Intrinsic dimension estimation with the Maximum Likelihood method. The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. The estimator in the paper is obtained using default parameters and dnoise = dnoiseGaussH.</span>
 
 <span class="sd">    With integral.approximation = &#39;Haro&#39; the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = &#39;guaranteed.convergence&#39;, r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = &#39;iteration&#39;, five iterations is used to determine m.</span>
 
 <span class="sd">    maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. </span>
-<span class="sd">    </span>
+
 <span class="sd">    ----------</span>
 <span class="sd">    Attributes</span>
-<span class="sd">    </span>
+
 <span class="sd">    mode : str, default=&#39;global&#39;</span>
 <span class="sd">        Whether to compute &#39;global&#39;, &#39;local&#39; or &#39;pointwise&#39; intrinsic dimension</span>
 <span class="sd">    k : int</span>
 <span class="sd">        Number of neighbors used for each dimension estimation.</span>
-<span class="sd">    dnoise : function</span>
-<span class="sd">        Vector valued function giving the transition density.</span>
+<span class="sd">    dnoise : None or &#39;dnoiseGaussH&#39;</span>
+<span class="sd">        Vector valued function giving the transition density. &#39;dnoiseGaussH&#39; is the one used in Haro</span>
 <span class="sd">    sigma : float, default=0</span>
 <span class="sd">        Estimated standard deviation for the noise.</span>
 <span class="sd">    n : int, default=&#39;None&#39;</span>
@@ -188,39 +212,42 @@
 <span class="sd">    integral.approximation : str, default=&#39;Haro&#39;</span>
 <span class="sd">        Can take values &#39;Haro&#39;, &#39;guaranteed.convergence&#39;, &#39;iteration&#39;</span>
 <span class="sd">    neighborhood.based : bool, default=&#39;True&#39;</span>
-<span class="sd">        means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.</span>
+<span class="sd">        Means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.</span>
+<span class="sd">    neighborhood_aggregation : str, default=&#39;maximum.likelihood&#39;</span>
+<span class="sd">        How to aggregate the pointwise estimates. Possible values &#39;maximum.likelihood&#39;, &#39;mean&#39;, &#39;median&#39;</span>
 <span class="sd">    K : int, default=5</span>
 <span class="sd">        Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE</span>
-<span class="sd">        </span>
+
 <span class="sd">    ---------</span>
 <span class="sd">    Returns</span>
-<span class="sd">    </span>
+
 <span class="sd">    dimension_ : float</span>
 <span class="sd">        The estimated intrinsic dimension</span>
-<span class="sd">      </span>
+
 <span class="sd">    ---------  </span>
 <span class="sd">    References</span>
-<span class="sd">    </span>
+
 <span class="sd">    Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.</span>
 
 <span class="sd">    Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.</span>
 
 <span class="sd">    Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press. </span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="MLE.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">dnoise</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">integral_approximation</span> <span class="o">=</span> <span class="s1">&#39;Haro&#39;</span><span class="p">,</span> <span class="n">unbiased</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                    <span class="n">neighborhood_based</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="n">neighborhood_aggregation</span> <span class="o">=</span> <span class="s1">&#39;maximum.likelihood&#39;</span><span class="p">,</span>
-                    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="mi">5</span><span class="p">):</span>
-        
-        <span class="n">args</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getargvalues</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">())</span>
+
+<div class="viewcode-block" id="MLE.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">dnoise</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">integral_approximation</span><span class="o">=</span><span class="s1">&#39;Haro&#39;</span><span class="p">,</span> <span class="n">unbiased</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">neighborhood_based</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">neighborhood_aggregation</span><span class="o">=</span><span class="s1">&#39;maximum.likelihood&#39;</span><span class="p">,</span> <span class="n">K</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+        <span class="n">args</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getargvalues</span><span class="p">(</span>
+            <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">())</span>
         <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;self&quot;</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
-            
-<div class="viewcode-block" id="MLE.fit"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="MLE.fit"><a class="viewcode-back" href="../../../generated/skdim.global_id.MLE.html#skdim.global_id.MLE.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A reference implementation of a fitting function.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -236,28 +263,28 @@
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with 1 sample&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with n_features = 1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
-            
-        <span class="c1">#if self.k &gt;= len(X):</span>
+
+        <span class="c1"># if self.k &gt;= len(X):</span>
         <span class="c1">#    warnings.warn(&#39;k larger or equal to len(X), using len(X)-1&#39;)</span>
-        <span class="c1">#if self.K &gt;= len(X):</span>
+        <span class="c1"># if self.K &gt;= len(X):</span>
         <span class="c1">#    warnings.warn(&#39;k larger or equal to len(X), using len(X)-1&#39;)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;global&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikGlobalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikGlobalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;pointwise&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikPointwiseDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikPointwiseDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikLocalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-            
+
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
-        <span class="k">return</span> <span class="bp">self</span>        </div>
-            
-    <span class="k">def</span> <span class="nf">maxLikGlobalDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">maxLikGlobalDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="c1"># &#39;k&#39; is the number of neighbors used for each dimension estimation.</span>
         <span class="c1"># &#39;dnoise&#39; is a vector valued function giving the transition density.</span>
         <span class="c1"># &#39;sigma&#39; is the estimated standard deviation for the noise.</span>
@@ -265,31 +292,32 @@
         <span class="c1"># integral.approximation can take values &#39;Haro&#39;, &#39;guaranteed.convergence&#39;, &#39;iteration&#39;</span>
         <span class="c1"># neighborhood.based means that estimation is made for each neighborhood,</span>
         <span class="c1"># otherwise estimation is based on distances in entire data set.</span>
-        <span class="c1"># &#39;K&#39; is number of neighbors per data point that is considered, only used for </span>
+        <span class="c1"># &#39;K&#39; is number of neighbors per data point that is considered, only used for</span>
         <span class="c1"># neighborhood.based = False</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighborhood_based</span><span class="p">:</span>
             <span class="n">mi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">maxLikPointwiseDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighborhood_aggregation</span> <span class="o">==</span> <span class="s1">&#39;maximum.likelihood&#39;</span><span class="p">:</span>
-                <span class="n">de</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">mi</span><span class="p">)</span> 
-
+                <span class="n">de</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">mi</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighborhood_aggregation</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
-                <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mi</span><span class="p">)</span> 
+                <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">mi</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighborhood_aggregation</span> <span class="o">==</span> <span class="s1">&#39;median&#39;</span><span class="p">:</span>
                 <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">mi</span><span class="p">)</span>
             <span class="k">return</span><span class="p">(</span><span class="n">de</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-            <span class="n">Rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)))))[:</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span>
-            <span class="n">de</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxLikDimEstFromR</span><span class="p">(</span><span class="n">Rs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">sigma</span><span class="p">)</span> <span class="c1"># Since distances between points are used, noise is </span>
-                                                               <span class="c1"># added at both ends, i.e. variance is doubled. </span>
-                                                               <span class="c1">#likelihood = np.nan</span>
-            <span class="k">return</span><span class="p">(</span><span class="n">de</span><span class="p">)</span> 
+            <span class="n">dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">Rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)))))[</span>
+                <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">]</span>
+            <span class="c1"># Since distances between points are used, noise is</span>
+            <span class="n">de</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxLikDimEstFromR</span><span class="p">(</span><span class="n">Rs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="c1"># added at both ends, i.e. variance is doubled.</span>
+            <span class="c1">#likelihood = np.nan</span>
+            <span class="k">return</span><span class="p">(</span><span class="n">de</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">maxLikPointwiseDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
-        <span class="c1">## estimates dimension around each point in data[indices, ]</span>
+    <span class="k">def</span> <span class="nf">maxLikPointwiseDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># estimates dimension around each point in data[indices, ]</span>
         <span class="c1">#</span>
         <span class="c1"># &#39;indices&#39; give the indexes for which local dimension estimation should</span>
         <span class="c1"># be performed.</span>
@@ -299,16 +327,17 @@
         <span class="c1"># &#39;n&#39; is the dimension of the noise (at least dim(data)[2])</span>
 
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">nbh_dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span> <span class="c1"># This vector will hold local dimension estimates</span>
+        <span class="n">nbh_dist</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c1"># This vector will hold local dimension estimates</span>
+        <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-            <span class="n">Rs</span> <span class="o">=</span> <span class="n">nbh_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
-            <span class="n">de</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxLikDimEstFromR</span><span class="p">(</span><span class="n">Rs</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+            <span class="n">Rs</span> <span class="o">=</span> <span class="n">nbh_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span>
+            <span class="n">de</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxLikDimEstFromR</span><span class="p">(</span><span class="n">Rs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
 
         <span class="k">return</span><span class="p">(</span><span class="n">de</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">maxLikLocalDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">maxLikLocalDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="c1"># assuming data set is local</span>
         <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">cent_X</span> <span class="o">=</span> <span class="n">X</span> <span class="o">-</span> <span class="n">center</span>
@@ -325,11 +354,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dnoiseGaussH</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">integral_approximation</span> <span class="o">==</span> <span class="s1">&#39;Haro&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">r</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="p">:</span> <span class="n">r</span> <span class="o">*</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 
         <span class="n">de</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_maxLikDimEstFromR_haro_approx</span><span class="p">(</span><span class="n">Rs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">integral_approximation</span> <span class="o">==</span> <span class="s1">&#39;iteration&#39;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;integral_approximation=&#39;iteration&#39; not implemented yet. See R intdim package&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;integral_approximation=&#39;iteration&#39; not implemented yet. See R intdim package&quot;</span><span class="p">)</span>
             <span class="c1">#de = maxLikDimEstFromRIterative(Rs, dnoise_orig, sigma, n, de, unbiased)</span>
 
         <span class="k">return</span><span class="p">(</span><span class="n">de</span><span class="p">)</span>
@@ -351,29 +382,32 @@
         <span class="n">numerator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
 
-        <span class="n">numInt</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Rj</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rk</span><span class="o">/</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">denomInt</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Rj</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">numInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">Rj</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Rk</span><span class="o">/</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">denomInt</span><span class="p">(</span><span class="n">x</span><span class="p">):</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dnoise</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Rj</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">Rj</span> <span class="o">=</span> <span class="n">Rs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
-            <span class="n">numerator</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">numInt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Rpr</span><span class="p">,</span> <span class="n">epsrel</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="n">epsabs</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">denominator</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span><span class="n">denomInt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Rpr</span><span class="p">,</span> <span class="n">epsrel</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">,</span> <span class="n">epsabs</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
+            <span class="n">numerator</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span>
+                <span class="n">numInt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Rpr</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">denominator</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">integrate</span><span class="o">.</span><span class="n">quad</span><span class="p">(</span>
+                <span class="n">denomInt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Rpr</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span><span class="p">(</span><span class="n">kfac</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">numerator</span><span class="o">/</span><span class="n">denominator</span><span class="p">))</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_dnorm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span> 
+    <span class="k">def</span> <span class="nf">_dnorm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span><span class="o">*</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">_dnoiseGaussH</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dnorm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">mu</span><span class="o">=</span><span class="n">r</span><span class="p">,</span><span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span> </div>
-                                            <span class="c1"># f(s|r) in Haro et al. (2008) w/ Gaussian</span>
-                                            <span class="c1"># transition density</span>
-                                            <span class="c1"># &#39;k&#39; is not used, but is input</span>
-                                            <span class="c1"># for compatibility</span>
+    <span class="k">def</span> <span class="nf">_dnoiseGaussH</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dnorm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span></div>
+        <span class="c1"># f(s|r) in Haro et al. (2008) w/ Gaussian</span>
+        <span class="c1"># transition density</span>
+        <span class="c1"># &#39;k&#39; is not used, but is input</span>
+        <span class="c1"># for compatibility</span>
 
-    <span class="c1">#def maxLikDimEstFromRIterative(Rs, dnoise, sigma, n, init = 5,</span>
+    <span class="c1"># def maxLikDimEstFromRIterative(Rs, dnoise, sigma, n, init = 5,</span>
     <span class="c1">#                  unbiased = False, iterations = 5, verbose = False):</span>
     <span class="c1">#    m = init</span>
     <span class="c1">#    if verbose:</span>
@@ -386,9 +420,9 @@
     <span class="c1">#            print(&quot;\n&quot;)</span>
     <span class="c1">#    return(m)</span>
     <span class="c1">#</span>
-    <span class="c1">#def maxLikDimEstFromRIterative_inner(Rs, dnoise, sigma, n, m, unbiased):</span>
+    <span class="c1"># def maxLikDimEstFromRIterative_inner(Rs, dnoise, sigma, n, m, unbiased):</span>
     <span class="c1">#</span>
-    <span class="c1">#    k = len(Rs)  </span>
+    <span class="c1">#    k = len(Rs)</span>
     <span class="c1">#    kfac = k-2 if unbiased else k-1</span>
     <span class="c1">#</span>
     <span class="c1">#    Rk = np.max(Rs)</span>
@@ -398,10 +432,10 @@
     <span class="c1">#</span>
     <span class="c1">#    numerator = np.repeat(np.nan, k - 1)</span>
     <span class="c1">#    denominator = np.repeat(np.nan, k - 1)</span>
-    <span class="c1">#    </span>
+    <span class="c1">#</span>
     <span class="c1">#    numInt = lambda x: x**(m-1)*dnoise(x, Rj, sigma, n) * np.log(Rk/x)</span>
     <span class="c1">#    denomInt = lambda x: x**(m-1)*dnoise(x, Rj, sigma, n)</span>
-    <span class="c1">#    </span>
+    <span class="c1">#</span>
     <span class="c1">#    for j in range(k-1):</span>
     <span class="c1">#        Rj = Rs[j]</span>
     <span class="c1">#        m = np.maximum(m, 1)</span>

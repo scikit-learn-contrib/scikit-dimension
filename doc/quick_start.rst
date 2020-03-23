@@ -9,51 +9,34 @@ Installation
 
 To install with pip run::
 
-    $ git clone https://github.com/scikit-learn-contrib/project-template.git
+    $ pip install git+https://github.com/j-bac/scikit-dimension.git
 
 To install from source run::
 
-    $ git clone https://github.com/scikit-learn-contrib/project-template.git
+    $ git clone https://github.com/j-bac/scikit-dimension
+    $ cd scikit-dimension
+    $ pip install .
 
 Basic usage
 ===================================================
 
-Global intrinsic dimension estimators
-
-.. code-block:: python
-
-    from skdim import global_id
-    import numpy as np
-    from matplotlib import pyplot as plt
-
-    X=np.random.random((1000,10))
-
-    res = global_id.CorrInt().fit(X).dimension_
-    res = global_id.DANCo().fit(X).dimension_
-    res = global_id.KNN().fit(X).dimension_
-    res = global_id.Mada().fit(X).dimension_
-    res = global_id.MLE().fit(X).dimension_
-    res = global_id.TwoNN().fit(X).dimension_
-
-Local intrinsic dimension estimators
+Local and global estimators can be used in this way:
 
 .. code-block:: python
 
     import skdim
-    from skdim import local_id
     import numpy as np
-    import matplotlib.pyplot as plt
 
-    X = np.random.random((1000,10))
+    #generate data : np.array (n_points x n_dim). Here a uniformly sampled 5-ball embedded in 10 dimensions
+    data = np.zeros((1000,10))
+    data[:,:5] = skdim.randball(n_points = 1000, n_dim = 5, radius = 1, random_state = 0)
 
-    #one neighborhood
-    res = local_id.ESS().fit(X)
-    res = local_id.FisherS().fit(X)
-    res = local_id.MOM().fit(X)
-    res = local_id.MiND_ML().fit(X)
-    res = local_id.TLE().fit(X)
-    res = local_id.lPCA().fit(X)
-
-
-    #all datapoint neighborhoods
-    pw_id = skdim.commonfuncs.asPointwise(X,local_id.FisherS().fit,n_neighbors=100,n_jobs=1)
+    #fit a global estimator
+    danco = skdim.global_id.DANCo().fit(data)
+    #fit a local estimator (local estimators assume input data comes from a local data neighborhood)
+    fishers = skdim.local_id.FisherS().fit(data)
+    #fit a global or local estimator in k-nearest-neighborhoods of each point:
+    lpca_pw = skdim.asPointwise(data = data,
+                                class_instance = skdim.local_id.lPCA(),
+                                n_neighbors = 100,
+                                n_jobs = 1)

@@ -158,33 +158,33 @@
            <div itemprop="articleBody">
             
   <h1>Source code for skdim.global_id._TwoNN</h1><div class="highlight"><pre>
-<span></span><span class="c1">#Original Author: Francesco Mottes</span>
-<span class="c1">#https://github.com/fmottes/TWO-NN</span>
-<span class="c1">#MIT License</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># MIT License</span>
 <span class="c1">#</span>
-<span class="c1">#Copyright (c) 2019 fmottes</span>
+<span class="c1"># Copyright (c) 2020 Jonathan Bac</span>
 <span class="c1">#</span>
-<span class="c1">#Permission is hereby granted, free of charge, to any person obtaining a copy</span>
-<span class="c1">#of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
-<span class="c1">#in the Software without restriction, including without limitation the rights</span>
-<span class="c1">#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
-<span class="c1">#copies of the Software, and to permit persons to whom the Software is</span>
-<span class="c1">#furnished to do so, subject to the following conditions:</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
 <span class="c1">#</span>
-<span class="c1">#The above copyright notice and this permission notice shall be included in all</span>
-<span class="c1">#copies or substantial portions of the Software.</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
 <span class="c1">#</span>
-<span class="c1">#THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
-<span class="c1">#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
-<span class="c1">#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
-<span class="c1">#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
-<span class="c1">#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
-<span class="c1">#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
-<span class="c1">#SOFTWARE.</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="c1">#</span>
 
-<span class="c1">#Author of the speed modifications (with sklearn dependencies): Jonathan Bac</span>
-<span class="c1">#Date  : 02-Jan-2020</span>
-<span class="c1">#-----------------------------</span>
+<span class="c1"># Author of the speed modifications (with sklearn dependencies): Jonathan Bac</span>
+<span class="c1"># Date  : 02-Jan-2020</span>
+<span class="c1"># -----------------------------</span>
 
 
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
@@ -199,7 +199,7 @@
 <div class="viewcode-block" id="TwoNN"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN">[docs]</a><span class="k">class</span> <span class="nc">TwoNN</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.</span>
-<span class="sd">    </span>
+
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters:</span>
 <span class="sd">    return_xy : bool (default=False)</span>
@@ -210,28 +210,27 @@
 <span class="sd">        Whether data is a precomputed distance matrix</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Returns:</span>
-<span class="sd">    </span>
+
 <span class="sd">    d : int</span>
 <span class="sd">        Intrinsic dimension of the dataset according to TWO-NN.</span>
 <span class="sd">    x : 1d array (optional)</span>
 <span class="sd">        Array with the -log(mu) values.</span>
 <span class="sd">    y : 1d array (optional)</span>
 <span class="sd">        Array with the -log(F(mu_{sigma(i)})) values.</span>
-<span class="sd">        </span>
+
 <span class="sd">    -----------</span>
 <span class="sd">    References:</span>
-<span class="sd">    </span>
+
 <span class="sd">    [1] E. Facco, M. d’Errico, A. Rodriguez &amp; A. Laio</span>
 <span class="sd">        Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    
-<div class="viewcode-block" id="TwoNN.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">return_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">discard_fraction</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TwoNN.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">discard_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span> <span class="o">=</span> <span class="n">return_xy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span> <span class="o">=</span> <span class="n">discard_fraction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span></div>
-        
-<div class="viewcode-block" id="TwoNN.fit"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TwoNN.fit"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A reference implementation of a fitting function.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -247,22 +246,21 @@
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with 1 sample&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with n_features = 1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twonn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span> 
+        <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twonn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
-        <span class="k">return</span> <span class="bp">self</span>        </div>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
-
-    <span class="k">def</span> <span class="nf">_twonn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_twonn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates intrinsic dimension of the provided data points with the TWO-NN algorithm.</span>
 
@@ -294,46 +292,53 @@
 <span class="sd">            Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-
         <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">:</span>
-            <span class="n">r1</span><span class="p">,</span><span class="n">r2</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">dists</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dists</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">_mu</span> <span class="o">=</span> <span class="n">r2</span><span class="o">/</span><span class="n">r1</span>
-            <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span> <span class="c1">#discard the largest distances</span>
+            <span class="c1"># discard the largest distances</span>
+            <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+                <span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span>
 
-        <span class="k">else</span><span class="p">:</span>    
+        <span class="k">else</span><span class="p">:</span>
             <span class="c1"># mu = r2/r1 for each data point</span>
-            <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">25</span><span class="p">:</span> <span class="c1">#relatively high dimensional data, use distance matrix generator</span>
+            <span class="c1"># relatively high dimensional data, use distance matrix generator</span>
+            <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">25</span><span class="p">:</span>
                 <span class="n">distmat_chunks</span> <span class="o">=</span> <span class="n">pairwise_distances_chunked</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
                 <span class="n">_mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)))</span>
                 <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">distmat_chunks</span><span class="p">:</span>
-                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-                    <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
                     <span class="n">_mu</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span><span class="n">r2</span><span class="o">/</span><span class="n">r1</span><span class="p">)</span>
                     <span class="n">i</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-                <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span> <span class="c1">#discard the largest distances</span>
+                <span class="c1"># discard the largest distances</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+                    <span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span>
 
-            <span class="k">else</span><span class="p">:</span> <span class="c1">#relatively low dimensional data, search nearest neighbors directly</span>
-                <span class="n">dists</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-                <span class="n">r1</span><span class="p">,</span><span class="n">r2</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">dists</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># relatively low dimensional data, search nearest neighbors directly</span>
+                <span class="n">dists</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_nn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                <span class="n">r1</span><span class="p">,</span> <span class="n">r2</span> <span class="o">=</span> <span class="n">dists</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dists</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="n">_mu</span> <span class="o">=</span> <span class="n">r2</span><span class="o">/</span><span class="n">r1</span>
-                <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span> <span class="c1">#discard the largest distances</span>
+                <span class="c1"># discard the largest distances</span>
+                <span class="n">mu</span> <span class="o">=</span> <span class="n">_mu</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+                    <span class="n">_mu</span><span class="p">)[:</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">))]]</span>
 
         <span class="c1"># Empirical cumulate</span>
         <span class="n">Femp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">N</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span><span class="p">)))</span><span class="o">/</span><span class="n">N</span>
 
         <span class="c1"># Fit line</span>
         <span class="n">lr</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">(</span><span class="n">fit_intercept</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">lr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Femp</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">lr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="o">-</span>
+               <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">Femp</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-        <span class="n">d</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># extract slope</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extract slope</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-        <span class="k">else</span><span class="p">:</span> 
+        <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">d</span></div>
 </pre></div>
 

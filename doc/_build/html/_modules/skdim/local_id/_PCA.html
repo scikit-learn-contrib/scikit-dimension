@@ -158,16 +158,38 @@
            <div itemprop="articleBody">
             
   <h1>Source code for skdim.local_id._PCA</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># MIT License</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020 Jonathan Bac</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="c1">#</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">pdist</span><span class="p">,</span> <span class="n">squareform</span>
 <span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span>
 
 
-<div class="viewcode-block" id="lPCA"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA">[docs]</a><span class="k">class</span> <span class="nc">lPCA</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>    
+<div class="viewcode-block" id="lPCA"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA">[docs]</a><span class="k">class</span> <span class="nc">lPCA</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Intrinsic dimension estimation using local PCA.</span>
 <span class="sd">    Version &#39;FO&#39; is the method by Fukunaga-Olsen, version &#39;fan&#39; is the method by Fan et al..</span>
 <span class="sd">    Version &#39;maxgap&#39; returns the position of the largest relative gap in the sequence of singular values.</span>
@@ -188,16 +210,17 @@
 <span class="sd">    PFan : float</span>
 <span class="sd">        Only for ver = &#39;Fan&#39;. Total covariance in non-noise.</span>
 <span class="sd">    verbose : bool, default=False</span>
-<span class="sd">    </span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="lPCA.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ver</span> <span class="o">=</span> <span class="s1">&#39;FO&#39;</span><span class="p">,</span> <span class="n">alphaRatio</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span><span class="p">,</span> <span class="n">alphaFO</span> <span class="o">=</span> <span class="o">.</span><span class="mi">05</span><span class="p">,</span> <span class="n">alphaFan</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">betaFan</span> <span class="o">=</span> <span class="o">.</span><span class="mi">8</span><span class="p">,</span>
-                 <span class="n">PFan</span> <span class="o">=</span> <span class="o">.</span><span class="mi">95</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        
+
+<div class="viewcode-block" id="lPCA.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ver</span><span class="o">=</span><span class="s1">&#39;FO&#39;</span><span class="p">,</span> <span class="n">alphaRatio</span><span class="o">=.</span><span class="mi">05</span><span class="p">,</span> <span class="n">alphaFO</span><span class="o">=.</span><span class="mi">05</span><span class="p">,</span> <span class="n">alphaFan</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">betaFan</span><span class="o">=.</span><span class="mi">8</span><span class="p">,</span>
+                 <span class="n">PFan</span><span class="o">=.</span><span class="mi">95</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">=</span> <span class="n">ver</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphaRatio</span> <span class="o">=</span> <span class="n">alphaRatio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphaFO</span> <span class="o">=</span> <span class="n">alphaFO</span>
@@ -205,15 +228,15 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">betaFan</span> <span class="o">=</span> <span class="n">betaFan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">PFan</span> <span class="o">=</span> <span class="n">PFan</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span></div>
-        
-<div class="viewcode-block" id="lPCA.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="lPCA.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A reference implementation of a fitting function.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        X : {array-like}, shape (n_samples, n_features)</span>
 <span class="sd">            A local dataset of training input samples.</span>
 <span class="sd">        y : dummy parameter to respect the sklearn API</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        self : object</span>
@@ -222,89 +245,103 @@
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with 1 sample&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with n_features = 1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
 
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcaLocalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;ratio&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcaLocalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pcaLocalDimEst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
-        <span class="k">return</span> <span class="bp">self</span>        </div>
-
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_pcaLocalDimEst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="n">explained_var</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">explained_variance_</span>    
+        <span class="n">explained_var</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">explained_variance_</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;FO&#39;</span><span class="p">):</span> <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_FO</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;fan&#39;</span><span class="p">):</span> <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fan</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;maxgap&#39;</span><span class="p">):</span> <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maxgap</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;ratio&#39;</span><span class="p">):</span> <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ratio</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;FO&#39;</span><span class="p">):</span>
+            <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_FO</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;fan&#39;</span><span class="p">):</span>
+            <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fan</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;maxgap&#39;</span><span class="p">):</span>
+            <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maxgap</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="o">==</span> <span class="s1">&#39;ratio&#39;</span><span class="p">):</span>
+            <span class="k">return</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ratio</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span>
 
-
-    <span class="k">def</span> <span class="nf">_FO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">explained_var</span><span class="p">):</span>
-        <span class="n">de</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span><span class="o">&gt;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaFO</span><span class="o">*</span><span class="n">explained_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="k">def</span> <span class="nf">_FO</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explained_var</span><span class="p">):</span>
+        <span class="n">de</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span> <span class="o">&gt;</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaFO</span><span class="o">*</span><span class="n">explained_var</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
         <span class="n">gaps</span> <span class="o">=</span> <span class="n">explained_var</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">explained_var</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    
+
+        <span class="k">if</span> <span class="n">de</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaps</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_maxgap</span><span class="p">(</span><span class="n">explained_var</span><span class="p">):</span>
         <span class="n">gaps</span> <span class="o">=</span> <span class="n">explained_var</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">explained_var</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">gaps</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
-        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         
-        
+        <span class="k">if</span> <span class="n">de</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaps</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">_ratio</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explained_var</span><span class="p">):</span>
-        <span class="c1">#X - data set (n x d)</span>
-        <span class="c1">#theta - ratio of variance to preserve (theta \in [0,1])</span>
+        <span class="c1"># X - data set (n x d)</span>
+        <span class="c1"># theta - ratio of variance to preserve (theta \in [0,1])</span>
         <span class="n">sumexp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span>
-        <span class="n">de</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sumexp</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaRatio</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span> 
+        <span class="n">idx_threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sumexp</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaRatio</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_threshold</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">de</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">de</span> <span class="o">=</span> <span class="n">idx_threshold</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">de</span>
-        
-    <span class="k">def</span> <span class="nf">_fan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">explained_var</span><span class="p">):</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_fan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">explained_var</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span> <span class="o">/</span>
+                     <span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">PFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">explained_var</span><span class="p">[</span><span class="n">r</span><span class="p">:])</span>
         <span class="n">explained_var</span> <span class="o">-=</span> <span class="n">sigma</span>
         <span class="n">gaps</span> <span class="o">=</span> <span class="n">explained_var</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">explained_var</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-        <span class="n">de</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">gaps</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">alphaFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
-                                    <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">betaFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">])))</span>
-        <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span> <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
-        
-        
-        
-        
+        <span class="n">de</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">gaps</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphaFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">)</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">explained_var</span><span class="p">))</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">betaFan</span><span class="p">)[</span><span class="mi">0</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">de</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">gaps</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="n">de</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">gaps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
 <span class="c1">##### dev in progress</span>
-<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
-<span class="k">def</span> <span class="nf">pcaOtpmPointwiseDimEst</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">):</span>
-    <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">N</span><span class="p">)</span>
-    <span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">pt</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">cluster_centers_</span>
-    <span class="n">pt_bm</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span>
-    <span class="n">pt_sm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pt_bm</span><span class="p">))</span>
-
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
-        <span class="n">pt_sm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">lens</span><span class="p">(</span><span class="n">pt</span><span class="p">[[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">!=</span><span class="n">pt_bm</span><span class="p">[</span><span class="n">k</span><span class="p">]],:]</span> <span class="o">-</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">,:]))</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pt_sm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">pt_bm</span><span class="p">[</span><span class="n">k</span><span class="p">]):</span>
-            <span class="n">pt_sm</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="n">de_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-    <span class="n">nbr_nb_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
-        <span class="n">nb</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pt_sm</span><span class="p">[</span><span class="n">pt_bm</span> <span class="o">==</span> <span class="n">k</span><span class="p">],</span> <span class="n">pt_bm</span><span class="p">[</span><span class="n">pt_sm</span> <span class="o">==</span> <span class="n">k</span><span class="p">])))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="n">nbr_nb_c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nb</span><span class="p">)</span>
-        <span class="n">loc_dat</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="n">nb</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">pt</span><span class="p">[</span><span class="n">k</span><span class="p">,:]</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">loc_dat</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">de_c</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">lPCA</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">loc_dat</span><span class="p">)</span><span class="o">.</span><span class="n">dimension_</span> <span class="c1">#pcaLocalDimEst(loc_dat, ver = &quot;FO&quot;, alphaFO = alpha)</span>
-
-    <span class="n">de</span> <span class="o">=</span> <span class="n">de_c</span><span class="p">[</span><span class="n">pt_bm</span><span class="p">]</span>
-    <span class="n">nbr_nb</span> <span class="o">=</span> <span class="n">nbr_nb_c</span><span class="p">[</span><span class="n">pt_bm</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">de</span><span class="p">,</span> <span class="n">nbr_nb</span>
+<span class="c1">#from sklearn.cluster import KMeans</span>
+<span class="c1"># def pcaOtpmPointwiseDimEst(data, N, alpha = 0.05):</span>
+<span class="c1">#    km = KMeans(n_clusters=N)</span>
+<span class="c1">#    km.fit(data)</span>
+<span class="c1">#    pt = km.cluster_centers_</span>
+<span class="c1">#    pt_bm = km.labels_</span>
+<span class="c1">#    pt_sm = np.repeat(np.nan, len(pt_bm))</span>
+<span class="c1">#</span>
+<span class="c1">#    for k in range(len(data)):</span>
+<span class="c1">#        pt_sm[k] = np.argmin(lens(pt[[i for i in range(N) if i!=pt_bm[k]],:] - data[k,:]))</span>
+<span class="c1">#        if (pt_sm[k] &gt;= pt_bm[k]):</span>
+<span class="c1">#            pt_sm[k] += 1</span>
+<span class="c1">#</span>
+<span class="c1">#    de_c = np.repeat(np.nan, N)</span>
+<span class="c1">#    nbr_nb_c = np.repeat(np.nan, N)</span>
+<span class="c1">#    for k in range(N):</span>
+<span class="c1">#        nb = np.unique(np.concatenate((pt_sm[pt_bm == k], pt_bm[pt_sm == k]))).astype(int)</span>
+<span class="c1">#        nbr_nb_c[k] = len(nb)</span>
+<span class="c1">#        loc_dat = pt[nb,:] - pt[k,:]</span>
+<span class="c1">#        if len(loc_dat) == 1:</span>
+<span class="c1">#            continue</span>
+<span class="c1">#        de_c[k] = lPCA().fit(loc_dat).dimension_ #pcaLocalDimEst(loc_dat, ver = &quot;FO&quot;, alphaFO = alpha)</span>
+<span class="c1">#</span>
+<span class="c1">#    de = de_c[pt_bm]</span>
+<span class="c1">#    nbr_nb = nbr_nb_c[pt_bm]</span>
+<span class="c1">#    return de, nbr_nb</span>
 </pre></div>
 
            </div>

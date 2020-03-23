@@ -158,47 +158,66 @@
            <div itemprop="articleBody">
             
   <h1>Source code for skdim.local_id._FisherS</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># MIT License</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2020 Jonathan Bac</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span>
 <span class="kn">from</span> <span class="nn">sklearn.utils.validation</span> <span class="kn">import</span> <span class="n">check_array</span>
 
 <span class="kn">import</span> <span class="nn">numba</span> <span class="k">as</span> <span class="nn">nb</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">sklearn.decomposition</span> <span class="k">as</span> <span class="nn">sk</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">gammainc</span>
 <span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">lambertw</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">import</span> <span class="nn">scipy.io</span>
-<span class="kn">from</span> <span class="nn">.._commonfuncs</span> <span class="kn">import</span> <span class="n">randsphere</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FisherS"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS">[docs]</a><span class="k">class</span> <span class="nc">FisherS</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Intrinsic dimension estimation using the FisherS algorithm.</span>
-<span class="sd">    </span>
+
 <span class="sd">    -----------</span>
 <span class="sd">    Attributes</span>
-<span class="sd">    ConditionalNumber : - a positive real value used to select the top</span>
+<span class="sd">    conditional_number : - a positive real value used to select the top</span>
 <span class="sd">            princinpal components. We consider only PCs with eigen values</span>
 <span class="sd">            which are not less than the maximal eigenvalue divided by</span>
-<span class="sd">            ConditionalNumber Default value is 10.</span>
-<span class="sd">    ProjectOnSphere :  a boolean value indicating if projecting on a</span>
+<span class="sd">            conditional_number Default value is 10.</span>
+<span class="sd">    project_on_sphere :  a boolean value indicating if projecting on a</span>
 <span class="sd">            sphere should be performed. Default value is true.</span>
 <span class="sd">    test_alphas : 2D np.array, float</span>
 <span class="sd">        A row vector of floats, with alpha range, the values must be given increasing</span>
 <span class="sd">            within (0,1) interval. Default is np.arange(.6,1,.02)[None].</span>
-<span class="sd">    ProducePlots : bool, default=False</span>
+<span class="sd">    produce_plots : bool, default=False</span>
 <span class="sd">        A boolean value indicating if the standard plots need to be drawn.</span>
-<span class="sd">    ncomp : bool</span>
+<span class="sd">    verbose : bool</span>
 <span class="sd">        Whether to print number of retained principal components</span>
 <span class="sd">    limit_maxdim : bool</span>
 <span class="sd">        Whether to cap estimated maxdim to the embedding dimension</span>
-<span class="sd">       </span>
+
 <span class="sd">    -----------</span>
 <span class="sd">    Returns</span>
-<span class="sd">    </span>
+
 <span class="sd">    n_alpha : 1D np.array, float</span>
 <span class="sd">        Effective dimension profile as a function of alpha</span>
 <span class="sd">    n_single : float</span>
@@ -212,20 +231,19 @@
 <span class="sd">    -----------</span>
 <span class="sd">    References</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    
-<div class="viewcode-block" id="FisherS.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ConditionalNumber</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">ProjectOnSphere</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                 <span class="n">alphas</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ProducePlots</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-                 <span class="n">ncomp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">limit_maxdim</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">ConditionalNumber</span> <span class="o">=</span> <span class="n">ConditionalNumber</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ProjectOnSphere</span> <span class="o">=</span> <span class="n">ProjectOnSphere</span>
+<div class="viewcode-block" id="FisherS.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conditional_number</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">project_on_sphere</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">alphas</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">produce_plots</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit_maxdim</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conditional_number</span> <span class="o">=</span> <span class="n">conditional_number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_on_sphere</span> <span class="o">=</span> <span class="n">project_on_sphere</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">=</span> <span class="n">alphas</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ProducePlots</span> <span class="o">=</span> <span class="n">ProducePlots</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ncomp</span> <span class="o">=</span> <span class="n">ncomp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">produce_plots</span> <span class="o">=</span> <span class="n">produce_plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">limit_maxdim</span> <span class="o">=</span> <span class="n">limit_maxdim</span></div>
-        
-<div class="viewcode-block" id="FisherS.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="FisherS.fit"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A reference implementation of a fitting function.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -238,36 +256,37 @@
 <span class="sd">        self : object</span>
 <span class="sd">            Returns self.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="n">X</span> <span class="o">=</span> <span class="n">check_array</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">accept_sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with 1 sample&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t fit with n_features = 1&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
-            
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> <span class="c1">#test_alphas introduced to pass sklearn checks (sklearn doesn&#39;t like arrays as default parameters)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">02</span><span class="p">)[</span><span class="kc">None</span><span class="p">]</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_alpha_</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">p_alpha_</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">alphas_</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">separable_fraction_</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">Xp_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SeparabilityAnalysis</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        
+
+        <span class="c1"># test_alphas introduced to pass sklearn checks (sklearn doesn&#39;t like arrays as default parameters)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">02</span><span class="p">)[</span><span class="kc">None</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_alpha_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_alpha_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alphas_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">separable_fraction_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Xp_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SeparabilityAnalysis</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
-        <span class="k">return</span> <span class="bp">self</span>        </div>
-
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="nd">@staticmethod</span>
     <span class="nd">@nb</span><span class="o">.</span><span class="n">njit</span>
     <span class="k">def</span> <span class="nf">_histc</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
-        <span class="n">map_to_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">bins</span><span class="p">)</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]),</span><span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)))</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">map_to_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])):</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">map_to_bins</span><span class="p">[:,</span><span class="n">j</span><span class="p">]:</span>
-                <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">map_to_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">map_to_bins</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">map_to_bins</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]:</span>
+                <span class="n">r</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">r</span>
 
-    <span class="k">def</span> <span class="nf">_preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">,</span><span class="n">center</span><span class="p">,</span><span class="n">dimred</span><span class="p">,</span><span class="n">whiten</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_preprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">dimred</span><span class="p">,</span> <span class="n">whiten</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        %preprocessing of the dataset</span>
 <span class="sd">        %</span>
@@ -275,54 +294,51 @@
 <span class="sd">        %   X is n-by-d data matrix with n d-dimensional datapoints.</span>
 <span class="sd">        %   center is boolean. True means subtraction of mean vector.</span>
 <span class="sd">        %   dimred is boolean. True means applying of dimensionality reduction with</span>
-<span class="sd">        %       PCA. Number of used PCs is defined by ConditionalNumber argument.</span>
+<span class="sd">        %       PCA. Number of used PCs is defined by conditional_number argument.</span>
 <span class="sd">        %   whiten is boolean. True means applying of whitenning. True whiten</span>
 <span class="sd">        %       automatically caused true dimred.</span>
-<span class="sd">        %   projectonsphere is boolean. True means projecting data onto unit sphere</span>
+<span class="sd">        %   project_on_sphere is boolean. True means projecting data onto unit sphere</span>
 <span class="sd">        %   varargin contains Name Value pairs. One possible value can be:</span>
-<span class="sd">        %       &#39;ConditionalNumber&#39; - a positive real value used to select the top</span>
+<span class="sd">        %       &#39;conditional_number&#39; - a positive real value used to select the top</span>
 <span class="sd">        %           principal components. We consider only PCs with eigen values</span>
 <span class="sd">        %           which are not less than the maximal eigenvalue divided by</span>
-<span class="sd">        %           ConditionalNumber Default value is 10. </span>
+<span class="sd">        %           conditional_number Default value is 10. </span>
 <span class="sd">        %</span>
 <span class="sd">        %Outputs:</span>
 <span class="sd">        %   X is preprocessed data matrix.&#39;&#39;&#39;</span>
 
-        <span class="c1">#centering</span>
-        <span class="n">nobjects</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">sampleMean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># centering</span>
+        <span class="n">sampleMean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">-</span><span class="n">sampleMean</span>
-        <span class="c1">#dimensionality reduction if requested dimensionality reduction or whitening</span>
-        <span class="n">PCAcomputed</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># dimensionality reduction if requested dimensionality reduction or whitening</span>
         <span class="k">if</span> <span class="n">dimred</span> <span class="ow">or</span> <span class="n">whiten</span><span class="p">:</span>
             <span class="n">pca</span> <span class="o">=</span> <span class="n">sk</span><span class="o">.</span><span class="n">PCA</span><span class="p">()</span>
             <span class="n">u</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
             <span class="n">s</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">explained_variance_</span>
-            <span class="n">PCAcomputed</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">sc</span> <span class="o">=</span> <span class="n">s</span><span class="o">/</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sc</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">ConditionalNumber</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span> <span class="o">@</span> <span class="n">v</span><span class="p">[:,</span><span class="n">ind</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncomp</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> components are retained using factor </span><span class="si">%2.2f</span><span class="s1">&#39;</span> <span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">),</span><span class="bp">self</span><span class="o">.</span><span class="n">ConditionalNumber</span><span class="p">))</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">sc</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">conditional_number</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span> <span class="o">@</span> <span class="n">v</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%i</span><span class="s1"> components are retained using factor </span><span class="si">%2.2f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                      <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ind</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">conditional_number</span><span class="p">))</span>
 
-        <span class="c1">#whitening</span>
+        <span class="c1"># whitening</span>
         <span class="k">if</span> <span class="n">whiten</span><span class="p">:</span>
-            <span class="n">X</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span><span class="n">ind</span><span class="p">]</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">/</span><span class="n">st</span>
         <span class="c1"># #project on sphere (scale each vector to unit length)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ProjectOnSphere</span><span class="p">:</span>
-            <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_on_sphere</span><span class="p">:</span>
+            <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
             <span class="n">st</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">st</span><span class="p">])</span><span class="o">.</span><span class="n">T</span>
             <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">/</span><span class="n">st</span>
 
-        <span class="k">return</span> <span class="n">X</span>    
+        <span class="k">return</span> <span class="n">X</span>
 
-    
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_probability_inseparable_sphere</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_probability_inseparable_sphere</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; </span>
 <span class="sd">        %probability_inseparable_sphere calculate theoretical probability for point</span>
 <span class="sd">        %to be inseparable for dimension n</span>
@@ -333,21 +349,22 @@
 <span class="sd">        %</span>
 <span class="sd">        %Outputs:</span>
 <span class="sd">        %   p is c-by-d matrix of probabilities.&#39;&#39;&#39;</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span><span class="mi">2</span><span class="p">)),(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">alphas</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">((</span><span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> \
+            <span class="p">(</span><span class="n">alphas</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">n</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">p</span>
 
-    <span class="k">def</span> <span class="nf">_checkSeparability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xy</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_checkSeparability</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
         <span class="n">dxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
         <span class="n">sm</span> <span class="o">=</span> <span class="p">(</span><span class="n">xy</span><span class="o">/</span><span class="n">dxy</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
         <span class="n">sm</span> <span class="o">=</span> <span class="n">sm</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">sm</span><span class="p">))</span>
-        <span class="n">sm</span> <span class="o">=</span> <span class="n">sm</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span>
+        <span class="n">sm</span> <span class="o">=</span> <span class="n">sm</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span>
         <span class="n">py</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-        <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
-        <span class="n">separ_fraction</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">py</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
+        <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">separ_fraction</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">py</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
 
-        <span class="k">return</span> <span class="n">separ_fraction</span><span class="p">,</span><span class="n">py</span>
+        <span class="k">return</span> <span class="n">separ_fraction</span><span class="p">,</span> <span class="n">py</span>
 
-    <span class="k">def</span> <span class="nf">_checkSeparabilityMultipleAlpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_checkSeparabilityMultipleAlpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;%checkSeparabilityMultipleAlpha calculate fraction of points inseparable</span>
 <span class="sd">        %for each alpha and fraction of points which are inseparable from each</span>
 <span class="sd">        %point for different alpha.</span>
@@ -363,67 +380,67 @@
 <span class="sd">        %   py is n-by-m matrix. py(i,j) is fraction of points which are</span>
 <span class="sd">        %       inseparable from point data(i, :) for alphas(j).&#39;&#39;&#39;</span>
 
-
-        <span class="c1">#Number of points per 1 loop. 20k assumes approx 3.2GB</span>
+        <span class="c1"># Number of points per 1 loop. 20k assumes approx 3.2GB</span>
         <span class="n">nP</span> <span class="o">=</span> <span class="mi">2000</span>
-        
+
         <span class="n">alphas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span>
-        <span class="c1">#Normalize alphas</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alphas</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Normalize alphas</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alphas</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">alphas</span> <span class="o">=</span> <span class="n">alphas</span><span class="o">.</span><span class="n">T</span>
         <span class="n">addedone</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span><span class="mi">1</span><span class="p">)])</span>
+        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alphas</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
             <span class="n">addedone</span> <span class="o">=</span> <span class="mi">1</span>
 
-        <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([[</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)],</span><span class="n">alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)]])</span>
-        
-        
+        <span class="n">alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+            <span class="p">[[</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)],</span> <span class="n">alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)]])</span>
+
         <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">alphas</span><span class="p">)))</span>
         <span class="n">leng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">nP</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nP</span><span class="p">):</span>
             <span class="c1">#print(&#39;Chunk +{}&#39;.format(k))</span>
-            <span class="n">e</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="n">nP</span> 
+            <span class="n">e</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="n">nP</span>
             <span class="k">if</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
                 <span class="n">e</span> <span class="o">=</span> <span class="n">n</span>
             <span class="c1"># Calculate diagonal part, divide each row by diagonal element</span>
             <span class="n">xy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
-            <span class="n">leng</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">xy</span><span class="p">)[:,</span><span class="kc">None</span><span class="p">]</span>
+            <span class="n">leng</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">xy</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
             <span class="n">xy</span> <span class="o">=</span> <span class="n">xy</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">leng</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">]</span><span class="o">.</span><span class="n">squeeze</span><span class="p">())</span>
             <span class="n">xy</span> <span class="o">=</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">leng</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">]</span>
-            <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histc</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
+            <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">_histc</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
             <span class="c1"># Calculate nondiagonal part</span>
-            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">nP</span><span class="p">):</span>
-                <span class="c1">#Ignore diagonal part</span>
+            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nP</span><span class="p">):</span>
+                <span class="c1"># Ignore diagonal part</span>
                 <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="n">kk</span><span class="p">:</span>
-                    <span class="k">continue</span>                         
-                <span class="n">ee</span> <span class="o">=</span> <span class="n">kk</span> <span class="o">+</span> <span class="n">nP</span> 
+                    <span class="k">continue</span>
+                <span class="n">ee</span> <span class="o">=</span> <span class="n">kk</span> <span class="o">+</span> <span class="n">nP</span>
                 <span class="k">if</span> <span class="n">ee</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
                     <span class="n">ee</span> <span class="o">=</span> <span class="n">n</span>
 
                 <span class="n">xy</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">@</span> <span class="n">data</span><span class="p">[</span><span class="n">kk</span><span class="p">:</span><span class="n">ee</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">T</span>
                 <span class="n">xy</span> <span class="o">=</span> <span class="n">xy</span> <span class="o">/</span> <span class="n">leng</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">]</span>
-                <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_histc</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
+                <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">counts</span><span class="p">[</span><span class="n">k</span><span class="p">:</span><span class="n">e</span><span class="p">,</span> <span class="p">:]</span> <span class="o">+</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_histc</span><span class="p">(</span><span class="n">xy</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">alphas</span><span class="p">)</span>
 
-        <span class="c1">#Calculate cumulative sum</span>
-        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">[:,::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="c1"># Calculate cumulative sum</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">counts</span><span class="p">[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="c1">#print(counts)</span>
+        <span class="c1"># print(counts)</span>
 
         <span class="n">py</span> <span class="o">=</span> <span class="n">counts</span><span class="o">/</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
         <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="o">.</span><span class="n">T</span>
         <span class="k">if</span> <span class="n">addedone</span><span class="p">:</span>
-            <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,:]</span>
+            <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span>
+            <span class="n">py</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
 
-        <span class="n">separ_fraction</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">py</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])</span>
+        <span class="n">separ_fraction</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">py</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
 
         <span class="k">return</span> <span class="n">separ_fraction</span><span class="p">,</span> <span class="n">py</span>
 
-
-    <span class="k">def</span> <span class="nf">_dimension_uniform_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">py</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_dimension_uniform_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">py</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        %Gives an estimation of the dimension of uniformly sampled n-sphere</span>
 <span class="sd">        %corresponding to the average probability of being inseparable and a margin</span>
@@ -440,85 +457,91 @@
 <span class="sd">        %   n_single_estimate - a single estimate for the effective dimension </span>
 <span class="sd">        %   alfa_single_estimate is alpha for n_single_estimate.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">([</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
 
-        <span class="c1">#Calculate dimension for each alpha</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])):</span>
+        <span class="c1"># Calculate dimension for each alpha</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
             <span class="k">if</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1">#All points are separable. Nothing to do and not interesting</span>
-                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="c1"># All points are separable. Nothing to do and not interesting</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">p</span>  <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)</span>
-                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)))))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">w</span><span class="p">)</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span>
+                    <span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)))))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">w</span><span class="p">)</span>
 
-        <span class="n">n</span><span class="p">[</span><span class="n">n</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
-        <span class="c1">#Find indices of alphas which are not completely separable </span>
+        <span class="n">n</span><span class="p">[</span><span class="n">n</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+        <span class="c1"># Find indices of alphas which are not completely separable</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;All points are fully separable for any of the chosen alphas&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s1">&#39;All points are fully separable for any of the chosen alphas&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
 
-        <span class="c1">#Find the maximal value of such alpha</span>
-        <span class="n">alpha_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">])</span>
-        <span class="c1">#The reference alpha is the closest to 90 of maximal partially separable alpha</span>
+        <span class="c1"># Find the maximal value of such alpha</span>
+        <span class="n">alpha_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">])</span>
+        <span class="c1"># The reference alpha is the closest to 90 of maximal partially separable alpha</span>
         <span class="n">alpha_ref</span> <span class="o">=</span> <span class="n">alpha_max</span><span class="o">*</span><span class="mf">0.9</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)</span><span class="o">==</span><span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="c1">#Get corresponding values</span>
-        <span class="n">alfa_single_estimate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)</span>
+                     <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Get corresponding values</span>
+        <span class="n">alfa_single_estimate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
         <span class="n">n_single_estimate</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
 
-        <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">n_single_estimate</span><span class="p">,</span><span class="n">alfa_single_estimate</span>
+        <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_single_estimate</span><span class="p">,</span> <span class="n">alfa_single_estimate</span>
 
-
-    <span class="k">def</span> <span class="nf">_dimension_uniform_sphere_robust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">py</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_dimension_uniform_sphere_robust</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">py</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;modification to return selected index and handle the case where all values are 0&#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">([</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
 
-        <span class="c1">#Calculate dimension for each alpha</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])):</span>
+        <span class="c1"># Calculate dimension for each alpha</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
             <span class="k">if</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1">#All points are separable. Nothing to do and not interesting</span>
-                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="c1"># All points are separable. Nothing to do and not interesting</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">p</span>  <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)</span>
                 <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">))))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">w</span><span class="p">)</span>
 
-        <span class="n">n</span><span class="p">[</span><span class="n">n</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
-        <span class="c1">#Find indices of alphas which are not completely separable </span>
+        <span class="n">n</span><span class="p">[</span><span class="n">n</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+        <span class="c1"># Find indices of alphas which are not completely separable</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">inds</span><span class="o">.</span><span class="n">size</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">inds</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">n_single_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="n">alfa_single_estimate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-            <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">n_single_estimate</span><span class="p">,</span><span class="n">alfa_single_estimate</span>
+            <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_single_estimate</span><span class="p">,</span> <span class="n">alfa_single_estimate</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1">#Find the maximal value of such alpha</span>
-            <span class="n">alpha_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">])</span>
-            <span class="c1">#The reference alpha is the closest to 90 of maximal partially separable alpha</span>
+            <span class="c1"># Find the maximal value of such alpha</span>
+            <span class="n">alpha_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">])</span>
+            <span class="c1"># The reference alpha is the closest to 90 of maximal partially separable alpha</span>
             <span class="n">alpha_ref</span> <span class="o">=</span> <span class="n">alpha_max</span><span class="o">*</span><span class="mf">0.9</span>
-            <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)</span><span class="o">==</span><span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="c1">#Get corresponding values</span>
-            <span class="n">alfa_single_estimate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)</span>
+                         <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span><span class="o">-</span><span class="n">alpha_ref</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Get corresponding values</span>
+            <span class="n">alfa_single_estimate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
             <span class="n">n_single_estimate</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span>
 
-            <span class="k">return</span> <span class="n">n</span><span class="p">,</span><span class="n">n_single_estimate</span><span class="p">,</span><span class="n">alfa_single_estimate</span><span class="p">,</span><span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_single_estimate</span><span class="p">,</span> <span class="n">alfa_single_estimate</span><span class="p">,</span> <span class="n">inds</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
-
-<div class="viewcode-block" id="FisherS.point_inseparability_to_pointID"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.point_inseparability_to_pointID">[docs]</a>    <span class="k">def</span> <span class="nf">point_inseparability_to_pointID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">idx</span><span class="o">=</span><span class="s1">&#39;all_inseparable&#39;</span><span class="p">,</span> <span class="n">force_definite_dim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="FisherS.point_inseparability_to_pointID"><a class="viewcode-back" href="../../../generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS.point_inseparability_to_pointID">[docs]</a>    <span class="k">def</span> <span class="nf">point_inseparability_to_pointID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="s1">&#39;all_inseparable&#39;</span><span class="p">,</span> <span class="n">force_definite_dim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Turn pointwise inseparability probability into pointwise global ID</span>
 <span class="sd">        Inputs : </span>
@@ -532,72 +555,76 @@
 <span class="sd">                    whether to force fully separable points to take the minimum detectable inseparability value (1/(n-1)) (i.e., maximal detectable dimension)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
-        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="s1">&#39;all_inseparable&#39;</span><span class="p">:</span> <span class="c1">#all points are inseparable</span>
-            <span class="n">selected_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_alpha</span><span class="o">!=</span><span class="mi">0</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="n">idx</span> <span class="o">==</span> <span class="s1">&#39;selected&#39;</span><span class="p">:</span> <span class="c1">#globally selected alpha</span>
-            <span class="n">selected_idx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_alpha</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">n_single</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>   
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="s1">&#39;all_inseparable&#39;</span><span class="p">:</span>  <span class="c1"># all points are inseparable</span>
+            <span class="n">selected_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p_alpha</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">idx</span> <span class="o">==</span> <span class="s1">&#39;selected&#39;</span><span class="p">:</span>  <span class="c1"># globally selected alpha</span>
+            <span class="n">selected_idx</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_alpha</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_single</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
             <span class="n">selected_idx</span> <span class="o">=</span> <span class="n">idx</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;unknown idx parameter&#39;</span><span class="p">)</span>
 
-        <span class="c1">#select palpha and corresponding alpha</span>
-        <span class="n">palpha_selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_alpha</span><span class="p">[</span><span class="n">selected_idx</span><span class="p">,:]</span>
-        <span class="n">alpha_selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">selected_idx</span><span class="p">]</span>
+        <span class="c1"># select palpha and corresponding alpha</span>
+        <span class="n">palpha_selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p_alpha</span><span class="p">[</span><span class="n">selected_idx</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">alpha_selected</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">selected_idx</span><span class="p">]</span>
 
-
-        <span class="n">py</span><span class="o">=</span><span class="n">palpha_selected</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="n">_alphas</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">alpha_selected</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">palpha_selected</span><span class="p">))[</span><span class="kc">None</span><span class="p">]</span>
+        <span class="n">py</span> <span class="o">=</span> <span class="n">palpha_selected</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">_alphas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+            <span class="n">alpha_selected</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">palpha_selected</span><span class="p">))[</span><span class="kc">None</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">force_definite_dim</span><span class="p">:</span>
-            <span class="n">py</span><span class="p">[</span><span class="n">py</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span>
+            <span class="n">py</span><span class="p">[</span><span class="n">py</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span><span class="o">%</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;length of py (</span><span class="si">%i</span><span class="s1">) and alpha (</span><span class="si">%i</span><span class="s1">) does not match&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_alphas</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">_alphas</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">([</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="p">[</span><span class="s1">&#39;&quot;Alphas&quot; must be a real vector, with alpha range, the values must be within (0,1) interval&#39;</span><span class="p">])</span>
 
-        <span class="c1">#Calculate dimension for each alpha</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])):</span>
+        <span class="c1"># Calculate dimension for each alpha</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
             <span class="k">if</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1">#All points are separable. Nothing to do and not interesting</span>
-                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+                <span class="c1"># All points are separable. Nothing to do and not interesting</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">p</span>  <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="n">a2</span> <span class="o">=</span> <span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">py</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">a2</span> <span class="o">=</span> <span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
                 <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)</span>
-                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)))))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">w</span><span class="p">)</span>
+                <span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span>
+                    <span class="n">lambertw</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">p</span><span class="o">*</span><span class="n">a2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">a2</span><span class="p">)))))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">w</span><span class="p">)</span>
 
-        <span class="n">n</span><span class="p">[</span><span class="n">n</span><span class="o">==</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
+        <span class="n">n</span><span class="p">[</span><span class="n">n</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;nan&#39;</span><span class="p">)</span>
 
-        <span class="c1">#Find indices of alphas which are not completely separable </span>
+        <span class="c1"># Find indices of alphas which are not completely separable</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)),</span><span class="s1">&#39;points have nonzero inseparability probability for chosen alpha = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">alpha_selected</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;, force_definite_dim = </span><span class="si">{force_definite_dim}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">inds</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">py</span><span class="p">)),</span> <span class="s1">&#39;points have nonzero inseparability probability for chosen alpha = &#39;</span> <span class="o">+</span>
+                  <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">alpha_selected</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="sa">f</span><span class="s1">&#39;, force_definite_dim = </span><span class="si">{force_definite_dim}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">n</span><span class="p">,</span> <span class="n">inds</span></div>
 
-
-
-    <span class="k">def</span> <span class="nf">_SeparabilityAnalysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">X</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_SeparabilityAnalysis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        %Performs standard analysis of separability and produces standard plots. </span>
 <span class="sd">        %</span>
 <span class="sd">        %Inputs:</span>
 <span class="sd">        %   X  - is a data matrix with one data point in each row.</span>
 <span class="sd">        %   Optional arguments in varargin form Name, Value pairs. Possible names:</span>
-<span class="sd">        %       &#39;ConditionalNumber&#39; - a positive real value used to select the top</span>
+<span class="sd">        %       &#39;conditional_number&#39; - a positive real value used to select the top</span>
 <span class="sd">        %           princinpal components. We consider only PCs with eigen values</span>
 <span class="sd">        %           which are not less than the maximal eigenvalue divided by</span>
-<span class="sd">        %           ConditionalNumber Default value is 10.</span>
-<span class="sd">        %       &#39;ProjectOnSphere&#39; - a boolean value indicating if projecting on a</span>
+<span class="sd">        %           conditional_number Default value is 10.</span>
+<span class="sd">        %       &#39;project_on_sphere&#39; - a boolean value indicating if projecting on a</span>
 <span class="sd">        %           sphere should be performed. Default value is true.</span>
 <span class="sd">        %       &#39;Alphas&#39; - a real vector, with alpha range, the values must be given increasing</span>
 <span class="sd">        %           within (0,1) interval. Default is [0.6,0.62,...,0.98].</span>
-<span class="sd">        %       &#39;ProducePlots&#39; - a boolean value indicating if the standard plots</span>
+<span class="sd">        %       &#39;produce_plots&#39; - a boolean value indicating if the standard plots</span>
 <span class="sd">        %           need to be drawn. Default is true.</span>
-<span class="sd">        %       &#39;ncomp&#39; - bool, whether to print number of retained principal components</span>
+<span class="sd">        %       &#39;verbose&#39; - bool, whether to print number of retained principal components</span>
 <span class="sd">        %       &#39;limit_maxdim&#39; bool, whether to cap estimated maxdim to the embedding dimension</span>
 <span class="sd">        %Outputs:</span>
 <span class="sd">        %   n_alpha - effective dimension profile as a function of alpha</span>
@@ -609,63 +636,80 @@
 <span class="sd">        %       alpha</span>
 <span class="sd">        %   alphas - alpha values</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">npoints</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">npoints</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="c1"># Preprocess data</span>
-        <span class="n">Xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessing</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Xp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocessing</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="c1"># Check separability</span>
-        <span class="n">separable_fraction</span><span class="p">,</span><span class="n">p_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkSeparabilityMultipleAlpha</span><span class="p">(</span><span class="n">Xp</span><span class="p">)</span>  
+        <span class="n">separable_fraction</span><span class="p">,</span> <span class="n">p_alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkSeparabilityMultipleAlpha</span><span class="p">(</span>
+            <span class="n">Xp</span><span class="p">)</span>
         <span class="c1"># Calculate mean fraction of separable points for each alpha.</span>
-        <span class="n">py_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">p_alpha</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>    
-        <span class="n">n_alpha</span><span class="p">,</span><span class="n">n_single</span><span class="p">,</span><span class="n">alpha_single</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_uniform_sphere</span><span class="p">(</span><span class="n">py_mean</span><span class="p">)</span>
-        
-        <span class="n">alpha_ind_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">n_single</span><span class="o">==</span><span class="n">n_alpha</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">py_mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">p_alpha</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_alpha</span><span class="p">,</span> <span class="n">n_single</span><span class="p">,</span> <span class="n">alpha_single</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dimension_uniform_sphere</span><span class="p">(</span>
+            <span class="n">py_mean</span><span class="p">)</span>
+
+        <span class="n">alpha_ind_selected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">n_single</span> <span class="o">==</span> <span class="n">n_alpha</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">limit_maxdim</span><span class="p">:</span>
-            <span class="n">n_single</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">n_single</span><span class="p">,</span><span class="kc">None</span><span class="p">,</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">n_single</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">n_single</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ProducePlots</span><span class="p">:</span>
-            <span class="c1">#Define the minimal and maximal dimensions for theoretical graph with</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">produce_plots</span><span class="p">:</span>
+            <span class="c1"># Define the minimal and maximal dimensions for theoretical graph with</span>
             <span class="c1"># two dimensions in each side</span>
-            <span class="n">n_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))</span><span class="o">-</span><span class="mi">2</span><span class="p">;</span>
-            <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">)</span><span class="o">+</span><span class="mf">0.8</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">;</span>
-            <span class="k">if</span> <span class="n">n_min</span><span class="o">&lt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))</span><span class="o">-</span><span class="mi">2</span>
+            <span class="n">n_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">)</span><span class="o">+</span><span class="mf">0.8</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span>
+            <span class="k">if</span> <span class="n">n_min</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="n">n_min</span> <span class="o">=</span> <span class="mi">1</span>
 
-            <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_min</span><span class="p">,</span><span class="n">n_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 
             <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">n_alpha</span><span class="p">,</span><span class="s1">&#39;ko-&#39;</span><span class="p">);</span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">alpha_ind_selected</span><span class="p">],</span><span class="n">n_single</span><span class="p">,</span><span class="s1">&#39;rx&#39;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u03B1</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Effective dimension&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span> <span class="p">;</span> <span class="n">locs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">();</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">n_alpha</span><span class="p">,</span> <span class="s1">&#39;ko-&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha_ind_selected</span><span class="p">],</span>
+                     <span class="n">n_single</span><span class="p">,</span> <span class="s1">&#39;rx&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u03B1</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Effective dimension&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">locs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
             <span class="n">nbins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">npoints</span><span class="o">/</span><span class="mi">200</span><span class="p">)))</span>
 
-            <span class="k">if</span> <span class="n">nbins</span><span class="o">&lt;</span><span class="mi">20</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nbins</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
                 <span class="n">nbins</span> <span class="o">=</span> <span class="mi">20</span>
 
-
             <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p_alpha</span><span class="p">[</span><span class="n">alpha_ind_selected</span><span class="p">,:][</span><span class="mi">0</span><span class="p">],</span><span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;inseparability prob.p for </span><span class="se">\u03B1</span><span class="s1">=</span><span class="si">%2.2f</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">alpha_ind_selected</span><span class="p">]),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Number of values&#39;</span><span class="p">);</span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">locs</span><span class="p">,</span><span class="n">labels</span><span class="p">);</span>
-            <span class="n">pteor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">),</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])))</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
-                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:])):</span>
-                    <span class="n">pteor</span><span class="p">[</span><span class="n">k</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_probability_inseparable_sphere</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">j</span><span class="p">],</span><span class="n">ns</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
-
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pteor</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])):</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">pteor</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]),</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">):</span>
-                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span><span class="n">py_mean</span><span class="p">[:</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span><span class="s1">&#39;bo-&#39;</span><span class="p">,</span><span class="s1">&#39;LineWidth&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
-            <span class="k">else</span><span class="p">:</span> 
-                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span><span class="n">py_mean</span><span class="p">,</span><span class="s1">&#39;bo-&#39;</span><span class="p">,</span><span class="s1">&#39;LineWidth&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
-
-            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u03B1</span><span class="s1">&#39;</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mean inseparability prob.&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">);</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Theor.curves for n=</span><span class="si">%i</span><span class="s1">:</span><span class="si">%i</span><span class="s1">&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">n_min</span><span class="p">,</span><span class="n">n_max</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">p_alpha</span><span class="p">[</span><span class="n">alpha_ind_selected</span><span class="p">,</span> <span class="p">:][</span><span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">nbins</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Inseparability prob. for </span><span class="se">\u03B1</span><span class="s1">=</span><span class="si">%2.2f</span><span class="s1">&#39;</span> <span class="o">%</span>
+                       <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha_ind_selected</span><span class="p">]),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Number of values&#39;</span><span class="p">)</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">n_alpha</span><span class="p">,</span><span class="n">n_single</span><span class="p">,</span><span class="n">p_alpha</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">,</span><span class="n">separable_fraction</span><span class="p">,</span><span class="n">Xp</span></div>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">locs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+            <span class="n">pteor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])))</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ns</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])):</span>
+                    <span class="n">pteor</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_probability_inseparable_sphere</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">ns</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pteor</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pteor</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">):</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))[</span>
+                             <span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">py_mean</span><span class="p">[:</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">n_alpha</span><span class="p">))[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;bo-&#39;</span><span class="p">,</span> <span class="s1">&#39;LineWidth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span>
+                             <span class="n">py_mean</span><span class="p">,</span> <span class="s1">&#39;bo-&#39;</span><span class="p">,</span> <span class="s1">&#39;LineWidth&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\u03B1</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Mean inseparability prob.&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Theor.curves for n=</span><span class="si">%i</span><span class="s1">:</span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n_min</span><span class="p">,</span> <span class="n">n_max</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_single</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FisherS selected several dimensions as equally probable. Taking the maximum&#39;</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">n_alpha</span><span class="p">,</span> <span class="n">n_single</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">p_alpha</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphas</span><span class="p">,</span> <span class="n">separable_fraction</span><span class="p">,</span> <span class="n">Xp</span></div>
 </pre></div>
 
            </div>
