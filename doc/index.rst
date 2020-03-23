@@ -6,15 +6,19 @@
 Welcome to scikit-dimension's documentation!
 ============================================
 
-.. automodule:: skdim.local_id
-    :members:
-
 .. toctree::
    :maxdepth: 2
    :hidden:
    :caption: Getting Started
 
    quick_start
+   
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: User guide
+
+   user_guide
 
 .. toctree::
    :maxdepth: 2
