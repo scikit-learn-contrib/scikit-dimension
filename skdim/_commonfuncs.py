@@ -126,7 +126,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
     if n_jobs > 1:
         pool = mp.Pool(n_jobs)
         results = pool.map(
-            proxy, [(class_instance.fit, data[i, :], params) for i in knn])
+            class_instance.fit, [data[i, :] for i in knn])
         pool.close()
         return results
     else:
