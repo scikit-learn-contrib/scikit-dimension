@@ -24,6 +24,7 @@
 import numpy as np
 import itertools
 import numbers
+import multiprocessing as mp
 from sklearn.utils.validation import check_random_state
 from sklearn.neighbors import NearestNeighbors
 from scipy.special import gammainc
