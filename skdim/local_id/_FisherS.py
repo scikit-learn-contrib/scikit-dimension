@@ -193,16 +193,16 @@ class FisherS(BaseEstimator):
             (alphas*np.sqrt(2*np.pi*n))
         return p
 
-    def _checkSeparability(self, xy):
-        dxy = np.diag(xy)
-        sm = (xy/dxy).T
-        sm = sm - np.diag(np.diag(sm))
-        sm = sm > self._alphas
-        py = sum(sm.T)
-        py = py/len(py[0, :])
-        separ_fraction = sum(py == 0)/len(py[0, :])
-
-        return separ_fraction, py
+#    def _checkSeparability(self, xy):
+#        dxy = np.diag(xy)
+#        sm = (xy/dxy).T
+#        sm = sm - np.diag(np.diag(sm))
+#        sm = sm > self._alphas
+#        py = sum(sm.T)
+#        py = py/len(py[0, :])
+#        separ_fraction = sum(py == 0)/len(py[0, :])
+#
+#        return separ_fraction, py
 
     def _checkSeparabilityMultipleAlpha(self, data):
         '''%checkSeparabilityMultipleAlpha calculate fraction of points inseparable
@@ -339,47 +339,47 @@ class FisherS(BaseEstimator):
 
         return n, n_single_estimate, alfa_single_estimate
 
-    def _dimension_uniform_sphere_robust(self, py):
-        '''modification to return selected index and handle the case where all values are 0'''
-        if len(py) != len(self._alphas[0, :]):
-            raise ValueError('length of py (%i) and alpha (%i) does not match' % (
-                len(py), len(self._alphas[0, :])))
-
-        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
-            raise ValueError(
-                ['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
-
-        # Calculate dimension for each alpha
-        n = np.zeros((len(self._alphas[0, :])))
-        for i in range(len(self._alphas[0, :])):
-            if py[i] == 0:
-                # All points are separable. Nothing to do and not interesting
-                n[i] = np.nan
-            else:
-                p = py[i]
-                a2 = self._alphas[0, i]**2
-                w = np.log(1-a2)
-                n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
-
-        n[n == np.inf] = float('nan')
-        # Find indices of alphas which are not completely separable
-        inds = np.where(~np.isnan(n))[0]
-        if inds.size == 0:
-            n_single_estimate = np.nan
-            alfa_single_estimate = np.nan
-            return n, n_single_estimate, alfa_single_estimate
-        else:
-            # Find the maximal value of such alpha
-            alpha_max = max(self._alphas[0, inds])
-            # The reference alpha is the closest to 90 of maximal partially separable alpha
-            alpha_ref = alpha_max*0.9
-            k = np.where(abs(self._alphas[0, inds]-alpha_ref)
-                         == min(abs(self._alphas[0, :]-alpha_ref)))[0]
-            # Get corresponding values
-            alfa_single_estimate = self._alphas[0, inds[k]]
-            n_single_estimate = n[inds[k]]
-
-            return n, n_single_estimate, alfa_single_estimate, inds[k]
+#    def _dimension_uniform_sphere_robust(self, py):
+#        '''modification to return selected index and handle the case where all values are 0'''
+#        if len(py) != len(self._alphas[0, :]):
+#            raise ValueError('length of py (%i) and alpha (%i) does not match' % (
+#                len(py), len(self._alphas[0, :])))
+#
+#        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
+#            raise ValueError(
+#                ['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
+#
+#        # Calculate dimension for each alpha
+#        n = np.zeros((len(self._alphas[0, :])))
+#        for i in range(len(self._alphas[0, :])):
+#            if py[i] == 0:
+#                # All points are separable. Nothing to do and not interesting
+#                n[i] = np.nan
+#            else:
+#                p = py[i]
+#                a2 = self._alphas[0, i]**2
+#                w = np.log(1-a2)
+#                n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
+#
+#        n[n == np.inf] = float('nan')
+#        # Find indices of alphas which are not completely separable
+#        inds = np.where(~np.isnan(n))[0]
+#        if inds.size == 0:
+#            n_single_estimate = np.nan
+#            alfa_single_estimate = np.nan
+#            return n, n_single_estimate, alfa_single_estimate
+#        else:
+#            # Find the maximal value of such alpha
+#            alpha_max = max(self._alphas[0, inds])
+#            # The reference alpha is the closest to 90 of maximal partially separable alpha
+#            alpha_ref = alpha_max*0.9
+#            k = np.where(abs(self._alphas[0, inds]-alpha_ref)
+#                         == min(abs(self._alphas[0, :]-alpha_ref)))[0]
+#            # Get corresponding values
+#            alfa_single_estimate = self._alphas[0, inds[k]]
+#            n_single_estimate = n[inds[k]]
+#
+#            return n, n_single_estimate, alfa_single_estimate, inds[k]
 
     def point_inseparability_to_pointID(self, idx='all_inseparable', force_definite_dim=False, verbose=True):
         '''
@@ -397,17 +397,17 @@ class FisherS(BaseEstimator):
 
         if idx == 'all_inseparable':  # all points are inseparable
             selected_idx = np.argwhere(
-                np.all(self.p_alpha != 0, axis=1)).max()
+                np.all(self.p_alpha_ != 0, axis=1)).max()
         elif idx == 'selected':  # globally selected alpha
             selected_idx = (
-                self.n_alpha == self.n_single).tolist().index(True)
+                self.n_alpha_ == self.n_single_).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
             raise ValueError('unknown idx parameter')
 
         # select palpha and corresponding alpha
-        palpha_selected = self.p_alpha[selected_idx, :]
+        palpha_selected = self.p_alpha_[selected_idx, :]
         alpha_selected = self._alphas[0, selected_idx]
 
         py = palpha_selected.copy()
@@ -442,7 +442,7 @@ class FisherS(BaseEstimator):
 
         # Find indices of alphas which are not completely separable
         inds = np.where(~np.isnan(n))[0]
-        if verbose:
+        if self.verbose:
             print(str(len(inds))+'/'+str(len(py)), 'points have nonzero inseparability probability for chosen alpha = ' +
                   str(round(alpha_selected, 2))+f', force_definite_dim = {force_definite_dim}')
         return n, inds

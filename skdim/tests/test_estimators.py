@@ -24,6 +24,7 @@
 import pytest
 import numpy as np
 import skdim
+import matplotlib.pyplot as plt
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
@@ -68,13 +69,15 @@ def test_ess_params(data):
     x = skdim.local_id.ESS(ver='b').fit(data)
     x = skdim.local_id.ESS(d=2).fit(data)
     
-def test_fisher_params(data):
+def test_fisher_params(data,monkeypatch):
+    monkeypatch.setattr(plt, 'show', lambda: None)
     x = skdim.local_id.FisherS().fit(data)
     x = skdim.local_id.FisherS(conditional_number=2).fit(data)
-    #x = skdim.local_id.FisherS(produce_plots=True).fit(data) #travis ci macosx stuck when producing plots 
+    x = skdim.local_id.FisherS(produce_plots=True).fit(data) #travis ci macosx stuck when producing plots 
     x = skdim.local_id.FisherS(project_on_sphere=False).fit(data)
     x = skdim.local_id.FisherS(verbose=True).fit(data)
     x = skdim.local_id.FisherS(limit_maxdim=True).fit(data)
+    x = skdim.local_id.FisherS().fit(data).point_inseparability_to_pointID()
 
 def test_mind_ml_params(data):
     x = skdim.local_id.MiND_ML()
