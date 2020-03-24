@@ -110,10 +110,6 @@ def test_danco_params(data):
     x = skdim.global_id.DANCo(D=5).fit(data)
     x = skdim.global_id.DANCo(k=5).fit(data)
     x = skdim.global_id.DANCo(ver='M').fit(data)
-    
-def test_danco_params(data):
-    x = skdim.global_id.CorrInt().fit(data)
-    x = skdim.global_id.CorrInt(k1=5,k2=15).fit(data)
 
 def test_knn_params(data):
     x = skdim.global_id.KNN().fit(data)
