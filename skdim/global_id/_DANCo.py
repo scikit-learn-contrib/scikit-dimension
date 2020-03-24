@@ -291,7 +291,7 @@ class DANCo(BaseEstimator):
                                  N, cal['N'])
 
         if self.ver not in ['DANCo', 'DANCoFit']:
-            return(self._MIND_MLx(X))
+            return(self._MIND_MLx(X,self.D))
 
         nocal = self._dancoDimEstNoCalibration(X, self.D)
         if any(np.isnan(val) for val in nocal.values()):
