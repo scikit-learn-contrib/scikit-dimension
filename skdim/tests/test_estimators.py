@@ -109,7 +109,9 @@ def test_danco_params(data):
     x = skdim.global_id.DANCo(fractal=False).fit(data)
     x = skdim.global_id.DANCo(D=5).fit(data)
     x = skdim.global_id.DANCo(k=5).fit(data)
-    x = skdim.global_id.DANCo(ver='M').fit(data)
+    x = skdim.global_id.DANCo(ver='MIND_MLk').fit(data)
+    x = skdim.global_id.DANCo(ver='MIND_MLi').fit(data)
+
 
 def test_knn_params(data):
     x = skdim.global_id.KNN().fit(data)
