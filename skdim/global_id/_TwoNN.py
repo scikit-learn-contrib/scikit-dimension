@@ -65,8 +65,7 @@ class TwoNN(BaseEstimator):
         Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
     """
 
-    def __init__(self, return_xy=False, discard_fraction=0.1, dist=False):
-        self.return_xy = return_xy
+    def __init__(self, discard_fraction=0.1, dist=False):
         self.discard_fraction = discard_fraction
         self.dist = dist
 
@@ -91,10 +90,7 @@ class TwoNN(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
 
-        if self.return_xy:
-            self.dimension_, self.x_, self.y_ = self._twonn(X)
-        else:
-            self.dimension_ = self._twonn(X)
+        self.dimension_, self.linear_fit_ = self._twonn(X)
 
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -176,7 +172,4 @@ class TwoNN(BaseEstimator):
 
         d = lr.coef_[0][0]  # extract slope
 
-        if self.return_xy:
-            return d, x, y
-        else:
-            return d
+        return d, lr
