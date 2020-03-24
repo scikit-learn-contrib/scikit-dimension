@@ -115,8 +115,11 @@ class DANCo(BaseEstimator):
 
         self.random_state_ = check_random_state(self.random_state)
 
-        self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(
-            X)
+        if self.ver not in ['DANCo','DANCoFit']:
+            self.dimension_ = self._dancoDimEst(X)
+        else:
+            self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
+            
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self
@@ -155,31 +158,31 @@ class DANCo(BaseEstimator):
         else:
             return -(N/d + np.sum(np.log(rhos) - (self._k-1)*(rhos**d)*np.log(rhos)/(1 - rhos**d)))
 
-    def _MIND_MLk(self, rhos, D):
+    def _MIND_MLk(self, rhos):
         N = len(rhos)
-        d_lik = np.array([np.nan]*D)
-        for d in range(D):
+        d_lik = np.array([np.nan]*self.D)
+        for d in range(self.D):
             d_lik[d] = self._lld(d, rhos, N)
         return(np.argmax(d_lik))
 
-    def _MIND_MLi(self, rhos, D, dinit):
+    def _MIND_MLi(self, rhos, dinit):
         res = minimize(fun=self._nlld,
                        x0=np.array([dinit]),
                        jac=self._nlld_gr,
                        args=(rhos, len(rhos)),
                        method='L-BFGS-B',
-                       bounds=[(0, D)])
+                       bounds=[(0, self.D)])
         return(res['x'])
 
-    def _MIND_MLx(self, X, D):
+    def _MIND_MLx(self, X):
         nbh_data, idx = get_nn(X, self._k+1)
         rhos = nbh_data[:, 0]/nbh_data[:, -1]
 
-        d_MIND_MLk = self._MIND_MLk(rhos, D)
+        d_MIND_MLk = self._MIND_MLk(rhos)
         if (self.ver == 'MIND_MLk'):
             return(d_MIND_MLk)
 
-        d_MIND_MLi = self._MIND_MLi(rhos, D, d_MIND_MLk)
+        d_MIND_MLi = self._MIND_MLi(rhos, d_MIND_MLk)
         if (self.ver == 'MIND_MLi'):
             return(d_MIND_MLi)
         else:
@@ -228,11 +231,11 @@ class DANCo(BaseEstimator):
         tau = self._Ainv(eta)
         return dict(nu=nu, tau=tau)
 
-    def _dancoDimEstNoCalibration(self, X, D, n_jobs=1):
+    def _dancoDimEstNoCalibration(self, X, n_jobs=1):
         nbh_data, idx = get_nn(X, self._k+1, n_jobs=n_jobs)
         rhos = nbh_data[:, 0]/nbh_data[:, -1]
-        d_MIND_MLk = self._MIND_MLk(rhos, D)
-        d_MIND_MLi = self._MIND_MLi(rhos, D, d_MIND_MLk)
+        d_MIND_MLk = self._MIND_MLk(rhos)
+        d_MIND_MLi = self._MIND_MLi(rhos, d_MIND_MLk)
 
         thetas = self._angles(X, idx[:, :self._k])
         ml_vm = list(map(self._ML_VM, thetas))
@@ -291,9 +294,9 @@ class DANCo(BaseEstimator):
                                  N, cal['N'])
 
         if self.ver not in ['DANCo', 'DANCoFit']:
-            return(self._MIND_MLx(X, self.D))
+            return(self._MIND_MLx(X))
 
-        nocal = self._dancoDimEstNoCalibration(X, self.D)
+        nocal = self._dancoDimEstNoCalibration(X)
         if any(np.isnan(val) for val in nocal.values()):
             return dict(de=np.nan, kl_divergence=np.nan, calibration_data=cal)
 
