@@ -339,4 +339,4 @@ class DANCo(BaseEstimator):
                 f, de, bounds=[(1, self.D+1)], tol=1e-3)['x']
             return de_fractal[0], kl[de-1], cal
         else:
-            return de[0], kl[de-1], cal
+            return de, kl[de-1], cal
