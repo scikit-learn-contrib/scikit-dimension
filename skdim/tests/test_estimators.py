@@ -135,9 +135,12 @@ def test_mle_params(data):
     x = skdim.global_id.MLE(neighborhood_aggregation='median').fit(data)
     
 def test_twonn_params(data):
-    x = skdim.global_id.TwoNN(return_xy=True)
-    x = skdim.global_id.TwoNN(discard_fraction=0.05)
-    
+    test_high_dim = np.zeros((len(data),30))
+    test_high_dim[,:data.shape[1]] = data
+    x = skdim.global_id.TwoNN().fit(test_high_dim)
+    x = skdim.global_id.TwoNN(return_xy=True).fit(data)
+    x = skdim.global_id.TwoNN(discard_fraction=0.05).fit(data)
+
 #test auxiliary functions
 def test_get_estimators(data):
     assert skdim.get_estimators() == ({'ESS': skdim.local_id._ESS.ESS,
