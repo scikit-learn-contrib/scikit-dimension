@@ -135,6 +135,7 @@ def test_mle_params(data):
     x = skdim.global_id.MLE(neighborhood_aggregation='median').fit(data)
     
 def test_twonn_params(data):
+    #to trigger the "n_features>25 condition"
     test_high_dim = np.zeros((len(data),30))
     test_high_dim[,:data.shape[1]] = data
     x = skdim.global_id.TwoNN().fit(test_high_dim)
