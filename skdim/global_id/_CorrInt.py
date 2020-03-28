@@ -32,10 +32,9 @@ from sklearn.utils.validation import check_array
 
 class CorrInt(BaseEstimator):
 
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-
+    """ Intrinsic dimension estimation using the Correlation Dimension.
+    A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.
+    
     Attributes
     ----------
     k1 : int
@@ -50,7 +49,12 @@ class CorrInt(BaseEstimator):
 
     dimension_ : float
         The estimated intrinsic dimension
-
+    
+    References
+    ----------
+    Code translated and description taken from the ider R package by Hideitsu Hino.
+    
+    P. Grassberger and I. Procaccia. Measuring the strangeness of strange attractors. Physica, 1983.
     """
 
     def __init__(self, k1=10, k2=20, DM=False):

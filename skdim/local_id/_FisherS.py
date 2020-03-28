@@ -35,7 +35,7 @@ warnings.filterwarnings('ignore')
 
 class FisherS(BaseEstimator):
     """
-    Intrinsic dimension estimation using the FisherS algorithm.
+    Local intrinsic dimension estimation using the FisherS algorithm.
 
     -----------
     Attributes

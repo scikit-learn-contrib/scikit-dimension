@@ -30,13 +30,29 @@ from sklearn.utils.validation import check_array
 
 class Mada(BaseEstimator):
 
-    """ A template estimator to be used as a reference implementation.
-    For more information regarding how to build your own estimator, read more
-    in the :ref:`User Guide <user_guide>`.
-    Parameters
+    """ Intrinsic dimension estimation using the Manifold-adaptive dimension estimation algorithm. f
+    A  variant  of  fractal  dimension  called  the  local  information  dimension  is  considered. The local information  dimension  is  estimated  by  using  the  probability  mass  function. Mada considers first order expansion of the probability mass around the inspection point, and it estimates the local information dimension by using two different radii from the inspection point. 
+ 
+    Attributes
     ----------
-    demo_param : str, default='demo_param'
-        A parameter used for demonstation of how to pass and store paramters.
+    k : int, default=20
+        Number of neighbors to consider
+    comb : str, default="average"
+        How to combine local estimates if local=False. Possible values : "average", "median"
+    local : bool, default=False
+        Whether to return local estimates
+        
+    Returns
+    -------
+    
+    self.dimension_ : float
+        The estimated intrinsic dimension
+        
+    References
+    ----------
+    Code translated and description taken from the ider R package by Hideitsu Hino.
+
+    A. M. Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.
     """
 
     def __init__(self, k=20, comb="average", DM=False, local=False):

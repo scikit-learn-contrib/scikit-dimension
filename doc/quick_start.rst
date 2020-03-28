@@ -40,3 +40,6 @@ Local and global estimators can be used in this way:
                                 class_instance = skdim.local_id.lPCA(),
                                 n_neighbors = 100,
                                 n_jobs = 1)
+                                
+    #get estimated intrinsic dimension
+    print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))

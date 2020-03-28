@@ -21,6 +21,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
+from . import data
 from . import local_id
 from . import global_id
 from ._commonfuncs import get_nn, get_estimators, asPointwise, randball

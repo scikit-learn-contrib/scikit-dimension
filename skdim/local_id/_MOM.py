@@ -30,12 +30,13 @@ from sklearn.utils.validation import check_array
 
 class MOM(BaseEstimator):
     """
-    Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.
+    Intrinsic dimension estimation using the Method Of Moments algorithm.
 
     -----------
     Attributes
 
-   epsilon : float
+    k : int
+        Number of nearest neighbors considered
 
     -----------
     Returns
@@ -44,7 +45,9 @@ class MOM(BaseEstimator):
         Intrinsic dimension of the dataset
 
     -----------
-    References:
+    References
+    
+     L.  Amsaleg,  O.  Chelly,  T.  Furon,  S.  Girard,  M.  E.Houle,  K.  Kawarabayashi,  and  M.  Nett.    Extreme-value-theoretic  estimation  of  local  intrinsic  dimensio-nality.DAMI, 32(6):1768–1805, 2018.
     """
 
     def __init__(self, k=20):

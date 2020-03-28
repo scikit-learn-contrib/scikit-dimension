@@ -34,7 +34,7 @@ class MLE(BaseEstimator):
 
     With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = 'iteration', five iterations is used to determine m.
 
-    maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. 
+    mode='local' and 'pointwise' assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. 
 
     ----------
     Attributes
@@ -66,6 +66,8 @@ class MLE(BaseEstimator):
 
     ---------  
     References
+    
+    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
 
     Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.
 
@@ -235,13 +237,10 @@ class MLE(BaseEstimator):
                 denomInt, 0, Rpr, epsrel=1e-2, epsabs=1e-2)[0]
 
         return(kfac/np.sum(numerator/denominator))
-
+    
     @staticmethod
-    def _dnorm(x, mu=0, sigma=1):
-        return np.exp(-.5*((x-mu)/sigma)**2)/(sigma*np.sqrt(2*np.pi))
-
-    def _dnoiseGaussH(self, r, s, sigma, k=None):
-        return self._dnorm(s, mu=r, sigma=sigma)
+    def _dnoiseGaussH(r, s, sigma, k=None):
+        return np.exp(-.5*((s-r)/sigma)**2)/(sigma*np.sqrt(2*np.pi))
         # f(s|r) in Haro et al. (2008) w/ Gaussian
         # transition density
         # 'k' is not used, but is input

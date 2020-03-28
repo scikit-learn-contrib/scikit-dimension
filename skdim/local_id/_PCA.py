@@ -30,7 +30,7 @@ from sklearn.utils.validation import check_array
 
 
 class lPCA(BaseEstimator):
-    """ Intrinsic dimension estimation using local PCA.
+    """ Local intrinsic dimension estimation using PCA.
     Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
     Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.
     All versions assume that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball.
@@ -53,6 +53,9 @@ class lPCA(BaseEstimator):
 
     References
     ----------
+    
+    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
+        
     Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.
 
     Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050. 
@@ -123,7 +126,7 @@ class lPCA(BaseEstimator):
     @staticmethod
     def _maxgap(explained_var):
         gaps = explained_var[:-1]/explained_var[1:]
-        de = np.argmax(gaps)+1
+        de = np.nanargmax(gaps)+1
         
         if de-1 < len(gaps):
             return de, gaps[de-1]

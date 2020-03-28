@@ -21,9 +21,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Credits to Kerstin Johnsson
-# https://cran.r-project.org/web/packages/intrinsicDimension/index.html
-# for the original R implementation
 
 import numpy as np
 import bisect
@@ -36,8 +33,8 @@ from sklearn.utils.validation import check_array
 
 class ESS(BaseEstimator):
     """
-    Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.
-
+    Local intrinsic dimension estimation using the Expected Simplex Skewness algorithm.
+    The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 
     -----------
     Attributes
 
@@ -54,7 +51,12 @@ class ESS(BaseEstimator):
         The Expected Simplex Skewness value.
 
     -----------
-    References:
+    References
+    
+    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
+    
+    Johnsson, K., Soneson, C., & Fontes, M. (2015). Low Bias Local Intrinsic Dimension Estimation from Expected Simplex Skewness. IEEE Trans. Pattern Anal. Mach. Intell., 37(1), 196-202. 
+
     """
 
     def __init__(self, ver='a', d=1, random_generator=None):

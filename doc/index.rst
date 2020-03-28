@@ -33,6 +33,17 @@ Welcome to scikit-dimension's documentation!
    :caption: Tutorial - Examples
 
    auto_examples/index
+   
+.. toctree::
+   :maxdepth: 2
+   :hidden:
+   :caption: Credits and references
+
+   references
+   
+   
+   
+Credits and references
 
 `Getting started <quick_start.html>`_
 -------------------------------------
@@ -53,3 +64,5 @@ The layout of available classes and functions.
 --------------------------------------
 
 A set of examples. It complements the `User Guide <user_guide.html>`_.
+
+

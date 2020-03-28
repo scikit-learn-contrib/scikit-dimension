@@ -41,7 +41,7 @@ class TwoNN(BaseEstimator):
     Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.
 
     -----------
-    Parameters:
+    Attributes
     return_xy : bool (default=False)
         Whether to return also the coordinate vectors used for the linear fit.
     discard_fraction : float between 0 and 1
@@ -49,7 +49,7 @@ class TwoNN(BaseEstimator):
     dist : bool (default=False)
         Whether data is a precomputed distance matrix
     -----------
-    Returns:
+    Returns
 
     d : int
         Intrinsic dimension of the dataset according to TWO-NN.
@@ -59,10 +59,9 @@ class TwoNN(BaseEstimator):
         Array with the -log(F(mu_{sigma(i)})) values.
 
     -----------
-    References:
+    References
 
-    [1] E. Facco, M. d’Errico, A. Rodriguez & A. Laio
-        Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
+    E. Facco, M. d’Errico, A. Rodriguez & A. Laio Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
     """
 
     def __init__(self, discard_fraction=0.1, dist=False):
