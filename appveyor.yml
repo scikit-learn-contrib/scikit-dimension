@@ -36,7 +36,7 @@ install:
 test_script:
   - mkdir for_test
   - cd for_test
-  - pytest -v --cov=skdim --pyargs skdim/tests/test_params_and_check_estimator.py
+  - pytest -v --cov=skdim --pyargs skdim
 
 after_test:
   - cp .coverage %APPVEYOR_BUILD_FOLDER%
