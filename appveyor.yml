@@ -37,7 +37,6 @@ test_script:
   - mkdir for_test
   - cd for_test
   - pytest -v --cov=skdim --ignore=skdim/tests/test_results.py --pyargs skdim
---pyargs skdim
 
 after_test:
   - cp .coverage %APPVEYOR_BUILD_FOLDER%
