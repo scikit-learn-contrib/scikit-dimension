@@ -53,7 +53,7 @@ install:
   - pip install .
 
 script:
-  - pytest -v --cov=skdim --pyargs skdim
+  - pytest -v --cov=skdim --ignore=skdim/tests/test_results--pyargs skdim
 
 after_success:
   - codecov
