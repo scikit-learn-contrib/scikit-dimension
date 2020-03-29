@@ -21,8 +21,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-from . import gendata
-from . import local_id
-from . import global_id
-from ._commonfuncs import get_nn, get_estimators, asPointwise, randball
-from ._version import __version__
+from ._ESS import ESS
+from ._FisherS import FisherS
+from ._PCA import lPCA
+from ._TLE import TLE
+from ._MiND_ML import MiND_ML
+from ._MOM import MOM

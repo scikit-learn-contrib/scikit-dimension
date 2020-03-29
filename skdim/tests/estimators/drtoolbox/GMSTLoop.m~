@@ -1,6 +1,0 @@
-size_data = length(data(1,:));
-[inds,dists] = KNN(data,round(size_data*0.1),true);
-d = [];
-for i = 1:length(inds(:,1))
-	  d(i) = intrinsic_dim(data,'GMST')
-end
