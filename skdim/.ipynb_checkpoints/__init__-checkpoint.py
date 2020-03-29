@@ -24,5 +24,5 @@
 from . import gendata
 from . import local_id
 from . import global_id
-from ._commonfuncs import get_nn, get_estimators, asPointwise, randball
+from ._commonfuncs import get_nn, get_estimators, asPointwise
 from ._version import __version__

@@ -42,7 +42,7 @@ from sklearn.utils.testing import (assert_equal,
 @pytest.fixture
 def data():
     X = np.zeros((100,10))
-    X[:,:5] = skdim.randball(n_points = 100, n_dim = 5, radius = 1, random_state = 0)
+    X[:,:5] = skdim.gendata.hyperBall(n_points = 100, n_dim = 5, radius = 1, random_state = 0)
     return X
 
 #test all estimators pass check_estimator

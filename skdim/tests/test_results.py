@@ -37,14 +37,14 @@ from sklearn.utils.testing import (assert_equal,
                                    assert_not_in,
                                    assert_no_warnings)
 
-import rpy2.robjects.packages as rpackages
-import rpy2.robjects.numpy2ri
-utils = rpackages.importr('utils')
-utils.install_packages('intrinsicDimension')
-utils.install_packages('ider')
-intdimr = rpackages.importr('intrinsicDimension')
-ider = intdimr = rpackages.importr('ider')
-rpy2.robjects.numpy2ri.activate()
+#import rpy2.robjects.packages as rpackages
+#import rpy2.robjects.numpy2ri
+#utils = rpackages.importr('utils')
+#utils.install_packages('intrinsicDimension')
+#utils.install_packages('ider')
+#intdimr = rpackages.importr('intrinsicDimension')
+#ider = intdimr = rpackages.importr('ider')
+#rpy2.robjects.numpy2ri.activate()
 
 @pytest.fixture
 def data():
@@ -77,7 +77,7 @@ def test_ess_results(data):
 #    x = skdim.local_id.MOM(k=5)
     
 def test_lpca_results(data):
-    assert(skdim.local_id.lPCA().fit(data)             == intdimr.pcaLocalDimEst(data,ver='FO')[0][0],
+    assert all(skdim.local_id.lPCA().fit(data)         == intdimr.pcaLocalDimEst(data,ver='FO')[0][0],
            skdim.local_id.lPCA(ver='fan').fit(data)    == intdimr.pcaLocalDimEst(data,ver='fan')[0][0],
            skdim.local_id.lPCA(ver='maxgap').fit(data) == intdimr.pcaLocalDimEst(data,ver='maxgap')[0][0]
           )
