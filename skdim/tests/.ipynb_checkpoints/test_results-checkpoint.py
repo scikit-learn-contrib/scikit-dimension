@@ -66,13 +66,12 @@ def test_ess_results(data):
 
     assert np.allclose(np.array([x.dimension_,x.essval_,x2.dimension_,x2.essval_,x3.dimension_,x3.essval_]),rx_results)
 
-#def test_mind_ml_results(data):
-#    x = skdim.local_id.MiND_ML()
-#    x = skdim.local_id.MiND_ML(ver='MLi')
-#    x = skdim.local_id.MiND_ML(ver='ML1')
-#    x = skdim.local_id.MiND_ML(D=5)
-#    x = skdim.local_id.MiND_ML(k=5)
-    
+def test_mind_ml_results(data):
+#     all((skdim.local_id.MiND_ML(ver='MLk').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=20,D=10,ver='MIND_MLi')[0]),
+#          skdim.local_id.MiND_ML(ver='MLi').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=10,D=5,ver='MIND_MLk')[0])))
+    assert all((skdim.local_id.MiND_ML(ver='MLk').fit(data).dimension_ == 3.696083548872364,
+                skdim.local_id.MiND_ML(ver='MLi').fit(data).dimension_ == 4))
+
 #def test_mom_results(data):
 #    x = skdim.local_id.MOM()
 #    x = skdim.local_id.MOM(k=5)
@@ -86,23 +85,21 @@ def test_lpca_results(data):
            skdim.local_id.lPCA(ver='fan').fit(data).dimension_    == 3,
            skdim.local_id.lPCA(ver='maxgap').fit(data).dimension_ == 5
           ))
-    
-#def test_tle_results(data):
-#    x = skdim.local_id.TLE().fit(data)
-#    x = skdim.local_id.TLE(epsilon=.01).fit(data)
+  
     
 def test_corrint_results(data):
 #     assert np.isclose(skdim.global_id.CorrInt().fit(data).dimension_,np.array(ider.corint(data,k1=10,k2=20)))
     assert np.isclose(skdim.global_id.CorrInt().fit(data).dimension_,2.9309171335492548)
     
-#def test_danco_results(data):
-#    x = skdim.global_id.DANCo().fit(data)
-#    x = skdim.global_id.DANCo(fractal=False).fit(data)
-#    x = skdim.global_id.DANCo(D=5).fit(data)
-#    x = skdim.global_id.DANCo(k=5).fit(data)
-#    x = skdim.global_id.DANCo(ver='MIND_MLk').fit(data)
-#    x = skdim.global_id.DANCo(ver='MIND_MLi').fit(data)
-
+def test_danco_results():
+    x = np.zeros(9)
+    for i in range(2,11):
+        print(i,end='\r')
+        X = skdim.gendata.hyperBall(n_points=100,n_dim=i,radius=1,random_state=0)
+        x[i-2] = skdim.global_id.DANCo(D=11,fractal=False,random_state=0).fit(X).dimension_
+        
+    assert np.all(x == np.array([ 2,  3,  4,  5,  6,  7,  8,  9, 10]))
+    
 #def test_knn_results(data):
 #    x = skdim.global_id.KNN().fit(data)
 #    x = skdim.global_id.KNN(k=5).fit(data)
@@ -154,11 +151,18 @@ def test_mle_results(data):
          3.4389424541367437)
     )   
     
-
+def test_tle_results(data):
+#     assert np.allclose(np.round(skdim.local_id.TLE().fit(data).dimension_,4),radovanovic_estimators_matlab(data,k=20)['id_tle'])
+    assert np.allclose(np.round(skdim.local_id.TLE().fit(data).dimension_,4),
+                        np.array([3.1975, 3.0745, 3.0447, 3.3422, 2.9231, 3.7637, 2.9517, 3.2285,
+                                  3.8731, 2.9633, 3.2595, 4.1404, 3.1353, 3.671 , 3.6847, 3.9358,
+                                  3.9902, 3.7741, 3.5728, 4.2938, 4.2238, 3.9431, 3.0891, 3.4052,
+                                  4.0238, 4.7747, 3.9094, 4.9064, 4.0431, 3.4192])
+               )
     
-#def test_twonn_results(data):
-#    #to trigger the "n_features>25 condition"
-#    test_high_dim = np.zeros((len(data),30))
-#    test_high_dim[:,:data.shape[1]] = data
-#    x = skdim.global_id.TwoNN().fit(test_high_dim)
-#    x = skdim.global_id.TwoNN(discard_fraction=0.05).fit(data)
+def test_twonn_results(data):
+    #to trigger the "n_features>25 condition"
+    test_high_dim = np.zeros((len(data),30))
+    test_high_dim[:,:data.shape[1]] = data
+    assert all((np.round(skdim.global_id.TwoNN().fit(test_high_dim).dimension_,5) == 4.05496,
+                np.round(skdim.global_id.TwoNN(discard_fraction=0.05).fit(data).dimension_,5) == 4.11323))
