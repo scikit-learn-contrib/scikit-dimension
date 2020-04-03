@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -190,13 +194,29 @@
 
 <div class="viewcode-block" id="Mada"><a class="viewcode-back" href="../../../generated/skdim.global_id.Mada.html#skdim.global_id.Mada">[docs]</a><span class="k">class</span> <span class="nc">Mada</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot; A template estimator to be used as a reference implementation.</span>
-<span class="sd">    For more information regarding how to build your own estimator, read more</span>
-<span class="sd">    in the :ref:`User Guide &lt;user_guide&gt;`.</span>
-<span class="sd">    Parameters</span>
+    <span class="sd">&quot;&quot;&quot; Intrinsic dimension estimation using the Manifold-adaptive dimension estimation algorithm. f</span>
+<span class="sd">    A  variant  of  fractal  dimension  called  the  local  information  dimension  is  considered. The local information  dimension  is  estimated  by  using  the  probability  mass  function. Mada considers first order expansion of the probability mass around the inspection point, and it estimates the local information dimension by using two different radii from the inspection point. </span>
+<span class="sd"> </span>
+<span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    demo_param : str, default=&#39;demo_param&#39;</span>
-<span class="sd">        A parameter used for demonstation of how to pass and store paramters.</span>
+<span class="sd">    k : int, default=20</span>
+<span class="sd">        Number of neighbors to consider</span>
+<span class="sd">    comb : str, default=&quot;average&quot;</span>
+<span class="sd">        How to combine local estimates if local=False. Possible values : &quot;average&quot;, &quot;median&quot;</span>
+<span class="sd">    local : bool, default=False</span>
+<span class="sd">        Whether to return local estimates</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    </span>
+<span class="sd">    self.dimension_ : float</span>
+<span class="sd">        The estimated intrinsic dimension</span>
+<span class="sd">        </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Code translated and description taken from the ider R package by Hideitsu Hino.</span>
+
+<span class="sd">    A. M. Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Mada.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.Mada.html#skdim.global_id.Mada.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">comb</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span> <span class="n">DM</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">local</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

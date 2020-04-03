@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -201,7 +205,7 @@
 <span class="sd">    Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.</span>
 
 <span class="sd">    -----------</span>
-<span class="sd">    Parameters:</span>
+<span class="sd">    Attributes</span>
 <span class="sd">    return_xy : bool (default=False)</span>
 <span class="sd">        Whether to return also the coordinate vectors used for the linear fit.</span>
 <span class="sd">    discard_fraction : float between 0 and 1</span>
@@ -209,7 +213,7 @@
 <span class="sd">    dist : bool (default=False)</span>
 <span class="sd">        Whether data is a precomputed distance matrix</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Returns:</span>
+<span class="sd">    Returns</span>
 
 <span class="sd">    d : int</span>
 <span class="sd">        Intrinsic dimension of the dataset according to TWO-NN.</span>
@@ -219,14 +223,12 @@
 <span class="sd">        Array with the -log(F(mu_{sigma(i)})) values.</span>
 
 <span class="sd">    -----------</span>
-<span class="sd">    References:</span>
+<span class="sd">    References</span>
 
-<span class="sd">    [1] E. Facco, M. d’Errico, A. Rodriguez &amp; A. Laio</span>
-<span class="sd">        Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)</span>
+<span class="sd">    E. Facco, M. d’Errico, A. Rodriguez &amp; A. Laio Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TwoNN.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">return_xy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">discard_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span> <span class="o">=</span> <span class="n">return_xy</span>
+<div class="viewcode-block" id="TwoNN.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">discard_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">discard_fraction</span> <span class="o">=</span> <span class="n">discard_fraction</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span></div>
 
@@ -251,10 +253,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X contains inf or NaN&quot;</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twonn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twonn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear_fit_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_twonn</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted_</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># `fit` should always return `self`</span>
@@ -336,10 +335,7 @@
 
         <span class="n">d</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># extract slope</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">d</span></div>
+        <span class="k">return</span> <span class="n">d</span><span class="p">,</span> <span class="n">lr</span></div>
 </pre></div>
 
            </div>

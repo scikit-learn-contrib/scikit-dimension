@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -190,12 +194,13 @@
 
 <div class="viewcode-block" id="MOM"><a class="viewcode-back" href="../../../generated/skdim.local_id.MOM.html#skdim.local_id.MOM">[docs]</a><span class="k">class</span> <span class="nc">MOM</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</span>
+<span class="sd">    Intrinsic dimension estimation using the Method Of Moments algorithm.</span>
 
 <span class="sd">    -----------</span>
 <span class="sd">    Attributes</span>
 
-<span class="sd">   epsilon : float</span>
+<span class="sd">    k : int</span>
+<span class="sd">        Number of nearest neighbors considered</span>
 
 <span class="sd">    -----------</span>
 <span class="sd">    Returns</span>
@@ -204,7 +209,9 @@
 <span class="sd">        Intrinsic dimension of the dataset</span>
 
 <span class="sd">    -----------</span>
-<span class="sd">    References:</span>
+<span class="sd">    References</span>
+<span class="sd">    </span>
+<span class="sd">     L.  Amsaleg,  O.  Chelly,  T.  Furon,  S.  Girard,  M.  E.Houle,  K.  Kawarabayashi,  and  M.  Nett.    Extreme-value-theoretic  estimation  of  local  intrinsic  dimensio-nality.DAMI, 32(6):1768–1805, 2018.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MOM.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.MOM.html#skdim.local_id.MOM.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>

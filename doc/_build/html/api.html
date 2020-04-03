@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="skdim.local_id.ESS" href="generated/skdim.local_id.ESS.html" />
-    <link rel="prev" title="Quick Start with scikit-dimension" href="quick_start.html" /> 
+    <link rel="prev" title="User guide" href="user_guide.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -89,6 +89,10 @@
               <p class="caption"><span class="caption-text">Getting Started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start with scikit-dimension</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
@@ -193,7 +197,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.ESS.html#skdim.local_id.ESS" title="skdim.local_id.ESS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.ESS</span></code></a>([ver, d, random_generator])</p></td>
-<td><p>Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.</p></td>
+<td><p>Local intrinsic dimension estimation using the Expected Simplex Skewness algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -204,7 +208,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.FisherS.html#skdim.local_id.FisherS" title="skdim.local_id.FisherS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.FisherS</span></code></a>([conditional_number, …])</p></td>
-<td><p>Intrinsic dimension estimation using the FisherS algorithm.</p></td>
+<td><p>Local intrinsic dimension estimation using the FisherS algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -215,7 +219,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.lPCA.html#skdim.local_id.lPCA" title="skdim.local_id.lPCA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.lPCA</span></code></a>([ver, alphaRatio, …])</p></td>
-<td><p>Intrinsic dimension estimation using local PCA.</p></td>
+<td><p>Local intrinsic dimension estimation using PCA.</p></td>
 </tr>
 </tbody>
 </table>
@@ -237,7 +241,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.MOM.html#skdim.local_id.MOM" title="skdim.local_id.MOM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.MOM</span></code></a>([k])</p></td>
-<td><p>Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</p></td>
+<td><p>Intrinsic dimension estimation using the Method Of Moments algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -248,7 +252,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.local_id.TLE.html#skdim.local_id.TLE" title="skdim.local_id.TLE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.local_id.TLE</span></code></a>([k, epsilon])</p></td>
-<td><p>Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</p></td>
+<td><p>Local intrinsic dimension estimation with the Tight Local Intrinsic Dimensionality Estimator algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -262,7 +266,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.CorrInt.html#skdim.global_id.CorrInt" title="skdim.global_id.CorrInt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.CorrInt</span></code></a>([k1, k2, DM])</p></td>
-<td><p>A template estimator to be used as a reference implementation.</p></td>
+<td><p>Intrinsic dimension estimation using the Correlation Dimension.</p></td>
 </tr>
 </tbody>
 </table>
@@ -284,7 +288,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.KNN.html#skdim.global_id.KNN" title="skdim.global_id.KNN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.KNN</span></code></a>([k, ps, M, gamma])</p></td>
-<td><p>This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al.</p></td>
+<td><p>Intrinsic dimension estimation with the kNN algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -295,7 +299,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.Mada.html#skdim.global_id.Mada" title="skdim.global_id.Mada"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.Mada</span></code></a>([k, comb, DM, local])</p></td>
-<td><p>A template estimator to be used as a reference implementation.</p></td>
+<td><p>Intrinsic dimension estimation using the Manifold-adaptive dimension estimation algorithm.</p></td>
 </tr>
 </tbody>
 </table>
@@ -316,7 +320,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN" title="skdim.global_id.TwoNN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.TwoNN</span></code></a>([return_xy, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/skdim.global_id.TwoNN.html#skdim.global_id.TwoNN" title="skdim.global_id.TwoNN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skdim.global_id.TwoNN</span></code></a>([discard_fraction, dist])</p></td>
 <td><p>Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.</p></td>
 </tr>
 </tbody>
@@ -335,7 +339,7 @@
         <a href="generated/skdim.local_id.ESS.html" class="btn btn-neutral float-right" title="skdim.local_id.ESS" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="quick_start.html" class="btn btn-neutral float-left" title="Quick Start with scikit-dimension" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="user_guide.html" class="btn btn-neutral float-left" title="User guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

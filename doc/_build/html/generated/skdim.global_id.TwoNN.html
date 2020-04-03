@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -182,9 +186,9 @@
 <h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.global_id</span></code>.TwoNN<a class="headerlink" href="#skdim-global-id-twonn" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="skdim.global_id.TwoNN">
-<em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">TwoNN</code><span class="sig-paren">(</span><em class="sig-param">return_xy=False</em>, <em class="sig-param">discard_fraction=0.1</em>, <em class="sig-param">dist=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_TwoNN.html#TwoNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.TwoNN" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">TwoNN</code><span class="sig-paren">(</span><em class="sig-param">discard_fraction=0.1</em>, <em class="sig-param">dist=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_TwoNN.html#TwoNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.TwoNN" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to calculate the intrinsic dimension of the provided data points with the TWO-NN algorithm.</p>
-<p>Parameters:
+<p>Attributes
 return_xy : bool (default=False)</p>
 <blockquote>
 <div><p>Whether to return also the coordinate vectors used for the linear fit.</p>
@@ -195,7 +199,7 @@ return_xy : bool (default=False)</p>
 <dt>dist<span class="classifier">bool (default=False)</span></dt><dd><p>Whether data is a precomputed distance matrix</p>
 </dd>
 </dl>
-<p>Returns:</p>
+<p>Returns</p>
 <dl class="simple">
 <dt>d<span class="classifier">int</span></dt><dd><p>Intrinsic dimension of the dataset according to TWO-NN.</p>
 </dd>
@@ -204,14 +208,13 @@ return_xy : bool (default=False)</p>
 <dt>y<span class="classifier">1d array (optional)</span></dt><dd><p>Array with the -log(F(mu_{sigma(i)})) values.</p>
 </dd>
 </dl>
-<p>References:</p>
-<dl class="simple">
-<dt>[1] E. Facco, M. d’Errico, A. Rodriguez &amp; A. Laio</dt><dd><p>Estimating the intrinsic dimension of datasets by a minimal neighborhood information (<a class="reference external" href="https://doi.org/10.1038/s41598-017-11873-y">https://doi.org/10.1038/s41598-017-11873-y</a>)</p>
-</dd>
-</dl>
+<p>References</p>
+<ol class="upperalpha simple" start="5">
+<li><p>Facco, M. d’Errico, A. Rodriguez &amp; A. Laio Estimating the intrinsic dimension of datasets by a minimal neighborhood information (<a class="reference external" href="https://doi.org/10.1038/s41598-017-11873-y">https://doi.org/10.1038/s41598-017-11873-y</a>)</p></li>
+</ol>
 <dl class="method">
 <dt id="skdim.global_id.TwoNN.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">return_xy=False</em>, <em class="sig-param">discard_fraction=0.1</em>, <em class="sig-param">dist=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_TwoNN.html#TwoNN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.TwoNN.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">discard_fraction=0.1</em>, <em class="sig-param">dist=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_TwoNN.html#TwoNN.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.TwoNN.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
 </dd></dl>
 

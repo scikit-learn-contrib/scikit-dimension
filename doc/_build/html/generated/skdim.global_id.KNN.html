@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -183,7 +187,8 @@
 <dl class="class">
 <dt id="skdim.global_id.KNN">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">KNN</code><span class="sig-paren">(</span><em class="sig-param">k=None</em>, <em class="sig-param">ps=None</em>, <em class="sig-param">M=1</em>, <em class="sig-param">gamma=2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_KNN.html#KNN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.KNN" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.</p>
+<dd><p>Intrinsic dimension estimation with the kNN algorithm.
+This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.</p>
 <dl class="attribute">
 <dt id="skdim.global_id.KNN.X">
 <code class="sig-name descname">X</code><a class="headerlink" href="#skdim.global_id.KNN.X" title="Permalink to this definition">¶</a></dt>
@@ -239,7 +244,17 @@
 </dl>
 </dd></dl>
 
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>self.dimension_</strong> (<em>float</em>) – The estimated intrinsic dimension</p></li>
+<li><p><strong>self.residual_</strong> (<em>float</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
 <p class="rubric">References</p>
+<p>Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.</p>
 <p>Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. IEEE Trans. on Sig. Proc., 58(2), 650-663.</p>
 <dl class="method">
 <dt id="skdim.global_id.KNN.__init__">

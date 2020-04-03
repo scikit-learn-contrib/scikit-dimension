@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -191,12 +195,12 @@
 
 <div class="viewcode-block" id="TLE"><a class="viewcode-back" href="../../../generated/skdim.local_id.TLE.html#skdim.local_id.TLE">[docs]</a><span class="k">class</span> <span class="nc">TLE</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</span>
+<span class="sd">    Local intrinsic dimension estimation with the Tight Local Intrinsic Dimensionality Estimator algorithm.</span>
 
 <span class="sd">    -----------</span>
 <span class="sd">    Attributes</span>
 
-<span class="sd">   epsilon : float</span>
+<span class="sd">    epsilon : float</span>
 
 <span class="sd">    -----------</span>
 <span class="sd">    Returns</span>
@@ -205,7 +209,11 @@
 <span class="sd">        Intrinsic dimension of the dataset</span>
 
 <span class="sd">    -----------</span>
-<span class="sd">    References:</span>
+<span class="sd">    References</span>
+<span class="sd">    </span>
+<span class="sd">    Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).</span>
+<span class="sd">    </span>
+<span class="sd">    Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović and Weeris Treeratanajaru. Intrinsic dimensionality estimation within tight localities. In Proceedings of the SIAM International Conference on Data Mining (SDM), pages 181–189, Calgary, Alberta, Canada, 2019</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TLE.__init__"><a class="viewcode-back" href="../../../generated/skdim.local_id.TLE.html#skdim.local_id.TLE.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>

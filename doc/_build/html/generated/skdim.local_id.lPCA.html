@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -179,11 +183,11 @@
            <div itemprop="articleBody">
             
   <div class="section" id="skdim-local-id-lpca">
-<h1><a class="reference internal" href="../index.html#module-skdim.local_id" title="skdim.local_id"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code></a>.lPCA<a class="headerlink" href="#skdim-local-id-lpca" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.lPCA<a class="headerlink" href="#skdim-local-id-lpca" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="skdim.local_id.lPCA">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">lPCA</code><span class="sig-paren">(</span><em class="sig-param">ver='FO'</em>, <em class="sig-param">alphaRatio=0.05</em>, <em class="sig-param">alphaFO=0.05</em>, <em class="sig-param">alphaFan=10</em>, <em class="sig-param">betaFan=0.8</em>, <em class="sig-param">PFan=0.95</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_PCA.html#lPCA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.lPCA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Intrinsic dimension estimation using local PCA.
+<dd><p>Local intrinsic dimension estimation using PCA.
 Version ‘FO’ is the method by Fukunaga-Olsen, version ‘fan’ is the method by Fan et al..
 Version ‘maxgap’ returns the position of the largest relative gap in the sequence of singular values.
 All versions assume that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball.</p>
@@ -201,6 +205,7 @@ All versions assume that the data is local, i.e. that it is a neighborhood taken
 </dd>
 </dl>
 <p class="rubric">References</p>
+<p>Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (<a class="reference external" href="https://cran.r-project.org/web/packages/intrinsicDimension/index.html">https://cran.r-project.org/web/packages/intrinsicDimension/index.html</a>).</p>
 <p>Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.</p>
 <p>Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050.</p>
 <dl class="method">

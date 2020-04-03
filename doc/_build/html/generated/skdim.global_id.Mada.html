@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -183,11 +187,57 @@
 <dl class="class">
 <dt id="skdim.global_id.Mada">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">Mada</code><span class="sig-paren">(</span><em class="sig-param">k=20</em>, <em class="sig-param">comb='average'</em>, <em class="sig-param">DM=False</em>, <em class="sig-param">local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_Mada.html#Mada"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.Mada" title="Permalink to this definition">¶</a></dt>
-<dd><p>A template estimator to be used as a reference implementation.
-For more information regarding how to build your own estimator, read more
-in the <a class="reference external" href="https://scikit-learn.org/stable/user_guide.html#user-guide" title="(in scikit-learn v0.22)"><span class="xref std std-ref">User Guide</span></a>.
-:param demo_param: A parameter used for demonstation of how to pass and store paramters.
-:type demo_param: str, default=’demo_param’</p>
+<dd><p>Intrinsic dimension estimation using the Manifold-adaptive dimension estimation algorithm. f
+A  variant  of  fractal  dimension  called  the  local  information  dimension  is  considered. The local information  dimension  is  estimated  by  using  the  probability  mass  function. Mada considers first order expansion of the probability mass around the inspection point, and it estimates the local information dimension by using two different radii from the inspection point.</p>
+<dl class="attribute">
+<dt id="skdim.global_id.Mada.k">
+<code class="sig-name descname">k</code><a class="headerlink" href="#skdim.global_id.Mada.k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of neighbors to consider</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a>, default=20</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="skdim.global_id.Mada.comb">
+<code class="sig-name descname">comb</code><a class="headerlink" href="#skdim.global_id.Mada.comb" title="Permalink to this definition">¶</a></dt>
+<dd><p>How to combine local estimates if local=False. Possible values : “average”, “median”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a>, default=”average”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="skdim.global_id.Mada.local">
+<code class="sig-name descname">local</code><a class="headerlink" href="#skdim.global_id.Mada.local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to return local estimates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a>, default=False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>self.dimension_</strong> – The estimated intrinsic dimension</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Code translated and description taken from the ider R package by Hideitsu Hino.</p>
+<ol class="upperalpha simple">
+<li><ol class="upperalpha simple" start="13">
+<li><p>Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.</p></li>
+</ol>
+</li>
+</ol>
 <dl class="method">
 <dt id="skdim.global_id.Mada.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">k=20</em>, <em class="sig-param">comb='average'</em>, <em class="sig-param">DM=False</em>, <em class="sig-param">local=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_Mada.html#Mada.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.Mada.__init__" title="Permalink to this definition">¶</a></dt>

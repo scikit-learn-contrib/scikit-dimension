@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -192,10 +196,9 @@
 
 <div class="viewcode-block" id="CorrInt"><a class="viewcode-back" href="../../../generated/skdim.global_id.CorrInt.html#skdim.global_id.CorrInt">[docs]</a><span class="k">class</span> <span class="nc">CorrInt</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot; A template estimator to be used as a reference implementation.</span>
-<span class="sd">    For more information regarding how to build your own estimator, read more</span>
-<span class="sd">    in the :ref:`User Guide &lt;user_guide&gt;`.</span>
-
+    <span class="sd">&quot;&quot;&quot; Intrinsic dimension estimation using the Correlation Dimension.</span>
+<span class="sd">    A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.</span>
+<span class="sd">    </span>
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    k1 : int</span>
@@ -210,7 +213,12 @@
 
 <span class="sd">    dimension_ : float</span>
 <span class="sd">        The estimated intrinsic dimension</span>
-
+<span class="sd">    </span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Code translated and description taken from the ider R package by Hideitsu Hino.</span>
+<span class="sd">    </span>
+<span class="sd">    P. Grassberger and I. Procaccia. Measuring the strangeness of strange attractors. Physica, 1983.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="CorrInt.__init__"><a class="viewcode-back" href="../../../generated/skdim.global_id.CorrInt.html#skdim.global_id.CorrInt.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k1</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">DM</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>

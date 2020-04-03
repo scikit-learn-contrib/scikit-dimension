@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -183,9 +187,8 @@
 <dl class="class">
 <dt id="skdim.global_id.CorrInt">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">CorrInt</code><span class="sig-paren">(</span><em class="sig-param">k1=10</em>, <em class="sig-param">k2=20</em>, <em class="sig-param">DM=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_CorrInt.html#CorrInt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.CorrInt" title="Permalink to this definition">¶</a></dt>
-<dd><p>A template estimator to be used as a reference implementation.
-For more information regarding how to build your own estimator, read more
-in the <a class="reference external" href="https://scikit-learn.org/stable/user_guide.html#user-guide" title="(in scikit-learn v0.22)"><span class="xref std std-ref">User Guide</span></a>.</p>
+<dd><p>Intrinsic dimension estimation using the Correlation Dimension.
+A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.</p>
 <dl class="attribute">
 <dt id="skdim.global_id.CorrInt.k1">
 <code class="sig-name descname">k1</code><a class="headerlink" href="#skdim.global_id.CorrInt.k1" title="Permalink to this definition">¶</a></dt>
@@ -227,6 +230,11 @@ in the <a class="reference external" href="https://scikit-learn.org/stable/user_
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<p>Code translated and description taken from the ider R package by Hideitsu Hino.</p>
+<ol class="upperalpha simple" start="16">
+<li><p>Grassberger and I. Procaccia. Measuring the strangeness of strange attractors. Physica, 1983.</p></li>
+</ol>
 <dl class="method">
 <dt id="skdim.global_id.CorrInt.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">k1=10</em>, <em class="sig-param">k2=20</em>, <em class="sig-param">DM=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_CorrInt.html#CorrInt.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.CorrInt.__init__" title="Permalink to this definition">¶</a></dt>

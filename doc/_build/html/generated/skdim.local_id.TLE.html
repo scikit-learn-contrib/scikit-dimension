@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -179,23 +183,21 @@
            <div itemprop="articleBody">
             
   <div class="section" id="skdim-local-id-tle">
-<h1><a class="reference internal" href="../index.html#module-skdim.local_id" title="skdim.local_id"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code></a>.TLE<a class="headerlink" href="#skdim-local-id-tle" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.TLE<a class="headerlink" href="#skdim-local-id-tle" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="skdim.local_id.TLE">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">TLE</code><span class="sig-paren">(</span><em class="sig-param">k=20</em>, <em class="sig-param">epsilon=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_TLE.html#TLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.TLE" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div><p>Class to calculate the intrinsic dimension of the provided data points with the Tight Locality Estimator algorithm.</p>
+<dd><p>Local intrinsic dimension estimation with the Tight Local Intrinsic Dimensionality Estimator algorithm.</p>
 <p>Attributes</p>
-</div></blockquote>
 <p>epsilon : float</p>
-<blockquote>
-<div><p>Returns</p>
+<p>Returns</p>
 <dl class="simple">
 <dt><a href="#id2"><span class="problematic" id="id3">dimension_</span></a><span class="classifier">int</span></dt><dd><p>Intrinsic dimension of the dataset</p>
 </dd>
 </dl>
-<p>References:</p>
-</div></blockquote>
+<p>References</p>
+<p>Code translated from the original implementation by Miloš Radovanović (<a class="reference external" href="https://perun.pmf.uns.ac.rs/radovanovic/tle/">https://perun.pmf.uns.ac.rs/radovanovic/tle/</a>).</p>
+<p>Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović and Weeris Treeratanajaru. Intrinsic dimensionality estimation within tight localities. In Proceedings of the SIAM International Conference on Data Mining (SDM), pages 181–189, Calgary, Alberta, Canada, 2019</p>
 <dl class="method">
 <dt id="skdim.local_id.TLE.__init__">
 <code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">k=20</em>, <em class="sig-param">epsilon=0.0001</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_TLE.html#TLE.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.TLE.__init__" title="Permalink to this definition">¶</a></dt>

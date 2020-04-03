@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -179,13 +183,15 @@
            <div itemprop="articleBody">
             
   <div class="section" id="skdim-local-id-ess">
-<h1><a class="reference internal" href="../index.html#module-skdim.local_id" title="skdim.local_id"><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code></a>.ESS<a class="headerlink" href="#skdim-local-id-ess" title="Permalink to this headline">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">skdim.local_id</span></code>.ESS<a class="headerlink" href="#skdim-local-id-ess" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="skdim.local_id.ESS">
 <em class="property">class </em><code class="sig-prename descclassname">skdim.local_id.</code><code class="sig-name descname">ESS</code><span class="sig-paren">(</span><em class="sig-param">ver='a'</em>, <em class="sig-param">d=1</em>, <em class="sig-param">random_generator=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/local_id/_ESS.html#ESS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.local_id.ESS" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Class to calculate the intrinsic dimension of the provided data points with the ESS algorithm.</p>
-<p>Attributes</p>
+<div><p>Local intrinsic dimension estimation using the Expected Simplex Skewness algorithm.
+The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball.
+———–
+Attributes</p>
 </div></blockquote>
 <dl>
 <dt>ver<span class="classifier">str, ‘a’ or ‘b’</span></dt><dd><blockquote>
@@ -202,7 +208,9 @@
 <dt><a href="#id4"><span class="problematic" id="id5">ess_</span></a><span class="classifier">float</span></dt><dd><p>The Expected Simplex Skewness value.</p>
 </dd>
 </dl>
-<p>References:</p>
+<p>References</p>
+<p>Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (<a class="reference external" href="https://cran.r-project.org/web/packages/intrinsicDimension/index.html">https://cran.r-project.org/web/packages/intrinsicDimension/index.html</a>).</p>
+<p>Johnsson, K., Soneson, C., &amp; Fontes, M. (2015). Low Bias Local Intrinsic Dimension Estimation from Expected Simplex Skewness. IEEE Trans. Pattern Anal. Mach. Intell., 37(1), 196-202.</p>
 </dd>
 </dl>
 <dl class="method">

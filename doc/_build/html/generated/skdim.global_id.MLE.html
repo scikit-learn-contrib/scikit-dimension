@@ -90,6 +90,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">scikit-dimension API</a><ul class="current">
@@ -185,7 +189,7 @@
 <em class="property">class </em><code class="sig-prename descclassname">skdim.global_id.</code><code class="sig-name descname">MLE</code><span class="sig-paren">(</span><em class="sig-param">mode='global'</em>, <em class="sig-param">k=20</em>, <em class="sig-param">dnoise=None</em>, <em class="sig-param">sigma=0</em>, <em class="sig-param">n=None</em>, <em class="sig-param">integral_approximation='Haro'</em>, <em class="sig-param">unbiased=False</em>, <em class="sig-param">neighborhood_based=True</em>, <em class="sig-param">neighborhood_aggregation='maximum.likelihood'</em>, <em class="sig-param">K=5</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/skdim/global_id/_MLE.html#MLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#skdim.global_id.MLE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Intrinsic dimension estimation with the Maximum Likelihood method. The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. The estimator in the paper is obtained using default parameters and dnoise = dnoiseGaussH.</p>
 <p>With integral.approximation = ‘Haro’ the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = ‘guaranteed.convergence’, r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = ‘iteration’, five iterations is used to determine m.</p>
-<p>maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension.</p>
+<p>mode=’local’ and ‘pointwise’ assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension.</p>
 <p>Attributes</p>
 <dl class="simple">
 <dt>mode<span class="classifier">str, default=’global’</span></dt><dd><p>Whether to compute ‘global’, ‘local’ or ‘pointwise’ intrinsic dimension</p>
@@ -213,6 +217,7 @@
 </dd>
 </dl>
 <p>References</p>
+<p>Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.</p>
 <p>Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.</p>
 <p>Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.</p>
 <p>Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press.</p>

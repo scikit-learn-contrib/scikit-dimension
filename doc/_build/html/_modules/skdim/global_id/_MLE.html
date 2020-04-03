@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -194,7 +198,7 @@
 
 <span class="sd">    With integral.approximation = &#39;Haro&#39; the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = &#39;guaranteed.convergence&#39;, r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = &#39;iteration&#39;, five iterations is used to determine m.</span>
 
-<span class="sd">    maxLikLocalDimEst assumes that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. </span>
+<span class="sd">    mode=&#39;local&#39; and &#39;pointwise&#39; assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. </span>
 
 <span class="sd">    ----------</span>
 <span class="sd">    Attributes</span>
@@ -226,6 +230,8 @@
 
 <span class="sd">    ---------  </span>
 <span class="sd">    References</span>
+<span class="sd">    </span>
+<span class="sd">    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.</span>
 
 <span class="sd">    Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.</span>
 
@@ -395,13 +401,10 @@
                 <span class="n">denomInt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Rpr</span><span class="p">,</span> <span class="n">epsrel</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">,</span> <span class="n">epsabs</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span><span class="p">(</span><span class="n">kfac</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">numerator</span><span class="o">/</span><span class="n">denominator</span><span class="p">))</span>
-
+    
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_dnorm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span><span class="o">*</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mu</span><span class="p">)</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_dnoiseGaussH</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dnorm</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_dnoiseGaussH</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-.</span><span class="mi">5</span><span class="o">*</span><span class="p">((</span><span class="n">s</span><span class="o">-</span><span class="n">r</span><span class="p">)</span><span class="o">/</span><span class="n">sigma</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">sigma</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span></div>
         <span class="c1"># f(s|r) in Haro et al. (2008) w/ Gaussian</span>
         <span class="c1"># transition density</span>
         <span class="c1"># &#39;k&#39; is not used, but is input</span>

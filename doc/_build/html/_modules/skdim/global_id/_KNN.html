@@ -88,6 +88,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../quick_start.html">Quick Start with scikit-dimension</a></li>
 </ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User guide</a></li>
+</ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../api.html">scikit-dimension API</a></li>
@@ -188,7 +192,8 @@
 
 
 <div class="viewcode-block" id="KNN"><a class="viewcode-back" href="../../../generated/skdim.global_id.KNN.html#skdim.global_id.KNN">[docs]</a><span class="k">class</span> <span class="nc">KNN</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.</span>
+    <span class="sd">&quot;&quot;&quot; Intrinsic dimension estimation with the kNN algorithm.</span>
+<span class="sd">    This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -203,9 +208,18 @@
 <span class="sd">        Number of bootstrap samples for each sample size.</span>
 <span class="sd">    gamma : int, default=2</span>
 <span class="sd">        Weighting constant.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    </span>
+<span class="sd">    self.dimension_ : float</span>
+<span class="sd">        The estimated intrinsic dimension</span>
+<span class="sd">    self.residual_ : float</span>
+<span class="sd">        </span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
+<span class="sd">    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.</span>
 
 <span class="sd">    Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. IEEE Trans. on Sig. Proc., 58(2), 650-663. </span>
 <span class="sd">    &quot;&quot;&quot;</span>

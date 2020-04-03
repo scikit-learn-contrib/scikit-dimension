@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="scikit-dimension API" href="api.html" />
+    <link rel="next" title="User guide" href="user_guide.html" />
     <link rel="prev" title="Welcome to scikit-dimension’s documentation!" href="index.html" /> 
 </head>
 
@@ -93,6 +93,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption"><span class="caption-text">User guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User guide</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Documentation</span></p>
 <ul>
@@ -189,7 +193,7 @@ $ pip install .
 
 <span class="c1">#generate data : np.array (n_points x n_dim). Here a uniformly sampled 5-ball embedded in 10 dimensions</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1000</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
-<span class="n">data</span><span class="p">[:,:</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">randball</span><span class="p">(</span><span class="n">n_points</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">n_dim</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[:,:</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">gendata</span><span class="o">.</span><span class="n">hyperBall</span><span class="p">(</span><span class="n">n_points</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">n_dim</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">radius</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
 <span class="c1">#fit a global estimator</span>
 <span class="n">danco</span> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">global_id</span><span class="o">.</span><span class="n">DANCo</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -200,6 +204,9 @@ $ pip install .
                             <span class="n">class_instance</span> <span class="o">=</span> <span class="n">skdim</span><span class="o">.</span><span class="n">local_id</span><span class="o">.</span><span class="n">lPCA</span><span class="p">(),</span>
                             <span class="n">n_neighbors</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
                             <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1">#get estimated intrinsic dimension</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">danco</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="n">fishers</span><span class="o">.</span><span class="n">dimension_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lpca_pw</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -213,7 +220,7 @@ $ pip install .
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="api.html" class="btn btn-neutral float-right" title="scikit-dimension API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="User guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to scikit-dimension’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
