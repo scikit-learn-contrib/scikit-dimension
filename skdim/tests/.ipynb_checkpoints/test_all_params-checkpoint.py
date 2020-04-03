@@ -116,7 +116,7 @@ def test_knn_params(data):
 def test_mada_params(data):
     x = skdim.global_id.Mada().fit(data)
     x = skdim.global_id.Mada(k=5).fit(data)
-    x = skdim.global_id.Mada(comb='mean').fit(data)
+    x = skdim.global_id.Mada(comb='average').fit(data)
     x = skdim.global_id.Mada(comb='median').fit(data)
     x = skdim.global_id.Mada(local=True).fit(data)
 
