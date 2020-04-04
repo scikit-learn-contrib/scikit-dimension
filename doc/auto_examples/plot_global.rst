@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_plot_global.py>` to download the full example code
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_plot_global.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_global.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_global.py:
 
 
 ===========================
@@ -35,7 +37,7 @@ Global ID example
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.234 seconds)
+   **Total running time of the script:** ( 0 minutes  2.340 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_global.py:
@@ -48,13 +50,13 @@ Global ID example
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: plot_global.py <plot_global.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: plot_global.ipynb <plot_global.ipynb>`
 
