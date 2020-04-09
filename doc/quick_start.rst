@@ -31,13 +31,13 @@ Local and global estimators can be used in this way:
     data = np.zeros((1000,10))
     data[:,:5] = skdim.gendata.hyperBall(n_points = 1000, n_dim = 5, radius = 1, random_state = 0)
 
-    #fit a global estimator
-    danco = skdim.global_id.DANCo().fit(data)
-    #fit a local estimator (local estimators assume input data comes from a local data neighborhood)
-    fishers = skdim.local_id.FisherS().fit(data)
+    #fit an estimator of global intrinsic dimension (gid)
+    danco = skdim.gid.DANCo().fit(data)
+    #fit an estimator of local intrinsic dimension (lid): local estimators assume input data comes from a local data neighborhood
+    fishers = skdim.lid.FisherS().fit(data)
     #fit a global or local estimator in k-nearest-neighborhoods of each point:
     lpca_pw = skdim.asPointwise(data = data,
-                                class_instance = skdim.local_id.lPCA(),
+                                class_instance = skdim.lid.lPCA(),
                                 n_neighbors = 100,
                                 n_jobs = 1)
                                 

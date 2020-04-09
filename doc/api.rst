@@ -2,83 +2,83 @@
 scikit-dimension API
 ####################
 
-The module global_id provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module local_id contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).
+The module gid provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module lid contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).
 
-local_id
+lid
 =========
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.ESS
+   skdim.lid.ESS
 
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.FisherS
+   skdim.lid.FisherS
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.lPCA
+   skdim.lid.lPCA
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.MiND_ML
+   skdim.lid.MiND_ML
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.MOM
+   skdim.lid.MOM
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-   skdim.local_id.TLE
+   skdim.lid.TLE
 
-global_id
+gid
 =========
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.CorrInt
+    skdim.gid.CorrInt
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.DANCo
+    skdim.gid.DANCo
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.KNN
+    skdim.gid.KNN
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.Mada
+    skdim.gid.Mada
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.MLE
+    skdim.gid.MLE
 
 .. autosummary::
    :toctree: generated/
    :template: class.rst
 
-    skdim.global_id.TwoNN
+    skdim.gid.TwoNN

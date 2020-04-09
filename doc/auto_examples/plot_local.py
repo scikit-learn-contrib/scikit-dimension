@@ -26,21 +26,21 @@
 Local ID example
 ===========================
 """
-from skdim import local_id, asPointwise
+from skdim import lid, asPointwise
 import numpy as np
 
 X = np.random.random((1000, 10))
 
 
 # one neighborhood
-ess = local_id.ESS().fit(X)
-fishers = local_id.FisherS().fit(X)
-mom = local_id.MOM().fit(X)
-mind_ml = local_id.MiND_ML().fit(X)
-tle = local_id.TLE().fit(X)
-lpca = local_id.lPCA().fit(X)
+ess = lid.ESS().fit(X)
+fishers = lid.FisherS().fit(X)
+mom = lid.MOM().fit(X)
+mind_ml = lid.MiND_ML().fit(X)
+tle = lid.TLE().fit(X)
+lpca = lid.lPCA().fit(X)
 
 
 # all datapoint neighborhoods
-pw_id = asPointwise(X, local_id.FisherS(),
+pw_id = asPointwise(X, lid.FisherS(),
                     n_neighbors=100, n_jobs=1)

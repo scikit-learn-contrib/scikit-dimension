@@ -22,10 +22,6 @@
 # SOFTWARE.
 #
 
-# Credits to Kerstin Johnsson
-# https://cran.r-project.org/web/packages/intrinsicDimension/index.html
-# for the R implementation
-
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_random_state
@@ -71,7 +67,7 @@ class DANCo(BaseEstimator):
     ----------
     References
     
-    Code translated from the intrinsicDimension R package by Kerstin Johnsson.
+    Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
 
     Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
 

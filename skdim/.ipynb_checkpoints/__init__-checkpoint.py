@@ -22,7 +22,7 @@
 # SOFTWARE.
 #
 from . import gendata
-from . import local_id
-from . import global_id
-from ._commonfuncs import get_nn, get_estimators, asPointwise
+from . import lid
+from . import gid
+from ._commonfuncs import get_nn, get_estimators, asPointwise, mean_local_id
 from ._version import __version__

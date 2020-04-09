@@ -1,12 +1,10 @@
-.. only:: html
+.. note::
+    :class: sphx-glr-download-link-note
 
-    .. note::
-        :class: sphx-glr-download-link-note
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_global.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_global.py>`     to download the full example code
-    .. rst-class:: sphx-glr-example-title
-
-    .. _sphx_glr_auto_examples_plot_global.py:
+.. _sphx_glr_auto_examples_plot_global.py:
 
 
 ===========================
@@ -22,22 +20,22 @@ Global ID example
 
 .. code-block:: default
 
-    from skdim import global_id
+    from skdim import gid
     import numpy as np
 
     X = np.random.random((1000, 10))
 
-    corrint = global_id.CorrInt().fit(X).dimension_
-    danco = global_id.DANCo().fit(X).dimension_
-    knn = global_id.KNN().fit(X).dimension_
-    mada = global_id.Mada().fit(X).dimension_
-    mle = global_id.MLE().fit(X).dimension_
-    twonn = global_id.TwoNN().fit(X).dimension_
+    corrint = gid.CorrInt().fit(X).dimension_
+    danco = gid.DANCo().fit(X).dimension_
+    knn = gid.KNN().fit(X).dimension_
+    mada = gid.Mada().fit(X).dimension_
+    mle = gid.MLE().fit(X).dimension_
+    twonn = gid.TwoNN().fit(X).dimension_
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.340 seconds)
+   **Total running time of the script:** ( 0 minutes  3.223 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_global.py:
@@ -50,13 +48,13 @@ Global ID example
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
      :download:`Download Python source code: plot_global.py <plot_global.py>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
      :download:`Download Jupyter notebook: plot_global.ipynb <plot_global.ipynb>`
 

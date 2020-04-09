@@ -1,12 +1,10 @@
-.. only:: html
+.. note::
+    :class: sphx-glr-download-link-note
 
-    .. note::
-        :class: sphx-glr-download-link-note
+    Click :ref:`here <sphx_glr_download_auto_examples_plot_local.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
 
-        Click :ref:`here <sphx_glr_download_auto_examples_plot_local.py>`     to download the full example code
-    .. rst-class:: sphx-glr-example-title
-
-    .. _sphx_glr_auto_examples_plot_local.py:
+.. _sphx_glr_auto_examples_plot_local.py:
 
 
 ===========================
@@ -22,29 +20,29 @@ Local ID example
 
 .. code-block:: default
 
-    from skdim import local_id, asPointwise
+    from skdim import lid, asPointwise
     import numpy as np
 
     X = np.random.random((1000, 10))
 
 
     # one neighborhood
-    ess = local_id.ESS().fit(X)
-    fishers = local_id.FisherS().fit(X)
-    mom = local_id.MOM().fit(X)
-    mind_ml = local_id.MiND_ML().fit(X)
-    tle = local_id.TLE().fit(X)
-    lpca = local_id.lPCA().fit(X)
+    ess = lid.ESS().fit(X)
+    fishers = lid.FisherS().fit(X)
+    mom = lid.MOM().fit(X)
+    mind_ml = lid.MiND_ML().fit(X)
+    tle = lid.TLE().fit(X)
+    lpca = lid.lPCA().fit(X)
 
 
     # all datapoint neighborhoods
-    pw_id = asPointwise(X, local_id.FisherS(),
+    pw_id = asPointwise(X, lid.FisherS(),
                         n_neighbors=100, n_jobs=1)
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.285 seconds)
+   **Total running time of the script:** ( 0 minutes  4.520 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_local.py:
@@ -57,13 +55,13 @@ Local ID example
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-python
+  .. container:: sphx-glr-download
 
      :download:`Download Python source code: plot_local.py <plot_local.py>`
 
 
 
-  .. container:: sphx-glr-download sphx-glr-download-jupyter
+  .. container:: sphx-glr-download
 
      :download:`Download Jupyter notebook: plot_local.ipynb <plot_local.ipynb>`
 

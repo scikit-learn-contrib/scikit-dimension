@@ -110,6 +110,7 @@ def proxy(tup):
 
 
 def get_nn(X, k, n_jobs=1):
+    '''Compute the k-nearest neighbors of a dataset np.array (n_samples x n_dims)'''
     neigh = NearestNeighbors(n_neighbors=k, n_jobs=n_jobs)
     neigh.fit(X)
     dists, inds = neigh.kneighbors(return_distance=True)
@@ -131,6 +132,31 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         return results
     else:
         return [class_instance.fit(data[i, :]).dimension_ for i in knn]
+    
+def mean_local_id(local_id,knnidx):
+    '''
+    Compute point mean local ID: the mean ID of all neighborhoods in which a point appears
+    
+    Parameters
+    ----------
+    local_id : list or np.array
+        list of local ID for each point
+    knnidx : np.array 
+        indices of kNN for each point returned by function get_nn
+    
+    Results
+    -------
+    mean_neighborhoods_LID : np.array
+        list of mean local ID for each point
+        
+    '''
+    mean_neighborhoods_LID = np.zeros(len(local_id))
+    for point_i in range(len(local_id)):
+        # get all points which have this point in their neighbourhoods
+        all_neighborhoods_with_point_i = np.append(np.where(knnidx==point_i)[0], point_i)
+        # get the mean local ID of these points
+        mean_neighborhoods_LID[point_i] = (local_id[all_neighborhoods_with_point_i].mean())
+    return mean_neighborhoods_LID
 
 
 def binom_coeff(n, k):
@@ -184,3 +210,5 @@ def check_random_generator(seed):
         return seed
     raise ValueError('%r cannot be used to seed a numpy.random._generator.Generator'
                      ' instance' % seed)
+    
+
