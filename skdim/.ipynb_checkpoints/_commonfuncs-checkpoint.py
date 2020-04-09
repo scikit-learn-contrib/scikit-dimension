@@ -34,9 +34,9 @@ import skdim
 
 def get_estimators():
     local_class_list = [o[1]
-                        for o in getmembers(skdim.local_id) if isclass(o[1])]
+                        for o in getmembers(skdim.lid) if isclass(o[1])]
     global_class_list = [o[1]
-                         for o in getmembers(skdim.global_id) if isclass(o[1])]
+                         for o in getmembers(skdim.gid) if isclass(o[1])]
 
     local_estimators = dict(
         zip([str(e).split('.')[-1][:-2] for e in local_class_list], local_class_list))
