@@ -42,7 +42,7 @@ Local ID example
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.454 seconds)
+   **Total running time of the script:** ( 0 minutes  4.388 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_local.py:

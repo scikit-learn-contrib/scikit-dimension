@@ -4,8 +4,8 @@ scikit-dimension API
 
 The module gid provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module lid contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).
 
-lid
-=========
+lid (local intrinsic dimension)
+===============================
 
 .. autosummary::
    :toctree: generated/
@@ -44,8 +44,8 @@ lid
 
    skdim.lid.TLE
 
-gid
-=========
+gid (global intrinsic dimension)
+================================
 
 .. autosummary::
    :toctree: generated/
