@@ -74,18 +74,18 @@ def test_fisher_params(data,monkeypatch):
     monkeypatch.setattr(plt, 'show', lambda: None)
     x = skdim.lid.FisherS().fit(data)
     x = skdim.lid.FisherS(conditional_number=2).fit(data)
-    x = skdim.lid.FisherS(produce_plots=True).fit(data) #travis ci macosx stuck when producing plots 
+    x = skdim.lid.FisherS(produce_plots=True).fit(data)
     x = skdim.lid.FisherS(project_on_sphere=False).fit(data)
     x = skdim.lid.FisherS(verbose=True).fit(data)
     x = skdim.lid.FisherS(limit_maxdim=True).fit(data)
     x = skdim.lid.FisherS().fit(data).point_inseparability_to_pointID()
 
 def test_mind_ml_params(data):
-    x = skdim.lid.MiND_ML()
-    x = skdim.lid.MiND_ML(ver='MLi')
-    x = skdim.lid.MiND_ML(ver='ML1')
-    x = skdim.lid.MiND_ML(D=5)
-    x = skdim.lid.MiND_ML(k=5)
+    x = skdim.gid.MiND_ML()
+    x = skdim.gid.MiND_ML(ver='MLi')
+    x = skdim.gid.MiND_ML(ver='ML1')
+    x = skdim.gid.MiND_ML(D=5)
+    x = skdim.gid.MiND_ML(k=5)
     
 def test_mom_params(data):
     x = skdim.lid.MOM()
@@ -122,11 +122,11 @@ def test_knn_params(data):
     x = skdim.gid.KNN(gamma=3).fit(data)
 
 def test_mada_params(data):
-    x = skdim.gid.Mada().fit(data)
-    x = skdim.gid.Mada(k=5).fit(data)
-    x = skdim.gid.Mada(comb='average').fit(data)
-    x = skdim.gid.Mada(comb='median').fit(data)
-    x = skdim.gid.Mada(local=True).fit(data)
+    x = skdim.lid.MADA().fit(data)
+    x = skdim.lid.MADA(k=5).fit(data)
+    x = skdim.lid.MADA(comb='average').fit(data)
+    x = skdim.lid.MADA(comb='median').fit(data)
+    x = skdim.lid.MADA(local=True).fit(data)
 
 def test_mle_params(data):
     x = skdim.gid.MLE().fit(data)
@@ -147,17 +147,17 @@ def test_twonn_params(data):
 #test auxiliary functions
 def test_get_estimators(data):
     assert skdim.get_estimators() == ({'ESS': skdim.lid._ESS.ESS,
-                                 'FisherS': skdim.lid._FisherS.FisherS,
-                                 'MOM': skdim.lid._MOM.MOM,
-                                 'MiND_ML': skdim.lid._MiND_ML.MiND_ML,
-                                 'TLE': skdim.lid._TLE.TLE,
-                                 'lPCA': skdim.lid._PCA.lPCA},
-                                {'CorrInt': skdim.gid._CorrInt.CorrInt,
-                                 'DANCo': skdim.gid._DANCo.DANCo,
-                                 'KNN': skdim.gid._KNN.KNN,
-                                 'MLE': skdim.gid._MLE.MLE,
-                                 'Mada': skdim.gid._Mada.Mada,
-                                 'TwoNN': skdim.gid._TwoNN.TwoNN})
+                                       'FisherS': skdim.lid._FisherS.FisherS,
+                                       'MADA': skdim.lid._MADA.MADA,
+                                       'MOM': skdim.lid._MOM.MOM,
+                                       'TLE': skdim.lid._TLE.TLE,
+                                       'lPCA': skdim.lid._PCA.lPCA},
+                                      {'CorrInt': skdim.gid._CorrInt.CorrInt,
+                                       'DANCo': skdim.gid._DANCo.DANCo,
+                                       'KNN': skdim.gid._KNN.KNN,
+                                       'MLE': skdim.gid._MLE.MLE,
+                                       'MiND_ML': skdim.gid._MiND_ML.MiND_ML,
+                                       'TwoNN': skdim.gid._TwoNN.TwoNN})
 
 def test_aspointwise(data):   
     x = skdim.asPointwise(data,skdim.lid.lPCA(),n_neighbors=50)

@@ -33,7 +33,7 @@ Local and global estimators can be used in this way:
 
     #fit an estimator of global intrinsic dimension (gid)
     danco = skdim.gid.DANCo().fit(data)
-    #fit an estimator of local intrinsic dimension (lid): local estimators assume input data comes from a local data neighborhood
+    #fit an estimator of local intrinsic dimension (lid)
     fishers = skdim.lid.FisherS().fit(data)
     #fit a global or local estimator in k-nearest-neighborhoods of each point:
     lpca_pw = skdim.asPointwise(data = data,

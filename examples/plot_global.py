@@ -42,6 +42,6 @@ X = np.random.random((1000, 10))
 corrint = gid.CorrInt().fit(X).dimension_
 danco = gid.DANCo().fit(X).dimension_
 knn = gid.KNN().fit(X).dimension_
-mada = gid.Mada().fit(X).dimension_
+mind_ml = gid.MiND_ML().fit(X).dimension_
 mle = gid.MLE().fit(X).dimension_
 twonn = gid.TwoNN().fit(X).dimension_

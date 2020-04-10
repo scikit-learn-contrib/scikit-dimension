@@ -44,7 +44,7 @@ X = np.random.random((1000, 10))
 ess = lid.ESS().fit(X)
 fishers = lid.FisherS().fit(X)
 mom = lid.MOM().fit(X)
-mind_ml = lid.MiND_ML().fit(X)
+mada = lid.MADA().fit(X)
 tle = lid.TLE().fit(X)
 lpca = lid.lPCA().fit(X)
 

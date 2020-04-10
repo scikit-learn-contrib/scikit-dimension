@@ -113,7 +113,7 @@ class FisherS(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
 
-        # test_alphas introduced to pass sklearn checks (sklearn doesn't like arrays as default parameters)
+        # test_alphas introduced to pass sklearn checks (sklearn doesn't take arrays as default parameters)
         if self.alphas is None:
             self._alphas = np.arange(.6, 1, .02)[None]
 
