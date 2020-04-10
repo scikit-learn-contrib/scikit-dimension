@@ -77,8 +77,8 @@ def test_ess_results(data):
 def test_mind_ml_results(data):
 #     all((skdim.lid.MiND_ML(ver='MLk').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=20,D=10,ver='MIND_MLi')[0]),
 #          skdim.lid.MiND_ML(ver='MLi').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=10,D=5,ver='MIND_MLk')[0])))
-    assert all((skdim.lid.MiND_ML(ver='MLk').fit(data).dimension_ == 3.696083548872364,
-                skdim.lid.MiND_ML(ver='MLi').fit(data).dimension_ == 4))
+    assert all((skdim.gid.MiND_ML(ver='MLk').fit(data).dimension_ == 3.696083548872364,
+                skdim.gid.MiND_ML(ver='MLi').fit(data).dimension_ == 4))
 
 #def test_mom_results(data):
 #    x = skdim.lid.MOM()
@@ -118,7 +118,7 @@ def test_danco_results():
 def test_mada_results(data):
 #     assert np.allclose(skdim.gid.Mada(local=True,k=20).fit(data).dimension_,np.array(ider.mada(data,local=True,k=20)))
 #            
-    assert np.allclose(skdim.gid.Mada(local=True,k=20).fit(data).dimension_,
+    assert np.allclose(skdim.lid.MADA(local=True,k=20).fit(data).dimension_,
                        np.array([2.73873109, 2.1619804 , 2.29577097, 3.13300883, 2.68340134,
                                  2.7744833 , 2.16936429, 2.63976628, 3.73803225, 2.68782875,
                                  3.3468158 , 3.3375878 , 2.58747076, 3.49101585, 2.84130906,
