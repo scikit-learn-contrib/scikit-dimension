@@ -48,7 +48,7 @@ class lPCA(BaseEstimator):
     ver : str 	
         Version. Possible values: 'FO', 'fan', 'maxgap','ratio'.
     alphaRatio : float
-        Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain (1-alphaRatio) percent of the variance.
+        Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain alphaRatio percent of the variance.
     alphaFO: float
         Only for ver = 'FO'. An eigenvalue is considered significant if it is larger than alpha times the largest eigenvalue.
     alphaFan : float
@@ -145,7 +145,7 @@ class lPCA(BaseEstimator):
         # X - data set (n x d)
         # theta - ratio of variance to preserve (theta \in [0,1])
         sumexp = np.cumsum(explained_var)
-        idx_threshold = np.where(sumexp > (1-self.alphaRatio))[0]
+        idx_threshold = np.where(sumexp > self.alphaRatio)[0]
         if len(idx_threshold) == 0:
             de = len(explained_var)
         else:
