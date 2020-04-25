@@ -105,7 +105,8 @@ class ESS(BaseEstimator):
     def _essLocalDimEst(self, X):
         essval = self._computeEss(X, verbose=False)
         if (np.isnan(essval)):
-            return(dict(de=np.nan, ess=np.nan))
+            de=np.nan 
+            return(de, essval)
 
         mindim = 1
         maxdim = 20
