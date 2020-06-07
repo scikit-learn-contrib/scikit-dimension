@@ -137,7 +137,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         results = pool.map(
             class_instance.fit, [data[i, :] for i in knn])
         pool.close()
-        return results
+        return [i.dimension_ for i in results]
     else:
         return [class_instance.fit(data[i, :]).dimension_ for i in knn]
     
