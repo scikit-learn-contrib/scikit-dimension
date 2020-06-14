@@ -82,7 +82,7 @@ class DANCo(BaseEstimator):
     Rozza, A et al. (2012) Novel high intrinsic dimensionality estimators. Machine learning 89, 37-65. 
     """
 
-    def __init__(self, k=10, D=10, calibration_data=None, ver='DANCo', fractal=True, verbose=False, random_state=None):
+    def __init__(self, k=10, D=None, calibration_data=None, ver='DANCo', fractal=True, verbose=False, random_state=None):
         self.k = k
         self.D = D
         self.calibration_data = calibration_data
@@ -118,6 +118,9 @@ class DANCo(BaseEstimator):
             self._k = len(X)-2
         else:
             self._k = self.k
+            
+        if self.D is None:
+            self.D = X.shape[1]
 
         self.random_state_ = check_random_state(self.random_state)
 
@@ -304,7 +307,7 @@ class DANCo(BaseEstimator):
 
         nocal = self._dancoDimEstNoCalibration(X, self.D)
         if any(np.isnan(val) for val in nocal.values()):
-            return dict(de=np.nan, kl_divergence=np.nan, calibration_data=cal)
+            return np.nan, np.nan, cal
 
         if (cal is None):
             cal = self._DancoCalibrationData(N)
