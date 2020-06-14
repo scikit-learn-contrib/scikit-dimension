@@ -219,8 +219,8 @@ class DANCo(BaseEstimator):
         #print((vec.len[combs[1, ]]*vec.len[combs[2, ]]))
         # }
         cos_th = sc_prod/(vec_len[combs[0, :]]*vec_len[combs[1, :]])
-        if (any(abs(cos_th) > 1)):
-            print(cos_th[np.abs(cos_th) > 1])
+        #if (any(abs(cos_th) > 1)):
+        #    print(cos_th[np.abs(cos_th) > 1])
         return(np.arccos(cos_th))
 
     def _angles(self, X, nbs):
