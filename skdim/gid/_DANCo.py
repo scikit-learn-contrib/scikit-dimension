@@ -344,7 +344,8 @@ class DANCo(BaseEstimator):
 
         if self.fractal:
             # Fitting with a cubic smoothing spline:
-            f = interp1d(np.arange(1, self.D+1), kl, kind='cubic',
+            kind = 'cubic' if X.shape[1] > 3 else 'quadratic'
+            f = interp1d(np.arange(1, self.D+1), kl, kind=kind,
                          bounds_error=False, fill_value=(1, self.D+1))
             # Locating the minima:
             de_fractal = minimize(
