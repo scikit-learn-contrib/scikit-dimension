@@ -124,9 +124,9 @@ class DANCo(BaseEstimator):
         self.random_state_ = check_random_state(self.random_state)
 
         if self.ver not in ['DANCo','DANCoFit']:
-            self._Dimension_ = self._dancoDimEst(X)
+            self.dimension_ = self._dancoDimEst(X)
         else:
-            self._Dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
+            self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
             
         self.is_fitted_ = True
         # `fit` should always return `self`
