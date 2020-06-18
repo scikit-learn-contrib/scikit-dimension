@@ -50,9 +50,9 @@ class DANCo(BaseEstimator):
     ----------
     Attributes
 
-    k :	
+    k : 
         Neighborhood parameter.
-    D :	
+    D : 
         Maximal dimension
     ver : str, default='DANCo'
         Version to use. possible values: 'DANCo', 'MIND_MLi', 'MIND_MLk'.
@@ -119,15 +119,14 @@ class DANCo(BaseEstimator):
         else:
             self._k = self.k
             
-        if self.D is None:
-            self.D = X.shape[1]
+        self._D = X.shape[1] if self.D is None else self.D
 
         self.random_state_ = check_random_state(self.random_state)
 
         if self.ver not in ['DANCo','DANCoFit']:
-            self.dimension_ = self._dancoDimEst(X)
+            self._Dimension_ = self._dancoDimEst(X)
         else:
-            self.dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
+            self._Dimension_, self.kl_divergence_, self.calibration_data_ = self._dancoDimEst(X)
             
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -283,7 +282,7 @@ class DANCo(BaseEstimator):
     def _computeDANCoCalibrationData(self, N):
         print('Computing calibration X...\nCurrent dimension: ', end=' ')
         cal = self._DancoCalibrationData(self._k, N)
-        while (cal['maxdim'] < self.D):
+        while (cal['maxdim'] < self._D):
             if cal['maxdim'] % 10 == 0:
                 print(cal['maxdim'], end=' ')
             cal = self._increaseMaxDimByOne(cal)
@@ -303,16 +302,16 @@ class DANCo(BaseEstimator):
                                  N, cal['N'])
 
         if self.ver not in ['DANCo', 'DANCoFit']:
-            return(self._MIND_MLx(X, self.D))
+            return(self._MIND_MLx(X, self._D))
 
-        nocal = self._dancoDimEstNoCalibration(X, self.D)
+        nocal = self._dancoDimEstNoCalibration(X, self._D)
         if any(np.isnan(val) for val in nocal.values()):
             return np.nan, np.nan, cal
 
         if (cal is None):
             cal = self._DancoCalibrationData(N)
 
-        if (cal['maxdim'] < self.D):
+        if (cal['maxdim'] < self._D):
 
             if self.ver == 'DANCoFit':
                 if self.verbose:
@@ -330,14 +329,14 @@ class DANCo(BaseEstimator):
             else:
                 if self.verbose:
                     print("Computing DANCo calibration data for N = {}, k = {} for dimensions {} to {}".format(
-                        N, self._k, cal['maxdim']+1, self.D))
+                        N, self._k, cal['maxdim']+1, self._D))
 
                 # compute statistics
-                while (cal['maxdim'] < self.D):
+                while (cal['maxdim'] < self._D):
                     cal = self._increaseMaxDimByOne(cal)
 
-        kl = np.array([np.nan]*self.D)
-        for d in range(self.D):
+        kl = np.array([np.nan]*self._D)
+        for d in range(self._D):
             kl[d] = self._KL(nocal, cal['calibration_data'][d])
 
         de = np.argmin(kl)+1
@@ -351,11 +350,11 @@ class DANCo(BaseEstimator):
             elif X.shape[1] == 2:
                 kind = 'linear'
                 
-            f = interp1d(np.arange(1, self.D+1), kl, kind=kind,
-                         bounds_error=False, fill_value=(1, self.D+1))
+            f = interp1d(np.arange(1, self._D+1), kl, kind=kind,
+                         bounds_error=False, fill_value=(1, self._D+1))
             # Locating the minima:
             de_fractal = minimize(
-                f, de, bounds=[(1, self.D+1)], tol=1e-3)['x']
+                f, de, bounds=[(1, self._D+1)], tol=1e-3)['x']
             return de_fractal[0], kl[de-1], cal
         else:
             return de, kl[de-1], cal
