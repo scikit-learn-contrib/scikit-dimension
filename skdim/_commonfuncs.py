@@ -219,4 +219,11 @@ def check_random_generator(seed):
     raise ValueError('%r cannot be used to seed a numpy.random._generator.Generator'
                      ' instance' % seed)
     
+def brokenstick_distribution(dim):
+    distr = np.zeros(dim)
+    for i in range(dim):
+        for j in range(i,dim):
+            distr[i]=distr[i]+1/(j+1)
+        distr[i]=distr[i]/dim
+    return distr
 

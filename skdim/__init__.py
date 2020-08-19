@@ -32,5 +32,5 @@
 from . import gendata
 from . import lid
 from . import gid
-from ._commonfuncs import get_nn, get_estimators, asPointwise, mean_local_id
+from ._commonfuncs import get_nn, get_estimators, asPointwise, mean_local_id, brokenstick_distribution
 from ._version import __version__
