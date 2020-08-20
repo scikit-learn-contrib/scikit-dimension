@@ -36,6 +36,7 @@ import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
+
 class lPCA(BaseEstimator):
     """ Local intrinsic dimension estimation using PCA.
     Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
@@ -57,6 +58,8 @@ class lPCA(BaseEstimator):
     PFan : float
         Only for ver = 'Fan'. Total covariance in non-noise.
     verbose : bool, default=False
+    explained_variance : bool, default=False
+        If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
 
     References
     ----------
@@ -70,8 +73,17 @@ class lPCA(BaseEstimator):
     Cangelosi R, Goriely A. Component retention in principal component analysis with application to cDNA microarray data. 2007. Biol. Direct 2:2.
     """
 
-    def __init__(self, ver='FO', alphaRatio=.05, alphaFO=.05, alphaFan=10, betaFan=.8,
-                 PFan=.95, verbose=True):
+    def __init__(
+        self,
+        ver="FO",
+        alphaRatio=0.05,
+        alphaFO=0.05,
+        alphaFan=10,
+        betaFan=0.8,
+        PFan=0.95,
+        verbose=True,
+        fit_explained_variance=False,
+    ):
         self.ver = ver
         self.alphaRatio = alphaRatio
         self.alphaFO = alphaFO
@@ -79,6 +91,7 @@ class lPCA(BaseEstimator):
         self.betaFan = betaFan
         self.PFan = PFan
         self.verbose = verbose
+        self.fit_explained_variance = fit_explained_variance
 
     def fit(self, X, y=None):
         """A reference implementation of a fitting function.
@@ -93,65 +106,62 @@ class lPCA(BaseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        if self.fit_explained_variance:
+            X = check_array(X, ensure_2d=False, ensure_min_samples=2)
+        else:
+            X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
-        #if self.ver == 'ratio':
-        #    self.dimension_ = self._pcaLocalDimEst(X)
-        #else:
         self.dimension_, self.gap_ = self._pcaLocalDimEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self
 
     def _pcaLocalDimEst(self, X):
-        pca = PCA().fit(X)
-        explained_var = pca.explained_variance_
+        if self.fit_explained_variance:
+            explained_var = X
+        else:
+            pca = PCA().fit(X)
+            explained_var = pca.explained_variance_
 
-        if (self.ver == 'FO'):
-            return(self._FO(explained_var))
-        elif (self.ver == 'fan'):
-            return(self._fan(explained_var))
-        elif (self.ver == 'maxgap'):
-            return(self._maxgap(explained_var))
-        elif (self.ver == 'ratio'):
-            return(self._ratio(explained_var))
-        elif (self.ver == 'Kaiser'):
-            return(self._Kaiser(explained_var))
-        elif (self.ver == 'broken_stick'):
-            return(self._broken_stick(explained_var))
+        if self.ver == "FO":
+            return self._FO(explained_var)
+        elif self.ver == "fan":
+            return self._fan(explained_var)
+        elif self.ver == "maxgap":
+            return self._maxgap(explained_var)
+        elif self.ver == "ratio":
+            return self._ratio(explained_var)
+        elif self.ver == "Kaiser":
+            return self._Kaiser(explained_var)
+        elif self.ver == "broken_stick":
+            return self._broken_stick(explained_var)
 
     def _FO(self, explained_var):
-        de = sum(explained_var > (self.alphaFO*explained_var[0]))
-        gaps = explained_var[:-1]/explained_var[1:]
+        de = sum(explained_var > (self.alphaFO * explained_var[0]))
+        gaps = explained_var[:-1] / explained_var[1:]
 
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
 
     @staticmethod
     def _maxgap(explained_var):
-        gaps = explained_var[:-1]/explained_var[1:]
-        de = np.nanargmax(gaps)+1
-        
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        gaps = explained_var[:-1] / explained_var[1:]
+        de = np.nanargmax(gaps) + 1
+
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
 
     def _ratio(self, explained_var):
         sumexp = np.cumsum(explained_var)
-        sumexp_norm = sumexp/np.max(sumexp)
-        de = sum(sumexp_norm<self.alphaRatio)+1
-        gaps = explained_var[:-1]/explained_var[1:]
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        sumexp_norm = sumexp / np.max(sumexp)
+        de = sum(sumexp_norm < self.alphaRatio) + 1
+        gaps = explained_var[:-1] / explained_var[1:]
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
         # X - data set (n x d)
@@ -162,56 +172,64 @@ class lPCA(BaseEstimator):
         #    de = len(explained_var)
         # else:
         #    de = idx_threshold.min() + 1
-        #return de
- 
+        # return de
 
     def _fan(self, explained_var):
-        r = np.where(np.cumsum(explained_var) /
-                     sum(explained_var) > self.PFan)[0][0]
+        r = np.where(np.cumsum(explained_var) / sum(explained_var) > self.PFan)[0][0]
         sigma = np.mean(explained_var[r:])
         explained_var -= sigma
-        gaps = explained_var[:-1]/explained_var[1:]
-        de = 1 + np.min(np.concatenate((np.where(gaps > self.alphaFan)[0],
-                                        np.where((np.cumsum(explained_var)/sum(explained_var)) > self.betaFan)[0])))
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        gaps = explained_var[:-1] / explained_var[1:]
+        de = 1 + np.min(
+            np.concatenate(
+                (
+                    np.where(gaps > self.alphaFan)[0],
+                    np.where(
+                        (np.cumsum(explained_var) / sum(explained_var)) > self.betaFan
+                    )[0],
+                )
+            )
+        )
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
 
     def _Kaiser(self, explained_var):
-        #de = sum(explained_var > (self.alphaFO*explained_var[0]))
-        de = sum(explained_var > np.mean(explained_var))+1
-        gaps = explained_var[:-1]/explained_var[1:]
+        # de = sum(explained_var > (self.alphaFO*explained_var[0]))
+        de = sum(explained_var > np.mean(explained_var)) + 1
+        gaps = explained_var[:-1] / explained_var[1:]
 
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
 
-    def _broken_stick(self, explained_var):
-        #bs = brokenstick_distribution(len(explained_var))        
-        dim = len(explained_var)
+    @staticmethod
+    def _brokenstick_distribution(dim):
         distr = np.zeros(dim)
         for i in range(dim):
-            for j in range(i,dim):
-                distr[i]=distr[i]+1/(j+1)
-            distr[i]=distr[i]/dim
-        bs = distr
-        gaps = explained_var[:-1]/explained_var[1:]
+            for j in range(i, dim):
+                distr[i] = distr[i] + 1 / (j + 1)
+            distr[i] = distr[i] / dim
+        return distr
+
+    def _broken_stick(self, explained_var):
+        bs = self._brokenstick_distribution(dim=len(explained_var))
+        gaps = explained_var[:-1] / explained_var[1:]
         de = 0
-        explained_var_norm = explained_var/np.sum(explained_var)
+        explained_var_norm = explained_var / np.sum(explained_var)
         for i in range(len(explained_var)):
-            if bs[i]>explained_var_norm[i]:
-                de = i+1
+            if bs[i] > explained_var_norm[i]:
+                de = i + 1
                 break
-        if de-1 < len(gaps):
-            return de, gaps[de-1]
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
         else:
             return de, gaps[-1]
 
 
 ##### dev in progress
-#from sklearn.cluster import KMeans
+# from sklearn.cluster import KMeans
 # def pcaOtpmPointwiseDimEst(data, N, alpha = 0.05):
 #    km = KMeans(n_clusters=N)
 #    km.fit(data)
