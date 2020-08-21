@@ -41,15 +41,15 @@ import skdim
 
 
 def get_estimators():
-    local_class_list = [o[1]
-                        for o in getmembers(skdim.lid) if isclass(o[1])]
-    global_class_list = [o[1]
-                         for o in getmembers(skdim.gid) if isclass(o[1])]
+    local_class_list = [o[1] for o in getmembers(skdim.lid) if isclass(o[1])]
+    global_class_list = [o[1] for o in getmembers(skdim.gid) if isclass(o[1])]
 
     local_estimators = dict(
-        zip([str(e).split('.')[-1][:-2] for e in local_class_list], local_class_list))
+        zip([str(e).split(".")[-1][:-2] for e in local_class_list], local_class_list)
+    )
     global_estimators = dict(
-        zip([str(e).split('.')[-1][:-2] for e in global_class_list], global_class_list))
+        zip([str(e).split(".")[-1][:-2] for e in global_class_list], global_class_list)
+    )
 
     return local_estimators, global_estimators
 
@@ -67,46 +67,47 @@ def indComb(NN):
 
 
 def indnComb(NN, n):
-    if (n == 1):
-        return(np.arange(NN).reshape((-1, 1)))
-    prev = indnComb(NN, n-1)
+    if n == 1:
+        return np.arange(NN).reshape((-1, 1))
+    prev = indnComb(NN, n - 1)
     lastind = prev[:, -1]
     ind_cf1 = np.repeat(lastind, NN)
     ind_cf2 = np.tile(np.arange(NN), len(lastind))
-    #ind_cf2 = np.arange(NN)
+    # ind_cf2 = np.arange(NN)
     # for i in range(len(lastind)-1):
     #    ind_cf2 = np.concatenate((ind_cf2,np.arange(NN)))
     new_ind = np.where(ind_cf1 < ind_cf2)[0]
-    new_ind1 = ((new_ind - 1) // NN)
+    new_ind1 = (new_ind - 1) // NN
     new_ind2 = new_ind % NN
     new_ind2[new_ind2 == 0] = NN
     return np.hstack((prev[new_ind1, :], np.arange(NN)[new_ind2].reshape((-1, 1))))
 
 
 def efficient_indnComb(n, k, random_generator_):
-    '''
+    """
     memory-efficient indnComb:
     uniformly takes 5000 samples from itertools.combinations(n,k)
-    '''
+    """
     ncomb = binom_coeff(n, k)
     pop = itertools.combinations(range(n), k)
-    targets = set(random_generator_.choice(
-        ncomb, min(ncomb, 5000), replace=False))
-    return np.array(list(itertools.compress(pop, map(targets.__contains__, itertools.count()))))
+    targets = set(random_generator_.choice(ncomb, min(ncomb, 5000), replace=False))
+    return np.array(
+        list(itertools.compress(pop, map(targets.__contains__, itertools.count())))
+    )
 
 
 def lens(vectors):
-    return np.sqrt(np.sum(vectors**2, axis=1))
+    return np.sqrt(np.sum(vectors ** 2, axis=1))
 
 
 def randball(n_points, n_dim, radius=1, center=[], random_state=None):
     random_state_ = check_random_state(random_state)
     if center == []:
-        center = np.array([0]*n_dim)
+        center = np.array([0] * n_dim)
     r = radius
     x = random_state_.normal(size=(n_points, n_dim))
-    ssq = np.sum(x**2, axis=1)
-    fr = r*gammainc(n_dim/2, ssq/2)**(1/n_dim)/np.sqrt(ssq)
+    ssq = np.sum(x ** 2, axis=1)
+    fr = r * gammainc(n_dim / 2, ssq / 2) ** (1 / n_dim) / np.sqrt(ssq)
     frtiled = np.tile(fr.reshape(n_points, 1), (1, n_dim))
     p = center + np.multiply(x, frtiled)
     return p
@@ -118,7 +119,7 @@ def proxy(tup):
 
 
 def get_nn(X, k, n_jobs=1):
-    '''Compute the k-nearest neighbors of a dataset np.array (n_samples x n_dims)'''
+    """Compute the k-nearest neighbors of a dataset np.array (n_samples x n_dims)"""
     neigh = NearestNeighbors(n_neighbors=k, n_jobs=n_jobs)
     neigh.fit(X)
     dists, inds = neigh.kneighbors(return_distance=True)
@@ -126,7 +127,7 @@ def get_nn(X, k, n_jobs=1):
 
 
 def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
-    '''Use a global estimator as a pointwise one by creating kNN neighborhoods'''
+    """Use a global estimator as a pointwise one by creating kNN neighborhoods"""
     if precomputed_knn is not None:
         knn = precomputed_knn
     else:
@@ -134,15 +135,15 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 
     if n_jobs > 1:
         pool = mp.Pool(n_jobs)
-        results = pool.map(
-            class_instance.fit, [data[i, :] for i in knn])
+        results = pool.map(class_instance.fit, [data[i, :] for i in knn])
         pool.close()
         return [i.dimension_ for i in results]
     else:
         return [class_instance.fit(data[i, :]).dimension_ for i in knn]
-    
-def mean_local_id(local_id,knnidx):
-    '''
+
+
+def mean_local_id(local_id, knnidx):
+    """
     Compute point mean local ID: the mean ID of all neighborhoods in which a point appears
     
     Parameters
@@ -157,18 +158,22 @@ def mean_local_id(local_id,knnidx):
     mean_neighborhoods_LID : np.array
         list of mean local ID for each point
         
-    '''
+    """
     mean_neighborhoods_LID = np.zeros(len(local_id))
     for point_i in range(len(local_id)):
         # get all points which have this point in their neighbourhoods
-        all_neighborhoods_with_point_i = np.append(np.where(knnidx==point_i)[0], point_i)
+        all_neighborhoods_with_point_i = np.append(
+            np.where(knnidx == point_i)[0], point_i
+        )
         # get the mean local ID of these points
-        mean_neighborhoods_LID[point_i] = (local_id[all_neighborhoods_with_point_i].mean())
+        mean_neighborhoods_LID[point_i] = local_id[
+            all_neighborhoods_with_point_i
+        ].mean()
     return mean_neighborhoods_LID
 
 
 def binom_coeff(n, k):
-    '''
+    """
     Taken from : https://stackoverflow.com/questions/26560726/python-binomial-coefficient
     Compute the number of ways to choose $k$ elements out of a pile of $n.$
 
@@ -183,7 +188,7 @@ def binom_coeff(n, k):
     :param n: the size of the pile of elements
     :param k: the number of elements to take from the pile
     :return: the number of ways to choose k elements out of a pile of n
-    '''
+    """
 
     # When k out of sensible range, should probably throw an exception.
     # For compatibility with scipy.special.{comb, binom} returns 0 instead.
@@ -216,14 +221,8 @@ def check_random_generator(seed):
         return np.random.default_rng(seed)
     if isinstance(seed, np.random._generator.Generator):
         return seed
-    raise ValueError('%r cannot be used to seed a numpy.random._generator.Generator'
-                     ' instance' % seed)
-    
-def brokenstick_distribution(dim):
-    distr = np.zeros(dim)
-    for i in range(dim):
-        for j in range(i,dim):
-            distr[i]=distr[i]+1/(j+1)
-        distr[i]=distr[i]/dim
-    return distr
+    raise ValueError(
+        "%r cannot be used to seed a numpy.random._generator.Generator"
+        " instance" % seed
+    )
 
