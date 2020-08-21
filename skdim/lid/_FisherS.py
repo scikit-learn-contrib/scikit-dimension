@@ -455,6 +455,119 @@ class FisherS(BaseEstimator):
                   str(round(alpha_selected, 2))+f', force_definite_dim = {force_definite_dim}')
         return n, inds
 
+    def getSeparabilityGraph(self,idx='all_inseparable',top_edges=10000):
+        data = self.Xp_
+        if idx == 'all_inseparable':  # all points are inseparable
+            selected_idx = np.argwhere(
+                np.all(self.p_alpha_ != 0, axis=1)).max()
+        elif idx == 'selected':  # globally selected alpha
+            selected_idx = (
+                self.n_alpha_ == self.n_single_).tolist().index(True)
+        elif type(idx) == int:
+            selected_idx = idx
+        else:
+            raise ValueError('unknown idx parameter')
+        alpha_selected = self._alphas[0, selected_idx]
+        return self.buildSeparabilityGraph(data,alpha_selected,top_edges=top_edges)
+
+    @staticmethod
+    def plotSeparabilityGraph(x,y,edges,alpha=0.3):
+        for i in range(len(edges)):
+            ii = edges[i][0]
+            jj = edges[i][1]
+            plt.plot([x[ii],x[jj]],[y[ii],y[jj]],'k-',alpha=alpha)        
+
+    @staticmethod
+    def buildSeparabilityGraph(data,alpha,top_edges=10000):
+        # weighted directed separability graph, represented by a list of tuples (point i, point j) and an array of weights
+        # each tuple is the observation that point i is inseparable from j, the weight is <x_i,x_j>/<xi,xi>-alpha
+        # 
+        # data is a matrix of data which is assumed to be properly normalized
+        # alpha parameter is a signle value in this case
+        # top_edges is the number of edges to return. if top_edges is negative then all edges will be returned
+    
+        #Number of points per 1 loop. 20k assumes approx 3.2GB
+        nP = np.min([2000,len(data)])
+        n = len(data)
+        leng = np.zeros((n, 1))
+        
+        #globalxy = np.zeros((n,n))
+        
+        insep_edges = []
+        weights = []
+        symmetric_graph = True
+        symmetry_message = False
+        
+        for k in range(0,n,nP):
+            e = k + nP 
+            if e > n:
+                e = n
+            # Calculate diagonal part, divide each row by diagonal element
+            xy = data[k:e, :] @ data[k:e, :].T
+            leng[k:e] = np.diag(xy)[:,None]
+            xy = xy - np.diag(leng[k:e].squeeze())
+            xy = xy / leng[k:e]
+            #if skdim.lid.FisherS.check_symmetric(xy):
+            if np.allclose(xy, xy.T, rtol=1e-05, atol=1e-08):
+                #globalxy[k:e,k:e] = np.triu(xy)
+                for i in range(nP):
+                    for j in range(i+1,nP):
+                        if xy[i,j]>alpha:
+                            insep_edges.append((k+i,k+j))
+                            weights.append(xy[i,j]-alpha)
+            else:
+                symmetric_graph = False
+                #globalxy[k:e,k:e] = xy
+                for i in range(nP):
+                    for j in range(i+1,nP):
+                        if xy[i,j]>alpha:
+                            insep_edges.append((k+i,k+j))   
+                            weights.append(xy[i,j]-alpha)
+            # Calculate nondiagonal part
+            startpoint = 0
+            if symmetric_graph:
+                startpoint = k
+                if not symmetry_message:
+                    print('Graph is symmetric, only upper triangle of the separability matrix will be used')
+                    symmetry_message = True
+            for kk in range(startpoint,n,nP):
+                #Ignore diagonal part
+                if not k == kk:
+                    ee = kk + nP 
+                    if ee > n:
+                        ee = n
+                    xy = data[k:e, :] @ data[kk:ee, :].T
+                    xy = xy / leng[k:e]
+                    #globalxy[k:e,kk:ee] = xy
+                    for i in range(ee-kk):
+                        for j in range(ee-kk):
+                            if xy[i,j]>alpha:
+                                insep_edges.append((k+i,kk+j))
+                                weights.append(xy[i,j]-alpha)
+                                
+        weights = np.array(weights)
+        
+        if top_edges>0:
+            if top_edges<len(insep_edges):
+                weights_sorted = np.sort(weights)
+                weights_sorted = weights_sorted[::-1]
+                thresh = weights_sorted[top_edges]
+                insep_edges_filtered = []
+                weights_filtered = []
+                for i,w in enumerate(weights):
+                    if w>thresh:
+                        insep_edges_filtered.append(insep_edges[i])
+                        weights_filtered.append(w)
+                weights = np.array(weights_filtered)
+                insep_edges = insep_edges_filtered
+            
+        return insep_edges,weights
+
+    @staticmethod
+    def check_symmetric(a, rtol=1e-05, atol=1e-08):
+        return np.allclose(a, a.T, rtol=rtol, atol=atol)
+
+
     def _SeparabilityAnalysis(self, X):
         '''
         %Performs standard analysis of separability and produces standard plots. 
