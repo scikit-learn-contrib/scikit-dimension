@@ -1,3 +1,9 @@
+"""
+===========================
+FisherS separability graph example
+===========================
+"""
+
 import skdim
 import numpy as np
 import matplotlib.pyplot as plt
