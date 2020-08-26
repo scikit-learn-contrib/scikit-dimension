@@ -389,7 +389,7 @@ class FisherS(BaseEstimator):
 #
 #            return n, n_single_estimate, alfa_single_estimate, inds[k]
 
-    def point_inseparability_to_pointID(self, idx='all_inseparable', force_definite_dim=False, verbose=True):
+    def point_inseparability_to_pointID(self, idx='all_inseparable', force_definite_dim=True, verbose=True):
         '''
         Turn pointwise inseparability probability into pointwise global ID
         Inputs : 
@@ -408,7 +408,7 @@ class FisherS(BaseEstimator):
                 np.all(self.p_alpha_ != 0, axis=1)).max()
         elif idx == 'selected':  # globally selected alpha
             selected_idx = (
-                self.n_alpha_ == self.n_single_).tolist().index(True)
+                self.n_alpha_ == self.dimension_).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
@@ -462,7 +462,7 @@ class FisherS(BaseEstimator):
                 np.all(self.p_alpha_ != 0, axis=1)).max()
         elif idx == 'selected':  # globally selected alpha
             selected_idx = (
-                self.n_alpha_ == self.n_single_).tolist().index(True)
+                self.n_alpha_ == self.dimension_).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
@@ -510,16 +510,16 @@ class FisherS(BaseEstimator):
             #if skdim.lid.FisherS.check_symmetric(xy):
             if np.allclose(xy, xy.T, rtol=1e-05, atol=1e-08):
                 #globalxy[k:e,k:e] = np.triu(xy)
-                for i in range(nP):
-                    for j in range(i+1,nP):
+                for i in range(len(xy)):
+                    for j in range(i+1,len(xy)):
                         if xy[i,j]>alpha:
                             insep_edges.append((k+i,k+j))
                             weights.append(xy[i,j]-alpha)
             else:
                 symmetric_graph = False
                 #globalxy[k:e,k:e] = xy
-                for i in range(nP):
-                    for j in range(i+1,nP):
+                for i in range(len(xy)):
+                    for j in range(i+1,len(xy)):
                         if xy[i,j]>alpha:
                             insep_edges.append((k+i,k+j))   
                             weights.append(xy[i,j]-alpha)
