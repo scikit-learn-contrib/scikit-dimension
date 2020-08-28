@@ -40,7 +40,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import i0, i1, digamma
 from scipy.interpolate import interp1d
-from _commonfuncs import binom_coeff, get_nn, hyperBall, lens, indnComb
+from .._commonfuncs import binom_coeff, get_nn, hyperBall, lens, indnComb
 
 
 class DANCo(BaseEstimator):
