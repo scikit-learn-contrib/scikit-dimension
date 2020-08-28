@@ -40,7 +40,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import i0, i1, digamma
 from scipy.interpolate import interp1d
-from .._commonfuncs import binom_coeff, get_nn, hyperBall, lens, indnComb
+from _commonfuncs import binom_coeff, get_nn, hyperBall, lens, indnComb
 
 
 class DANCo(BaseEstimator):
@@ -236,8 +236,7 @@ class DANCo(BaseEstimator):
         else:
             return 1 / ((eta ** 3) - 4 * (eta ** 2) + 3 * eta)
 
-    @staticmethod
-    def _loc_angles(pt, nbs):
+    def _loc_angles(self, pt, nbs):
         vec = nbs - pt
         # if(len(pt) == 1):
         #     vec = vec.T
@@ -249,8 +248,14 @@ class DANCo(BaseEstimator):
         # print((vec.len[combs[1, ]]*vec.len[combs[2, ]]))
         # }
         cos_th = sc_prod / (vec_len[combs[0, :]] * vec_len[combs[1, :]])
-        # if (any(abs(cos_th) > 1)):
-        #    print(cos_th[np.abs(cos_th) > 1])
+
+        if np.any(np.abs(cos_th) > 1):
+            np.clip(cos_th, a_min=None, a_max=1, out=cos_th)
+            if not hasattr(self, "_warned"):
+                self._warned = True
+                print(
+                    "Warning: your data might contain duplicate rows, which can affect results"
+                )
         return np.arccos(cos_th)
 
     def _angles(self, X, nbs):
