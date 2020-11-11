@@ -100,15 +100,15 @@ def lens(vectors):
     return np.sqrt(np.sum(vectors ** 2, axis=1))
 
 
-def hyperBall(n_points, n_dim, radius=1, center=[], random_state=None):
+def hyperBall(n, d, radius=1, center=[], random_state=None):
     random_state_ = check_random_state(random_state)
     if center == []:
-        center = np.array([0] * n_dim)
+        center = np.array([0] * d)
     r = radius
-    x = random_state_.normal(size=(n_points, n_dim))
+    x = random_state_.normal(size=(n, d))
     ssq = np.sum(x ** 2, axis=1)
-    fr = r * gammainc(n_dim / 2, ssq / 2) ** (1 / n_dim) / np.sqrt(ssq)
-    frtiled = np.tile(fr.reshape(n_points, 1), (1, n_dim))
+    fr = r * gammainc(d / 2, ssq / 2) ** (1 / d) / np.sqrt(ssq)
+    frtiled = np.tile(fr.reshape(n, 1), (1, d))
     p = center + np.multiply(x, frtiled)
     return p
 

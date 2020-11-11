@@ -10,10 +10,8 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from scipy.stats.mstats import winsorize
 
-ball1 = skdim.gendata.hyperBall(n_points=1000, n_dim=3, radius=0.5, center=[0, 0, 0]).T
-ball2 = skdim.gendata.hyperBall(
-    n_points=1000, n_dim=6, radius=0.5, center=[1, 0, 0, 0, 0, 0]
-).T
+ball1 = skdim.gendata.hyperBall(n=1000, d=3, radius=0.5, center=[0, 0, 0]).T
+ball2 = skdim.gendata.hyperBall(n=1000, d=6, radius=0.5, center=[1, 0, 0, 0, 0, 0]).T
 
 _2balls = np.zeros((6, 2000))
 _2balls[:3, :1000] = ball1
