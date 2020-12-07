@@ -90,10 +90,9 @@ class MADA(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
         if self.k >= len(X):
-            warnings.warn(
-                'k larger or equal to len(X), using len(X)-1')
+            warnings.warn("k larger or equal to len(X), using len(X)-1")
 
-        self._k = len(X)-1 if self.k >= len(X) else self.k
+        self._k = len(X) - 1 if self.k >= len(X) else self.k
 
         self.dimension_ = self._mada(X)
         self.is_fitted_ = True
@@ -102,7 +101,7 @@ class MADA(BaseEstimator):
 
     def _mada(self, X):
 
-        if (self.DM == False):
+        if self.DM == False:
             distmat = squareform(pdist(X))
 
         else:
@@ -110,9 +109,8 @@ class MADA(BaseEstimator):
 
         n = len(distmat)
 
-        if (self.local == False and n > 10000):
-            ID = np.random.choice(n, size=int(
-                np.round(n/2)), replace=False)
+        if self.local == False and n > 10000:
+            ID = np.random.choice(n, size=int(np.round(n / 2)), replace=False)
             tmpD = distmat[ID, :]
             tmpD[tmpD == 0] = np.max(tmpD)
 
@@ -120,17 +118,19 @@ class MADA(BaseEstimator):
             tmpD = distmat
             tmpD[tmpD == 0] = np.max(tmpD)
 
-        sortedD = np.sort(tmpD, axis=0, kind='mergesort')
-        RK = sortedD[self._k-1, :]
-        RK2 = sortedD[int(np.floor(self._k/2)-1), :]
-        ests = np.log(2)/np.log(RK/RK2)
+        sortedD = np.sort(tmpD, axis=0, kind="mergesort")
+        RK = sortedD[self._k - 1, :]
+        RK2 = sortedD[int(np.floor(self._k / 2) - 1), :]
+        ests = np.log(2) / np.log(RK / RK2)
 
-        if (self.local == True):
-            return(ests)
+        if self.local == True:
+            return ests
 
-        if (self.comb == "average"):
+        if self.comb == "average":
             return np.mean(ests)
-        elif (self.comb == "median"):
+        elif self.comb == "median":
             return np.median(ests)
         else:
-            raise ValueError("Invalid comb parameter. It has to be 'average' or 'median'")
+            raise ValueError(
+                "Invalid comb parameter. It has to be 'average' or 'median'"
+            )

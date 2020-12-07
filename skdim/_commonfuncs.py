@@ -137,9 +137,111 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         pool = mp.Pool(n_jobs)
         results = pool.map(class_instance.fit, [data[i, :] for i in knn])
         pool.close()
-        return [i.dimension_ for i in results]
+        return np.array([r.dimension_ for r in results])
     else:
-        return [class_instance.fit(data[i, :]).dimension_ for i in knn]
+        return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
+
+
+class PointwiseEstimator:
+    """Superclass: use a global estimator as a pointwise one by creating kNN neighborhoods"""
+
+    def fit_pw(self, X, precomputed_knn=False, smooth=False, n_neighbors=100, n_jobs=1):
+        """
+        Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
+
+        Parameters
+        ----------
+        X: np.array (n_samples x n_neighbors)
+            Dataset to fit
+        precomputed_knn: bool
+            Whether X is an array of precomputed (sorted) nearest neighbor indices
+        n_neighbors:
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+           smooth_ 
+        Returns
+        -------
+        self : object
+            Returns self
+        """
+
+        if precomputed_knn:
+            knnidx = X
+        else:
+            _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
+
+        if n_jobs > 1:
+            pool = mp.Pool(n_jobs)
+            results = pool.map(self.fit, [X[i, :] for i in knnidx])
+            pool.close()
+            self.dimension_pw_ = np.array([r.dimension_ for r in results])
+        else:
+            self.dimension_pw_ = np.array(
+                [self.fit(X[i, :]).dimension_ for i in knnidx]
+            )
+
+        if smooth:
+            self.dimension_pw_smooth_ = np.zeros(len(knnidx))
+            for i, point_nn in enumerate(knnidx):
+                self.dimension_pw_smooth_[i] = np.mean(
+                    np.append(self.dimension_pw_[i], self.dimension_pw_[point_nn])
+                )
+        return self
+
+    def fit_transform_pw(
+        self, X, precomputed_knn=False, smooth=False, n_neighbors=100, n_jobs=1
+    ):
+        """
+        Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
+
+        Parameters
+        ----------
+        X: np.array (n_samples x n_neighbors)
+            Dataset to fit
+        precomputed_knn: bool
+            Whether X is an array of precomputed (sorted) nearest neighbor indices
+        n_neighbors:
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+           smooth_ 
+        Returns
+        -------
+        dimension_pw : np.array 
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array 
+            If smooth is True, additionally returns smoothed pointwise ID estimates
+        """
+
+        if precomputed_knn:
+            knnidx = X
+        else:
+            _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
+
+        if n_jobs > 1:
+            pool = mp.Pool(n_jobs)
+            results = pool.map(self.fit, [X[i, :] for i in knnidx])
+            pool.close()
+            dimension_pw_ = np.array([r.dimension_ for r in results])
+        else:
+            dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
+
+        if smooth:
+            dimension_pw_smooth_ = np.zeros(len(knnidx))
+            for i, point_nn in enumerate(knnidx):
+                dimension_pw_smooth_[i] = np.mean(
+                    np.append(dimension_pw_[i], dimension_pw_[point_nn])
+                )
+            return dimension_pw_, dimension_pw_smooth_
+        else:
+            return dimension_pw_
 
 
 def mean_local_id(local_id, knnidx):
@@ -155,21 +257,19 @@ def mean_local_id(local_id, knnidx):
     
     Results
     -------
-    mean_neighborhoods_LID : np.array
+    dimension_pw_smooth_ : np.array
         list of mean local ID for each point
         
     """
-    mean_neighborhoods_LID = np.zeros(len(local_id))
+    dimension_pw_smooth_ = np.zeros(len(local_id))
     for point_i in range(len(local_id)):
         # get all points which have this point in their neighbourhoods
         all_neighborhoods_with_point_i = np.append(
             np.where(knnidx == point_i)[0], point_i
         )
         # get the mean local ID of these points
-        mean_neighborhoods_LID[point_i] = local_id[
-            all_neighborhoods_with_point_i
-        ].mean()
-    return mean_neighborhoods_LID
+        dimension_pw_smooth_[point_i] = local_id[all_neighborhoods_with_point_i].mean()
+    return dimension_pw_smooth_
 
 
 def binom_coeff(n, k):

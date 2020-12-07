@@ -40,10 +40,17 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import i0, i1, digamma
 from scipy.interpolate import interp1d
-from .._commonfuncs import binom_coeff, get_nn, hyperBall, lens, indnComb
+from .._commonfuncs import (
+    binom_coeff,
+    get_nn,
+    hyperBall,
+    lens,
+    indnComb,
+    PointwiseEstimator,
+)
 
 
-class DANCo(BaseEstimator):
+class DANCo(BaseEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation with the DANCo (Ceruti et al. 2012), MIND_MLi and MIND_MLk (Rozza et al. 2012) methods. 
 
@@ -65,7 +72,7 @@ class DANCo(BaseEstimator):
     ----------
     Returns
 
-    dimension_ : int or float
+    dimension_ : int (or float if fractal is True)
         The estimated intrinsic dimension
     kl_divergence : float
         The KL divergence between data and reference data for the estimated dimension (if ver == 'DANCo').

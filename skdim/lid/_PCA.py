@@ -31,17 +31,15 @@
 #
 import numpy as np
 from sklearn.decomposition import PCA
-
-import numpy as np
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
+from .._commonfuncs import PointwiseEstimator
 
 
-class lPCA(BaseEstimator):
+class lPCA(BaseEstimator, PointwiseEstimator):
     """ Local intrinsic dimension estimation using PCA.
     Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
     Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.
-    All versions assume that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball.
 
     Parameters
     ----------
@@ -60,6 +58,7 @@ class lPCA(BaseEstimator):
     verbose : bool, default=False
     explained_variance : bool, default=False
         If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
+
 
     References
     ----------

@@ -92,11 +92,9 @@ class CorrInt(BaseEstimator):
             raise ValueError("X contains inf or NaN")
 
         if self.k2 >= len(X):
-            warnings.warn(
-                'k2 larger or equal to len(X), using len(X)-1')
+            warnings.warn("k2 larger or equal to len(X), using len(X)-1")
         if self.k1 >= len(X):
-            warnings.warn(
-                'k1 larger or equal to len(X), using len(X)-2')
+            warnings.warn("k1 larger or equal to len(X), using len(X)-2")
 
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True
@@ -105,16 +103,16 @@ class CorrInt(BaseEstimator):
 
     def _corrint(self, X):
 
-        n_elements = len(X)**2  # number of elements
+        n_elements = len(X) ** 2  # number of elements
 
-        dists, _ = get_nn(X, min(self.k2, len(X)-1))
+        dists, _ = get_nn(X, min(self.k2, len(X) - 1))
 
         if self.DM is False:
             chunked_distmat = pairwise_distances_chunked(X)
         else:
             chunked_distmat = X
 
-        r1 = np.median(dists[:, min(self.k1-1, len(X)-2)])
+        r1 = np.median(dists[:, min(self.k1 - 1, len(X) - 2)])
         r2 = np.median(dists[:, -1])
 
         n_diagonal_entries = len(X)  # remove diagonal from sum count
@@ -124,6 +122,6 @@ class CorrInt(BaseEstimator):
             s1 += (chunk < r1).sum()
             s2 += (chunk < r2).sum()
 
-        Cr = np.array([s1/n_elements, s2/n_elements])
-        estq = np.diff(np.log(Cr))/np.log(r2/r1)
-        return estq
+        Cr = np.array([s1 / n_elements, s2 / n_elements])
+        estq = np.diff(np.log(Cr)) / np.log(r2 / r1)
+        return estq[0]

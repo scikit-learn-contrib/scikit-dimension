@@ -31,12 +31,12 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn
+from .._commonfuncs import get_nn, PointwiseEstimator
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class MOM(BaseEstimator):
+class MOM(BaseEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Method Of Moments algorithm.
 
@@ -84,9 +84,9 @@ class MOM(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
         if self.k >= len(X):
-            warnings.warn('k >= len(X), using k = len(X)-1')
+            warnings.warn("k >= len(X), using k = len(X)-1")
 
-        dists, inds = get_nn(X, min(self.k, len(X)-1))
+        dists, inds = get_nn(X, min(self.k, len(X) - 1))
 
         self.dimension_ = self._idmom(dists)
 
@@ -97,6 +97,6 @@ class MOM(BaseEstimator):
     def _idmom(self, dists):
         # dists - nearest-neighbor distances (k x 1, or k x n), sorted
         w = dists[:, -1]
-        m1 = np.sum(dists, axis=1)/dists.shape[1]
-        ID = -m1 / (m1-w)
+        m1 = np.sum(dists, axis=1) / dists.shape[1]
+        ID = -m1 / (m1 - w)
         return ID

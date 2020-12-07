@@ -85,13 +85,21 @@ class MLE(BaseEstimator):
 
     """
 
-    def __init__(self, mode='global', k=20, dnoise=None, sigma=0, n=None,
-                 integral_approximation='Haro', unbiased=False,
-                 neighborhood_based=True,
-                 neighborhood_aggregation='maximum.likelihood', K=5):
+    def __init__(
+        self,
+        mode="global",
+        k=20,
+        dnoise=None,
+        sigma=0,
+        n=None,
+        integral_approximation="Haro",
+        unbiased=False,
+        neighborhood_based=True,
+        neighborhood_aggregation="maximum.likelihood",
+        K=5,
+    ):
 
-        args, _, _, values = inspect.getargvalues(
-            inspect.currentframe())
+        args, _, _, values = inspect.getargvalues(inspect.currentframe())
         values.pop("self")
 
         for arg, val in values.items():
@@ -123,11 +131,11 @@ class MLE(BaseEstimator):
         # if self.K >= len(X):
         #    warnings.warn('k larger or equal to len(X), using len(X)-1')
 
-        if self.mode == 'global':
+        if self.mode == "global":
             self.dimension_ = self.maxLikGlobalDimEst(X)
-        elif self.mode == 'pointwise':
+        elif self.mode == "pointwise":
             self.dimension_ = self.maxLikPointwiseDimEst(X)
-        elif self.mode == 'local':
+        elif self.mode == "local":
             self.dimension_ = self.maxLikLocalDimEst(X)
 
         self.is_fitted_ = True
@@ -148,23 +156,22 @@ class MLE(BaseEstimator):
         if self.neighborhood_based:
             mi = self.maxLikPointwiseDimEst(X)
 
-            if self.neighborhood_aggregation == 'maximum.likelihood':
-                de = 1/np.mean(1/mi)
-            elif self.neighborhood_aggregation == 'mean':
+            if self.neighborhood_aggregation == "maximum.likelihood":
+                de = 1 / np.mean(1 / mi)
+            elif self.neighborhood_aggregation == "mean":
                 de = np.mean(mi)
-            elif self.neighborhood_aggregation == 'median':
+            elif self.neighborhood_aggregation == "median":
                 de = np.median(mi)
-            return(de)
+            return de
 
         else:
-            dist, idx = get_nn(X, min(self.K, len(X)-1))
-            Rs = np.sort(np.array(list(set(dist.flatten(order='F')))))[
-                :self.k]
+            dist, idx = get_nn(X, min(self.K, len(X) - 1))
+            Rs = np.sort(np.array(list(set(dist.flatten(order="F")))))[: self.k]
             # Since distances between points are used, noise is
-            de = self._maxLikDimEstFromR(Rs, np.sqrt(2)*self.sigma)
+            de = self._maxLikDimEstFromR(Rs, np.sqrt(2) * self.sigma)
             # added at both ends, i.e. variance is doubled.
-            #likelihood = np.nan
-            return(de)
+            # likelihood = np.nan
+            return de
 
     def maxLikPointwiseDimEst(self, X):
         # estimates dimension around each point in data[indices, ]
@@ -177,7 +184,7 @@ class MLE(BaseEstimator):
         # 'n' is the dimension of the noise (at least dim(data)[2])
 
         N = len(X)
-        nbh_dist, idx = get_nn(X, min(self.k, len(X)-1))
+        nbh_dist, idx = get_nn(X, min(self.k, len(X) - 1))
         # This vector will hold local dimension estimates
         de = np.repeat(np.nan, N)
 
@@ -185,7 +192,7 @@ class MLE(BaseEstimator):
             Rs = nbh_dist[i, :]
             de[i] = self._maxLikDimEstFromR(Rs, self.sigma)
 
-        return(de)
+        return de
 
     def maxLikLocalDimEst(self, X):
         # assuming data set is local
@@ -193,27 +200,31 @@ class MLE(BaseEstimator):
         cent_X = X - center
         Rs = np.sort(lens(cent_X))
         de = self._maxLikDimEstFromR(Rs, sigma)
-        return(de)
+        return de
 
     def _maxLikDimEstFromR(self, Rs, sigma):
 
-        if self.integral_approximation not in ['Haro', 'guaranteed.convergence', 'iteration']:
-            raise ValueError('Wrong integral approximation')
+        if self.integral_approximation not in [
+            "Haro",
+            "guaranteed.convergence",
+            "iteration",
+        ]:
+            raise ValueError("Wrong integral approximation")
 
-        if self.dnoise == 'dnoiseGaussH':
+        if self.dnoise == "dnoiseGaussH":
             self.dnoise = self._dnoiseGaussH
 
-        if not self.integral_approximation == 'Haro' and self.dnoise is not None:
-            self.dnoise = lambda r, s, sigma, k: r * \
-                self.dnoise(r, s, sigma, k)
+        if not self.integral_approximation == "Haro" and self.dnoise is not None:
+            self.dnoise = lambda r, s, sigma, k: r * self.dnoise(r, s, sigma, k)
 
         de = self._maxLikDimEstFromR_haro_approx(Rs, self.sigma)
-        if (self.integral_approximation == 'iteration'):
+        if self.integral_approximation == "iteration":
             raise ValueError(
-                "integral_approximation='iteration' not implemented yet. See R intdim package")
-            #de = maxLikDimEstFromRIterative(Rs, dnoise_orig, sigma, n, de, unbiased)
+                "integral_approximation='iteration' not implemented yet. See R intdim package"
+            )
+            # de = maxLikDimEstFromRIterative(Rs, dnoise_orig, sigma, n, de, unbiased)
 
-        return(de)
+        return de
 
     def _maxLikDimEstFromR_haro_approx(self, Rs, sigma):
         # if dnoise is the noise function this is the approximation used in Haro.
@@ -221,34 +232,37 @@ class MLE(BaseEstimator):
         # with 'unbiased' option, estimator is unbiased if no noise or boundary
 
         k = len(Rs)
-        kfac = k-2 if self.unbiased else k-1
+        kfac = k - 2 if self.unbiased else k - 1
 
         Rk = np.max(Rs)
         if self.dnoise is None:
-            return(kfac/(np.sum(np.log(Rk/Rs))))
+            return kfac / (np.sum(np.log(Rk / Rs)))
 
-        Rpr = Rk + 100*sigma
+        Rpr = Rk + 100 * sigma
 
         numerator = np.repeat(np.nan, k - 1)
         denominator = np.repeat(np.nan, k - 1)
 
-        def numInt(x): return self.dnoise(
-            x, Rj, sigma, self.n) * np.log(Rk/x)
+        def numInt(x):
+            return self.dnoise(x, Rj, sigma, self.n) * np.log(Rk / x)
 
-        def denomInt(x): return self.dnoise(x, Rj, sigma, self.n)
+        def denomInt(x):
+            return self.dnoise(x, Rj, sigma, self.n)
 
-        for j in range(k-1):
+        for j in range(k - 1):
             Rj = Rs[j]
             numerator[j] = scipy.integrate.quad(
-                numInt, 0, Rpr, epsrel=1e-2, epsabs=1e-2)[0]
+                numInt, 0, Rpr, epsrel=1e-2, epsabs=1e-2
+            )[0]
             denominator[j] = scipy.integrate.quad(
-                denomInt, 0, Rpr, epsrel=1e-2, epsabs=1e-2)[0]
+                denomInt, 0, Rpr, epsrel=1e-2, epsabs=1e-2
+            )[0]
 
-        return(kfac/np.sum(numerator/denominator))
-    
+        return kfac / np.sum(numerator / denominator)
+
     @staticmethod
     def _dnoiseGaussH(r, s, sigma, k=None):
-        return np.exp(-.5*((s-r)/sigma)**2)/(sigma*np.sqrt(2*np.pi))
+        return np.exp(-0.5 * ((s - r) / sigma) ** 2) / (sigma * np.sqrt(2 * np.pi))
         # f(s|r) in Haro et al. (2008) w/ Gaussian
         # transition density
         # 'k' is not used, but is input

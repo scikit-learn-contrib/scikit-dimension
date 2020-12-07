@@ -29,7 +29,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from . import gendata
+from . import datasets
 from . import lid
 from . import gid
 from ._commonfuncs import get_nn, get_estimators, asPointwise, mean_local_id

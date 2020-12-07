@@ -31,29 +31,30 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn
+from .._commonfuncs import get_nn, PointwiseEstimator
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class TLE(BaseEstimator):
+class TLE(BaseEstimator, PointwiseEstimator):
     """
     Local intrinsic dimension estimation with the Tight Local Intrinsic Dimensionality Estimator algorithm.
 
-    -----------
     Attributes
+    ----------
 
     epsilon : float
 
-    -----------
     Returns
+    -------
+
 
     dimension_ : int
         Intrinsic dimension of the dataset
 
-    -----------
     References
+    ----------
     
     Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).
     
@@ -85,14 +86,13 @@ class TLE(BaseEstimator):
         if not np.isfinite(X).all():
             raise ValueError("X contains inf or NaN")
         if self.k >= len(X):
-            warnings.warn('k >= len(X), using k = len(X)-1')
+            warnings.warn("k >= len(X), using k = len(X)-1")
 
-        dists, inds = get_nn(X, min(self.k, len(X)-1))
+        dists, inds = get_nn(X, min(self.k, len(X) - 1))
 
         self.dimension_ = np.zeros(len(X))
         for i in range(len(X)):
-            self.dimension_[i] = self._idtle(
-                X[inds[i, :]], dists[[i], :])
+            self.dimension_[i] = self._idtle(X[inds[i, :]], dists[[i], :])
 
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -105,22 +105,34 @@ class TLE(BaseEstimator):
 
         # Boundary case 1: If $r = 0$, this is fatal, since the neighborhood would be degenerate.
         if r == 0:
-            raise ValueError('All k-NN distances are zero!')
+            raise ValueError("All k-NN distances are zero!")
         # Main computation
         k = dists.shape[1]
         V = squareform(pdist(nn))
         Di = np.tile(dists.T, (1, k))
         Dj = Di.T
-        Z2 = 2*Di**2 + 2*Dj**2 - V**2
-        S = r * (((Di**2 + V**2 - Dj**2)**2 + 4*V**2 * (r**2 - Di**2))
-                 ** 0.5 - (Di**2 + V**2 - Dj**2)) / (2*(r**2 - Di**2))
-        T = r * (((Di**2 + Z2 - Dj**2)**2 + 4*Z2 * (r**2 - Di**2))
-                 ** 0.5 - (Di**2 + Z2 - Dj**2)) / (2*(r**2 - Di**2))
+        Z2 = 2 * Di ** 2 + 2 * Dj ** 2 - V ** 2
+        S = (
+            r
+            * (
+                ((Di ** 2 + V ** 2 - Dj ** 2) ** 2 + 4 * V ** 2 * (r ** 2 - Di ** 2))
+                ** 0.5
+                - (Di ** 2 + V ** 2 - Dj ** 2)
+            )
+            / (2 * (r ** 2 - Di ** 2))
+        )
+        T = (
+            r
+            * (
+                ((Di ** 2 + Z2 - Dj ** 2) ** 2 + 4 * Z2 * (r ** 2 - Di ** 2)) ** 0.5
+                - (Di ** 2 + Z2 - Dj ** 2)
+            )
+            / (2 * (r ** 2 - Di ** 2))
+        )
         # handle case of repeating k-NN distances
         Dr = (dists == r).squeeze()
-        S[Dr, :] = r * V[Dr, :]**2 / \
-            (r**2 + V[Dr, :]**2 - Dj[Dr, :]**2)
-        T[Dr, :] = r * Z2[Dr, :] / (r**2 + Z2[Dr, :] - Dj[Dr, :]**2)
+        S[Dr, :] = r * V[Dr, :] ** 2 / (r ** 2 + V[Dr, :] ** 2 - Dj[Dr, :] ** 2)
+        T[Dr, :] = r * Z2[Dr, :] / (r ** 2 + Z2[Dr, :] - Dj[Dr, :] ** 2)
         # Boundary case 2: If $u_i = 0$, then for all $1\leq j\leq k$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $u_j$.
         Di0 = (Di == 0).squeeze()
         T[Di0] = Dj[Di0]
@@ -143,9 +155,9 @@ class TLE(BaseEstimator):
         np.fill_diagonal(TSeps, 0)
         nTSeps = np.sum(TSeps)
         T[TSeps] = r
-        T = np.log(T/r)
+        T = np.log(T / r)
         S[TSeps] = r
-        S = np.log(S/r)
+        S = np.log(S / r)
         np.fill_diagonal(T, 0)  # delete diagonal elements
         np.fill_diagonal(S, 0)
         # Sum over the whole matrices
@@ -155,7 +167,7 @@ class TLE(BaseEstimator):
         Deps = dists < self.epsilon
         nDeps = np.sum(Deps, dtype=int)
         dists = dists[nDeps:]
-        s2 = np.sum(np.log(dists/r))
+        s2 = np.sum(np.log(dists / r))
         # Compute ID, subtracting numbers of dropped measurements
-        ID = -2*(k**2-nTSeps-nDeps-nV0) / (s1t+s1s+2*s2)
+        ID = -2 * (k ** 2 - nTSeps - nDeps - nV0) / (s1t + s1s + 2 * s2)
         return ID

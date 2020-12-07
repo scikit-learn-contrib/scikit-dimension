@@ -37,12 +37,13 @@ import numpy as np
 import sklearn.decomposition as sk
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
+from .._commonfuncs import PointwiseEstimator
 import warnings
 
 warnings.filterwarnings("ignore")
 
 
-class FisherS(BaseEstimator):
+class FisherS(BaseEstimator, PointwiseEstimator):
     """
     Local intrinsic dimension estimation using the FisherS algorithm.
 
@@ -367,49 +368,51 @@ class FisherS(BaseEstimator):
 
         return n, n_single_estimate, alfa_single_estimate
 
-#    def _dimension_uniform_sphere_robust(self, py):
-#        '''modification to return selected index and handle the case where all values are 0'''
-#        if len(py) != len(self._alphas[0, :]):
-#            raise ValueError('length of py (%i) and alpha (%i) does not match' % (
-#                len(py), len(self._alphas[0, :])))
-#
-#        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
-#            raise ValueError(
-#                ['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
-#
-#        # Calculate dimension for each alpha
-#        n = np.zeros((len(self._alphas[0, :])))
-#        for i in range(len(self._alphas[0, :])):
-#            if py[i] == 0:
-#                # All points are separable. Nothing to do and not interesting
-#                n[i] = np.nan
-#            else:
-#                p = py[i]
-#                a2 = self._alphas[0, i]**2
-#                w = np.log(1-a2)
-#                n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
-#
-#        n[n == np.inf] = float('nan')
-#        # Find indices of alphas which are not completely separable
-#        inds = np.where(~np.isnan(n))[0]
-#        if inds.size == 0:
-#            n_single_estimate = np.nan
-#            alfa_single_estimate = np.nan
-#            return n, n_single_estimate, alfa_single_estimate
-#        else:
-#            # Find the maximal value of such alpha
-#            alpha_max = max(self._alphas[0, inds])
-#            # The reference alpha is the closest to 90 of maximal partially separable alpha
-#            alpha_ref = alpha_max*0.9
-#            k = np.where(abs(self._alphas[0, inds]-alpha_ref)
-#                         == min(abs(self._alphas[0, :]-alpha_ref)))[0]
-#            # Get corresponding values
-#            alfa_single_estimate = self._alphas[0, inds[k]]
-#            n_single_estimate = n[inds[k]]
-#
-#            return n, n_single_estimate, alfa_single_estimate, inds[k]
+    #    def _dimension_uniform_sphere_robust(self, py):
+    #        '''modification to return selected index and handle the case where all values are 0'''
+    #        if len(py) != len(self._alphas[0, :]):
+    #            raise ValueError('length of py (%i) and alpha (%i) does not match' % (
+    #                len(py), len(self._alphas[0, :])))
+    #
+    #        if np.sum(self._alphas <= 0) > 0 or np.sum(self._alphas >= 1) > 0:
+    #            raise ValueError(
+    #                ['"Alphas" must be a real vector, with alpha range, the values must be within (0,1) interval'])
+    #
+    #        # Calculate dimension for each alpha
+    #        n = np.zeros((len(self._alphas[0, :])))
+    #        for i in range(len(self._alphas[0, :])):
+    #            if py[i] == 0:
+    #                # All points are separable. Nothing to do and not interesting
+    #                n[i] = np.nan
+    #            else:
+    #                p = py[i]
+    #                a2 = self._alphas[0, i]**2
+    #                w = np.log(1-a2)
+    #                n[i] = lambertw(-(w/(2*np.pi*p*p*a2*(1-a2))))/(-w)
+    #
+    #        n[n == np.inf] = float('nan')
+    #        # Find indices of alphas which are not completely separable
+    #        inds = np.where(~np.isnan(n))[0]
+    #        if inds.size == 0:
+    #            n_single_estimate = np.nan
+    #            alfa_single_estimate = np.nan
+    #            return n, n_single_estimate, alfa_single_estimate
+    #        else:
+    #            # Find the maximal value of such alpha
+    #            alpha_max = max(self._alphas[0, inds])
+    #            # The reference alpha is the closest to 90 of maximal partially separable alpha
+    #            alpha_ref = alpha_max*0.9
+    #            k = np.where(abs(self._alphas[0, inds]-alpha_ref)
+    #                         == min(abs(self._alphas[0, :]-alpha_ref)))[0]
+    #            # Get corresponding values
+    #            alfa_single_estimate = self._alphas[0, inds[k]]
+    #            n_single_estimate = n[inds[k]]
+    #
+    #            return n, n_single_estimate, alfa_single_estimate, inds[k]
 
-    def point_inseparability_to_pointID(self, idx='all_inseparable', force_definite_dim=True, verbose=True):
+    def point_inseparability_to_pointID(
+        self, idx="all_inseparable", force_definite_dim=True, verbose=True
+    ):
         """
         Turn pointwise inseparability probability into pointwise global ID
         Inputs : 
@@ -422,12 +425,10 @@ class FisherS(BaseEstimator):
                 force_definite_dim : bool
                     whether to force fully separable points to take the minimum detectable inseparability value (1/(n-1)) (i.e., maximal detectable dimension)
         """
-        if idx == 'all_inseparable':  # all points are inseparable
-            selected_idx = np.argwhere(
-                np.all(self.p_alpha_ != 0, axis=1)).max()
-        elif idx == 'selected':  # globally selected alpha
-            selected_idx = (
-                self.n_alpha_ == self.dimension_).tolist().index(True)
+        if idx == "all_inseparable":  # all points are inseparable
+            selected_idx = np.argwhere(np.all(self.p_alpha_ != 0, axis=1)).max()
+        elif idx == "selected":  # globally selected alpha
+            selected_idx = (self.n_alpha_ == self.dimension_).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
@@ -485,12 +486,10 @@ class FisherS(BaseEstimator):
 
     def getSeparabilityGraph(self, idx="all_inseparable", top_edges=10000):
         data = self.Xp_
-        if idx == 'all_inseparable':  # all points are inseparable
-            selected_idx = np.argwhere(
-                np.all(self.p_alpha_ != 0, axis=1)).max()
-        elif idx == 'selected':  # globally selected alpha
-            selected_idx = (
-                self.n_alpha_ == self.dimension_).tolist().index(True)
+        if idx == "all_inseparable":  # all points are inseparable
+            selected_idx = np.argwhere(np.all(self.p_alpha_ != 0, axis=1)).max()
+        elif idx == "selected":  # globally selected alpha
+            selected_idx = (self.n_alpha_ == self.dimension_).tolist().index(True)
         elif type(idx) == int:
             selected_idx = idx
         else:
@@ -538,20 +537,20 @@ class FisherS(BaseEstimator):
             xy = xy / leng[k:e]
             # if skdim.lid.FisherS.check_symmetric(xy):
             if np.allclose(xy, xy.T, rtol=1e-05, atol=1e-08):
-                #globalxy[k:e,k:e] = np.triu(xy)
+                # globalxy[k:e,k:e] = np.triu(xy)
                 for i in range(len(xy)):
-                    for j in range(i+1,len(xy)):
-                        if xy[i,j]>alpha:
-                            insep_edges.append((k+i,k+j))
-                            weights.append(xy[i,j]-alpha)
+                    for j in range(i + 1, len(xy)):
+                        if xy[i, j] > alpha:
+                            insep_edges.append((k + i, k + j))
+                            weights.append(xy[i, j] - alpha)
             else:
                 symmetric_graph = False
-                #globalxy[k:e,k:e] = xy
+                # globalxy[k:e,k:e] = xy
                 for i in range(len(xy)):
-                    for j in range(i+1,len(xy)):
-                        if xy[i,j]>alpha:
-                            insep_edges.append((k+i,k+j))   
-                            weights.append(xy[i,j]-alpha)
+                    for j in range(i + 1, len(xy)):
+                        if xy[i, j] > alpha:
+                            insep_edges.append((k + i, k + j))
+                            weights.append(xy[i, j] - alpha)
             # Calculate nondiagonal part
             startpoint = 0
             if symmetric_graph:

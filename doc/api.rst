@@ -1,84 +1,49 @@
-####################
-scikit-dimension API
-####################
+.. automodule:: skdim
 
-The module gid provides global intrinsic dimension estimators (i.e., one value for the entire dataset) and the module lid contains local intrinsic dimension estimators (i.e., functions provide values that are estimated in neighborhoods of each point).
+API
+===
 
-lid (local intrinsic dimension)
-===============================
+Import skdim as::
 
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
+   import skdim
 
-   skdim.lid.ESS
-
+Local ID
+--------
 
 .. autosummary::
-   :toctree: generated/
-   :template: class.rst
+   :toctree: .
 
-   skdim.lid.FisherS
+   lid.ESS
+   lid.FisherS
+   lid.lPCA
+   lid.MOM
+   lid.TLE
+   lid.MADA
 
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
 
-   skdim.lid.lPCA
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-   skdim.lid.MiND_ML
+Global ID
+---------
 
 .. autosummary::
-   :toctree: generated/
-   :template: class.rst
+   :toctree: .
 
-   skdim.lid.MOM
+   gid.CorrInt
+   gid.DANCo
+   gid.MiND_ML
+   gid.KNN
+   gid.MLE
+   gid.TwoNN
 
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
 
-   skdim.lid.TLE
-
-gid (global intrinsic dimension)
-================================
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    skdim.gid.CorrInt
+Datasets
+--------
 
 .. autosummary::
-   :toctree: generated/
-   :template: class.rst
+   :toctree: .
 
-    skdim.gid.DANCo
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    skdim.gid.KNN
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    skdim.gid.Mada
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    skdim.gid.MLE
-
-.. autosummary::
-   :toctree: generated/
-   :template: class.rst
-
-    skdim.gid.TwoNN
+   datasets.hyperSphere
+   datasets.hyperBall
+   datasets.hyperTwinPeaks
+   datasets.lineDiskBall
+   datasets.swissRoll3Sph
+   datasets.BenchmarkManifolds
