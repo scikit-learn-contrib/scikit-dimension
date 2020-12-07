@@ -49,14 +49,14 @@ from sklearn.utils.testing import (
 
 
 ### test data generation
-def test_gendata():
-    skdim.gendata.hyperBall(100, 2)
-    skdim.gendata.hyperSphere(100, 2)
-    skdim.gendata.hyperTwinPeaks(100, 2)
-    skdim.gendata.lineDiskBall(100)
-    skdim.gendata.swissRoll3Sph(100, 100)
-    skdim.gendata.BenchmarkManifolds(noise_type="uniform").generate(n=123, noise=0.1)
-    skdim.gendata.BenchmarkManifolds(noise_type="normal").generate(
+def test_datasets():
+    skdim.datasets.hyperBall(100, 2)
+    skdim.datasets.hyperSphere(100, 2)
+    skdim.datasets.hyperTwinPeaks(100, 2)
+    skdim.datasets.lineDiskBall(100)
+    skdim.datasets.swissRoll3Sph(100, 100)
+    skdim.datasets.BenchmarkManifolds(noise_type="uniform").generate(n=123, noise=0.1)
+    skdim.datasets.BenchmarkManifolds(noise_type="normal").generate(
         name="M5b_Helix2d", n=456, dim=3, d=2, noise=0.3
     )
 
@@ -64,7 +64,7 @@ def test_gendata():
 @pytest.fixture
 def data():
     X = np.zeros((100, 10))
-    X[:, :5] = skdim.gendata.hyperBall(n=100, d=5, radius=1, random_state=0)
+    X[:, :5] = skdim.datasets.hyperBall(n=100, d=5, radius=1, random_state=0)
     return X
 
 
@@ -198,14 +198,16 @@ def test_aspointwise(data):
     assert len(x) == len(data)
 
 
-def test_gendata():
-    x = skdim.gendata.hyperSphere(n_points=100, n_dim=2, center=[], random_state=None)
-    x = skdim.gendata.hyperTwinPeaks(n_points=100, n_dim=2, height=1, random_state=None)
-    x = skdim.gendata.swissRoll3Sph(
+def test_datasets():
+    x = skdim.datasets.hyperSphere(n_points=100, n_dim=2, center=[], random_state=None)
+    x = skdim.datasets.hyperTwinPeaks(
+        n_points=100, n_dim=2, height=1, random_state=None
+    )
+    x = skdim.datasets.swissRoll3Sph(
         Ns=50, Nsph=50, a=1, b=2, nturn=1.5, h=4, random_state=None
     )
-    x = skdim.gendata.swissRoll3Sph(
+    x = skdim.datasets.swissRoll3Sph(
         Ns=0, Nsph=50, a=1, b=2, nturn=1.5, h=4, random_state=None
     )
-    x = skdim.gendata.lineDiskBall(n_points=100, random_state=None)
+    x = skdim.datasets.lineDiskBall(n_points=100, random_state=None)
 
