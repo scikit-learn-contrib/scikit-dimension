@@ -60,7 +60,7 @@ from sklearn.utils.testing import (
 @pytest.fixture
 def data():
     X = np.zeros((30, 10))
-    X[:, :5] = skdim.datasets.hyperBall(n_points=30, n_dim=5, radius=1, random_state=0)
+    X[:, :5] = skdim.datasets.hyperBall(n=30, d=5, radius=1, random_state=0)
     return X
 
 
@@ -132,7 +132,7 @@ def test_danco_results():
     x = np.zeros(9)
     for i in range(2, 11):
         print(i, end="\r")
-        X = skdim.datasets.hyperBall(n_points=100, n_dim=i, radius=1, random_state=0)
+        X = skdim.datasets.hyperBall(n=100, d=i, radius=1, random_state=0)
         x[i - 2] = (
             skdim.gid.DANCo(D=11, fractal=False, random_state=0).fit(X).dimension_
         )
