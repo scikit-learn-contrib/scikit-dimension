@@ -46,7 +46,7 @@ install:
   - export PATH=$MINICONDA_PATH/bin:$PATH
   - conda update -y conda
   # create the testing environment
-  - conda create -n testenv --yes pip
+  - conda create -n testenv python=$TRAVIS_PYTHON_VERSION pip --yes
   - source activate testenv
   - conda install -y numpy scipy scikit-learn cython nose numba matplotlib pytest pytest-cov
   - pip install codecov
