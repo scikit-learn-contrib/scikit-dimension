@@ -8,12 +8,9 @@ jobs:
       - checkout
       - run:
           command: |
-            RELEASES_URL='https://github.com/jgm/pandoc/releases'
-            export PANDOCVERSION=$(curl -I "$RELEASES_URL/latest" | sed -ne 's#Location:.*tag/\(.*\)$#\1#p' | tr -d "\n\r")
-            echo $PANDOCVERSION
-            wget $RELEASES_URL/download/$PANDOCVERSION/pandoc-$PANDOCVERSION-linux-amd64.tar.gz
-            tar xvzf pandoc-$PANDOCVERSION-linux-amd64.tar.gz
-            export PATH=$HOME/pandoc-$PANDOCVERSION/bin:$PATH
+            wget https://github.com/jgm/pandoc/releases/download/2.11.2/pandoc-2.11.2-linux-amd64.tar.gz
+            tar xvzf pandoc-2.11.2-linux-amd64.tar.gz
+            export PATH=$HOME/pandoc-2.11.2/bin:$PATH
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
             chmod +x miniconda.sh && ./miniconda.sh -b -p ~/miniconda
             export PATH="~/miniconda/bin:$PATH"
