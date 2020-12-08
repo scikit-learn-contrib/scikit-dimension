@@ -31,7 +31,7 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn, PointwiseEstimator
+from .._commonfuncs import get_nn
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
@@ -97,6 +97,11 @@ class TLE(BaseEstimator):
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self
+
+    def fit_transform(self, X, y=None):
+        if not self.is_fitted_:
+            self.fit(X)
+        return self.dimension_
 
     def _idtle(self, nn, dists):
         # nn - matrix of nearest neighbors (k x d), sorted by distance

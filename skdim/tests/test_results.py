@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
-from sklearn.utils.validation import check_random_state
+from sklearn.utils.vaidation import check_random_state
 from sklearn.utils.testing import (
     assert_equal,
     assert_array_equal,
@@ -66,9 +66,9 @@ def data():
 
 # test default and non-default parameters
 def test_ess_results(data):
-    x = skdim.lid.ESS().fit(data)
-    x2 = skdim.lid.ESS(ver="b").fit(data)
-    x3 = skdim.lid.ESS(d=2).fit(data)
+    x = skdim.id.ESS().fit(data)
+    x2 = skdim.id.ESS(ver="b").fit(data)
+    x3 = skdim.id.ESS(d=2).fit(data)
 
     #     rx=intdimr.essLocalDimEst(data)
     #     rx2=intdimr.essLocalDimEst(data,ver='b')
@@ -94,38 +94,38 @@ def test_ess_results(data):
 
 
 def test_mind_ml_results(data):
-    #     all((skdim.lid.MiND_ML(ver='MLk').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=20,D=10,ver='MIND_MLi')[0]),
-    #          skdim.lid.MiND_ML(ver='MLi').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=10,D=5,ver='MIND_MLk')[0])))
+    #     all((skdim.id.MiND_ML(ver='MLk').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=20,D=10,ver='MIND_MLi')[0]),
+    #          skdim.id.MiND_ML(ver='MLi').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=10,D=5,ver='MIND_MLk')[0])))
     assert all(
         (
-            skdim.gid.MiND_ML(ver="MLk").fit(data).dimension_ == 3.696083548872364,
-            skdim.gid.MiND_ML(ver="MLi").fit(data).dimension_ == 4,
+            skdim.id.MiND_ML(ver="MLk").fit(data).dimension_ == 3.696083548872364,
+            skdim.id.MiND_ML(ver="MLi").fit(data).dimension_ == 4,
         )
     )
 
 
 # def test_mom_results(data):
-#    x = skdim.lid.MOM()
-#    x = skdim.lid.MOM(k=5)
+#    x = skdim.id.MOM()
+#    x = skdim.id.MOM(k=5)
 
 
 def test_lpca_results(data):
-    #     assert all((skdim.lid.lPCA().fit(data).dimension_         == intdimr.pcaLocalDimEst(data,ver='FO')[0][0],
-    #            skdim.lid.lPCA(ver='fan').fit(data).dimension_    == intdimr.pcaLocalDimEst(data,ver='fan')[0][0],
-    #            skdim.lid.lPCA(ver='maxgap').fit(data).dimension_ == intdimr.pcaLocalDimEst(data,ver='maxgap')[0][0]
+    #     assert all((skdim.id.lPCA().fit(data).dimension_         == intdimr.pcaLocalDimEst(data,ver='FO')[0][0],
+    #            skdim.id.lPCA(ver='fan').fit(data).dimension_    == intdimr.pcaLocalDimEst(data,ver='fan')[0][0],
+    #            skdim.id.lPCA(ver='maxgap').fit(data).dimension_ == intdimr.pcaLocalDimEst(data,ver='maxgap')[0][0]
     #           ))
     assert all(
         (
-            skdim.lid.lPCA().fit(data).dimension_ == 5,
-            skdim.lid.lPCA(ver="fan").fit(data).dimension_ == 3,
-            skdim.lid.lPCA(ver="maxgap").fit(data).dimension_ == 5,
+            skdim.id.lPCA().fit(data).dimension_ == 5,
+            skdim.id.lPCA(ver="fan").fit(data).dimension_ == 3,
+            skdim.id.lPCA(ver="maxgap").fit(data).dimension_ == 5,
         )
     )
 
 
 def test_corrint_results(data):
-    #     assert np.isclose(skdim.gid.CorrInt().fit(data).dimension_,np.array(ider.corint(data,k1=10,k2=20)))
-    assert np.isclose(skdim.gid.CorrInt().fit(data).dimension_, 2.9309171335492548)
+    #     assert np.isclose(skdim.id.CorrInt().fit(data).dimension_,np.array(ider.corint(data,k1=10,k2=20)))
+    assert np.isclose(skdim.id.CorrInt().fit(data).dimension_, 2.9309171335492548)
 
 
 def test_danco_results():
@@ -133,26 +133,24 @@ def test_danco_results():
     for i in range(2, 11):
         print(i, end="\r")
         X = skdim.datasets.hyperBall(n=100, d=i, radius=1, random_state=0)
-        x[i - 2] = (
-            skdim.gid.DANCo(D=11, fractal=False, random_state=0).fit(X).dimension_
-        )
+        x[i - 2] = skdim.id.DANCo(D=11, fractal=False, random_state=0).fit(X).dimension_
 
     assert np.all(x == np.array([2, 3, 4, 5, 6, 7, 8, 9, 10]))
 
 
 # def test_knn_results(data):
-#    x = skdim.gid.KNN().fit(data)
-#    x = skdim.gid.KNN(k=5).fit(data)
-#    x = skdim.gid.KNN(ps=np.arange(30,32)).fit(data)
-#    x = skdim.gid.KNN(M=2).fit(data)
-#    x = skdim.gid.KNN(gamma=3).fit(data)
+#    x = skdim.id.KNN().fit(data)
+#    x = skdim.id.KNN(k=5).fit(data)
+#    x = skdim.id.KNN(ps=np.arange(30,32)).fit(data)
+#    x = skdim.id.KNN(M=2).fit(data)
+#    x = skdim.id.KNN(gamma=3).fit(data)
 
 
 def test_mada_results(data):
-    #     assert np.allclose(skdim.gid.Mada(local=True,k=20).fit(data).dimension_,np.array(ider.mada(data,local=True,k=20)))
+    #     assert np.allclose(skdim.id.Mada(local=True,k=20).fit(data).dimension_,np.array(ider.mada(data,local=True,k=20)))
     #
     assert np.allclose(
-        skdim.lid.MADA(local=True, k=20).fit(data).dimension_,
+        skdim.id.MADA(local=True, k=20).fit(data).dimension_,
         np.array(
             [
                 2.73873109,
@@ -192,12 +190,12 @@ def test_mada_results(data):
 
 def test_mle_results(data):
     #     assert np.allclose(
-    #         (skdim.gid.MLE().fit(data).dimension_,
-    #         skdim.gid.MLE(k=5).fit(data).dimension_,
-    #         skdim.gid.MLE(n = 20, sigma=.1, dnoise='dnoiseGaussH').fit(data).dimension_,
-    #         skdim.gid.MLE(unbiased=True).fit(data).dimension_,
-    #         skdim.gid.MLE(K=10, neighborhood_based=False).fit(data).dimension_,
-    #         skdim.gid.MLE(neighborhood_aggregation='mean').fit(data).dimension_,
+    #         (skdim.id.MLE().fit(data).dimension_,
+    #         skdim.id.MLE(k=5).fit(data).dimension_,
+    #         skdim.id.MLE(n = 20, sigma=.1, dnoise='dnoiseGaussH').fit(data).dimension_,
+    #         skdim.id.MLE(unbiased=True).fit(data).dimension_,
+    #         skdim.id.MLE(K=10, neighborhood_based=False).fit(data).dimension_,
+    #         skdim.id.MLE(neighborhood_aggregation='mean').fit(data).dimension_,
     #         ),
     #         (intdimr.maxLikGlobalDimEst(data,k=20)[0][0],
     #         intdimr.maxLikGlobalDimEst(data,k=5)[0][0],
@@ -209,12 +207,12 @@ def test_mle_results(data):
     #     )
     assert np.allclose(
         (
-            skdim.gid.MLE().fit(data).dimension_,
-            skdim.gid.MLE(k=5).fit(data).dimension_,
-            skdim.gid.MLE(n=20, sigma=0.1, dnoise="dnoiseGaussH").fit(data).dimension_,
-            skdim.gid.MLE(unbiased=True).fit(data).dimension_,
-            skdim.gid.MLE(K=10, neighborhood_based=False).fit(data).dimension_,
-            skdim.gid.MLE(neighborhood_aggregation="mean").fit(data).dimension_,
+            skdim.id.MLE().fit(data).dimension_,
+            skdim.id.MLE(k=5).fit(data).dimension_,
+            skdim.id.MLE(n=20, sigma=0.1, dnoise="dnoiseGaussH").fit(data).dimension_,
+            skdim.id.MLE(unbiased=True).fit(data).dimension_,
+            skdim.id.MLE(K=10, neighborhood_based=False).fit(data).dimension_,
+            skdim.id.MLE(neighborhood_aggregation="mean").fit(data).dimension_,
         ),
         (
             3.341161830518472,
@@ -228,9 +226,9 @@ def test_mle_results(data):
 
 
 def test_tle_results(data):
-    #     assert np.allclose(np.round(skdim.lid.TLE().fit(data).dimension_,4),radovanovic_estimators_matlab(data,k=20)['id_tle'])
+    #     assert np.allclose(np.round(skdim.id.TLE().fit(data).dimension_,4),radovanovic_estimators_matlab(data,k=20)['id_tle'])
     assert np.allclose(
-        np.round(skdim.lid.TLE().fit(data).dimension_, 4),
+        np.round(skdim.id.TLE().fit(data).dimension_, 4),
         np.array(
             [
                 3.1975,
@@ -274,8 +272,8 @@ def test_twonn_results(data):
     test_high_dim[:, : data.shape[1]] = data
     assert all(
         (
-            np.round(skdim.gid.TwoNN().fit(test_high_dim).dimension_, 5) == 4.05496,
-            np.round(skdim.gid.TwoNN(discard_fraction=0.05).fit(data).dimension_, 5)
+            np.round(skdim.id.TwoNN().fit(test_high_dim).dimension_, 5) == 4.05496,
+            np.round(skdim.id.TwoNN(discard_fraction=0.05).fit(data).dimension_, 5)
             == 4.11323,
         )
     )

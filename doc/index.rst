@@ -15,7 +15,7 @@ When a dataset contains multiple manifolds or regions with different dimensional
 Organization of `scikit-dimension`
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`scikit-dimension` provides a submodule `gid` for global estimators and `lid` for local estimators of ID. The helper function skdim.asPointwise allows one to apply a local or global estimator to local datasets formed by the :math:`k`-nearest neighbours of each datapoint. Some global estimators, like maximum likelihood estimation (MLE), obtain a final global estimate by aggregating local estimates obtained in each point and thus also provide the option to return the local values of ID that they computed. 
+`scikit-dimension` provides a submodule `id` for intrinsic dimension estimators and `datasets` to generate benchmark datasets 
 
 Functionalities
 ^^^^^^^^^^^^^^^

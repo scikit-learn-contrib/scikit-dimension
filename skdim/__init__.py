@@ -30,7 +30,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from . import datasets
-from . import lid
-from . import gid
+from . import id
 from ._commonfuncs import get_nn, get_estimators, asPointwise, mean_local_id
 from ._version import __version__

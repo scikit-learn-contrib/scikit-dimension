@@ -32,13 +32,13 @@
 import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
-from .._commonfuncs import get_nn
+from .._commonfuncs import get_nn, PointwiseEstimator
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class CorrInt(BaseEstimator):
+class CorrInt(BaseEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
     A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.

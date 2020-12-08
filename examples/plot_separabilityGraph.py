@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from scipy.stats.mstats import winsorize
 
-ball1 = skdim.gendata.hyperBall(n=1000, d=3, radius=0.5, center=[0, 0, 0]).T
-ball2 = skdim.gendata.hyperBall(n=1000, d=6, radius=0.5, center=[1, 0, 0, 0, 0, 0]).T
+ball1 = skdim.datasets.hyperBall(n=1000, d=3, radius=0.5, center=[0, 0, 0]).T
+ball2 = skdim.datasets.hyperBall(n=1000, d=6, radius=0.5, center=[1, 0, 0, 0, 0, 0]).T
 
 _2balls = np.zeros((6, 2000))
 _2balls[:3, :1000] = ball1
@@ -19,7 +19,7 @@ _2balls[:, 1000:2000] = ball2
 X = _2balls.T
 
 u = PCA().fit_transform(X)
-fishers = skdim.lid.FisherS(conditional_number=10000).fit(X)
+fishers = skdim.id.FisherS(conditional_number=10000).fit(X)
 ns = fishers.point_inseparability_to_pointID()[0]
 edges, weights = fishers.getSeparabilityGraph()
 

@@ -99,6 +99,11 @@ class MADA(BaseEstimator):
         # `fit` should always return `self`
         return self
 
+    def fit_transform(self, X, y=None):
+        if not self.is_fitted_:
+            self.fit(X)
+        return self.dimension_
+
     def _mada(self, X):
 
         if self.DM == False:

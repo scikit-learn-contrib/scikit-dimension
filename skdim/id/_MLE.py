@@ -142,6 +142,11 @@ class MLE(BaseEstimator):
         # `fit` should always return `self`
         return self
 
+    def fit_transform(self, X, y=None):
+        if not self.is_fitted_:
+            self.fit(X)
+        return self.dimension_
+
     def maxLikGlobalDimEst(self, X):
         # 'k' is the number of neighbors used for each dimension estimation.
         # 'dnoise' is a vector valued function giving the transition density.

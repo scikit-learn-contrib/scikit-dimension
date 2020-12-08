@@ -33,25 +33,7 @@ import numpy as np
 import itertools
 import numbers
 import multiprocessing as mp
-from sklearn.utils.validation import check_random_state
 from sklearn.neighbors import NearestNeighbors
-from scipy.special import gammainc
-from inspect import getmembers, isclass
-import skdim
-
-
-def get_estimators():
-    local_class_list = [o[1] for o in getmembers(skdim.lid) if isclass(o[1])]
-    global_class_list = [o[1] for o in getmembers(skdim.gid) if isclass(o[1])]
-
-    local_estimators = dict(
-        zip([str(e).split(".")[-1][:-2] for e in local_class_list], local_class_list)
-    )
-    global_estimators = dict(
-        zip([str(e).split(".")[-1][:-2] for e in global_class_list], global_class_list)
-    )
-
-    return local_estimators, global_estimators
 
 
 def indComb(NN):
@@ -98,19 +80,6 @@ def efficient_indnComb(n, k, random_generator_):
 
 def lens(vectors):
     return np.sqrt(np.sum(vectors ** 2, axis=1))
-
-
-def hyperBall(n, d, radius=1, center=[], random_state=None):
-    random_state_ = check_random_state(random_state)
-    if center == []:
-        center = np.array([0] * d)
-    r = radius
-    x = random_state_.normal(size=(n, d))
-    ssq = np.sum(x ** 2, axis=1)
-    fr = r * gammainc(d / 2, ssq / 2) ** (1 / d) / np.sqrt(ssq)
-    frtiled = np.tile(fr.reshape(n, 1), (1, d))
-    p = center + np.multiply(x, frtiled)
-    return p
 
 
 def proxy(tup):
@@ -242,6 +211,11 @@ class PointwiseEstimator:
             return dimension_pw_, dimension_pw_smooth_
         else:
             return dimension_pw_
+
+    def fit_transform(self, X):
+        if not self.is_fitted_:
+            self.fit(X)
+        return self.dimension_
 
 
 def mean_local_id(local_id, knnidx):

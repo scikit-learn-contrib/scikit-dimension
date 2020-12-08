@@ -31,10 +31,23 @@
 #
 import numpy as np
 from sklearn.utils.validation import check_random_state
-from ._commonfuncs import hyperBall
+from scipy.special import gammainc
 
 
-def hyperSphere(n, d, center=[], random_state=None):
+def hyperBall(n, d, radius=1, center=[], random_state=None):
+    random_state_ = check_random_state(random_state)
+    if center == []:
+        center = np.array([0] * d)
+    r = radius
+    x = random_state_.normal(size=(n, d))
+    ssq = np.sum(x ** 2, axis=1)
+    fr = r * gammainc(d / 2, ssq / 2) ** (1 / d) / np.sqrt(ssq)
+    frtiled = np.tile(fr.reshape(n, 1), (1, d))
+    p = center + np.multiply(x, frtiled)
+    return p
+
+
+def hyperSphere(n, d, random_state=None):
     """
     Generates a sample from a uniform distribution on an hypersphere surface
     """
