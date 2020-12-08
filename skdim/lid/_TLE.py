@@ -37,7 +37,7 @@ from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class TLE(BaseEstimator, PointwiseEstimator):
+class TLE(BaseEstimator):
     """
     Local intrinsic dimension estimation with the Tight Local Intrinsic Dimensionality Estimator algorithm.
 

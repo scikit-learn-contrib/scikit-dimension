@@ -48,19 +48,6 @@ from sklearn.utils.testing import (
 )
 
 
-### test data generation
-def test_datasets():
-    skdim.datasets.hyperBall(100, 2)
-    skdim.datasets.hyperSphere(100, 2)
-    skdim.datasets.hyperTwinPeaks(100, 2)
-    skdim.datasets.lineDiskBall(100)
-    skdim.datasets.swissRoll3Sph(100, 100)
-    skdim.datasets.BenchmarkManifolds(noise_type="uniform").generate(n=123, noise=0.1)
-    skdim.datasets.BenchmarkManifolds(noise_type="normal").generate(
-        name="M5b_Helix2d", n=456, dim=3, d=2, noise=0.3
-    )
-
-
 @pytest.fixture
 def data():
     X = np.zeros((100, 10))
@@ -199,15 +186,13 @@ def test_aspointwise(data):
 
 
 def test_datasets():
-    x = skdim.datasets.hyperSphere(n_points=100, n_dim=2, center=[], random_state=None)
-    x = skdim.datasets.hyperTwinPeaks(
-        n_points=100, n_dim=2, height=1, random_state=None
+    skdim.datasets.hyperBall(100, 2)
+    skdim.datasets.hyperSphere(100, 2)
+    skdim.datasets.hyperTwinPeaks(100, 2)
+    skdim.datasets.lineDiskBall(100)
+    skdim.datasets.swissRoll3Sph(100, 100)
+    skdim.datasets.BenchmarkManifolds(noise_type="uniform").generate(n=123)
+    skdim.datasets.BenchmarkManifolds(noise_type="normal").generate(
+        name="M5b_Helix2d", n=456, dim=3, d=2
     )
-    x = skdim.datasets.swissRoll3Sph(
-        Ns=50, Nsph=50, a=1, b=2, nturn=1.5, h=4, random_state=None
-    )
-    x = skdim.datasets.swissRoll3Sph(
-        Ns=0, Nsph=50, a=1, b=2, nturn=1.5, h=4, random_state=None
-    )
-    x = skdim.datasets.lineDiskBall(n_points=100, random_state=None)
 
