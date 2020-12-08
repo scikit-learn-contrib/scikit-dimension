@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import parametrize_with_checks
 from sklearn.utils.estimator_checks import check_estimator
-from sklearn.utils.vaidation import check_random_state
+from sklearn.utils.validation import check_random_state
 from sklearn.utils.testing import (
     assert_equal,
     assert_array_equal,
