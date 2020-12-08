@@ -1,5 +1,7 @@
 version: 2
-
+#wget https://github.com/jgm/pandoc/releases/download/2.11.2/pandoc-2.11.2-linux-amd64.tar.gz
+#tar xvzf pandoc-2.11.2-linux-amd64.tar.gz
+#export PATH=$HOME/pandoc-2.11.2/bin:$PATH
 jobs:
   python3:
     docker:
@@ -8,9 +10,7 @@ jobs:
       - checkout
       - run:
           command: |
-            wget https://github.com/jgm/pandoc/releases/download/2.11.2/pandoc-2.11.2-linux-amd64.tar.gz
-            tar xvzf pandoc-2.11.2-linux-amd64.tar.gz
-            export PATH=$HOME/pandoc-2.11.2/bin:$PATH
+            apt-get update && apt-get install -y pandoc
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
             chmod +x miniconda.sh && ./miniconda.sh -b -p ~/miniconda
             export PATH="~/miniconda/bin:$PATH"

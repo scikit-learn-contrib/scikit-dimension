@@ -23,10 +23,6 @@ Functionalities
 - estimate local intrinsic dimension 
 - generate toy datasets and widely used synthetic manifolds to benchmark estimators 
 
-Reference
-^^^^^^^^^
-X
-
 Support
 ^^^^^^^
 Feel free to report an `issue <https://github.com/j-bac/scikit-dimension/issues/new/choose>`_
