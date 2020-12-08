@@ -1,8 +1,9 @@
 formats:
   - none
-requirements_file: requirements.txt
 python:
   pip_install: true
+  requirements: requirements.txt
   extra_requirements:
     - tests
-    - docs
+    - doc
+
