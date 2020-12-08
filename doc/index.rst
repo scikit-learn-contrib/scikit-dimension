@@ -1,7 +1,7 @@
 scikit-dimension - Intrinsic dimension estimation in Python
 ===========================================================
 
-**scikit-dimension** is a module Python for intrinsic dimension estimation.
+**scikit-dimension** is a Python module for intrinsic dimension estimation.
 
 What is intrinsic dimension ?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
