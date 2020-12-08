@@ -212,7 +212,7 @@ class PointwiseEstimator:
         else:
             return dimension_pw_
 
-    def fit_transform(self, X):
+    def fit_transform(self, X, y=None):
         if not self.is_fitted_:
             self.fit(X)
         return self.dimension_
