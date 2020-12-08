@@ -18,6 +18,7 @@ jobs:
             conda create -n testenv --yes --quiet python=3.6.4
             source activate testenv
             conda install --yes pip numpy scipy scikit-learn numba matplotlib pillow
+            conda install -c conda-forge pandoc  --yes
             pip install -r doc/requirements.txt
             pip install .
             cd doc
