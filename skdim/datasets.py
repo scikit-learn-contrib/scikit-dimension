@@ -318,7 +318,7 @@ class BenchmarkManifolds:
             return dict_data
 
         elif name in self.dict_truth.keys():
-            data = self.dict_gen[k](n=n, dim=dim, d=d)
+            data = self.dict_gen[name](n=n, dim=dim, d=d)
             return data + self.gen_noise(n, dim, noise)
 
     def _gen_spiral_data(self, n, dim=3, d=1):
