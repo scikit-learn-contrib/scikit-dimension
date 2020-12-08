@@ -2,7 +2,7 @@ setuptools
 setuptools_scm
 typing_extensions
 importlib_metadata
-sphinx_rtd_theme>=0.3
+sphinx_rtd_theme==0.5.0rc1
 sphinx_autodoc_typehints<=1.6
 ipykernel
 sphinx>=1.7
