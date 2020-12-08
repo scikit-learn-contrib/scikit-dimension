@@ -38,9 +38,9 @@ data = np.zeros((1000,10))
 data[:,:5] = skdim.datasets.hyperBall(n = 1000, d = 5, radius = 1, random_state = 0)
 
 #fit an estimator of global intrinsic dimension (gid)
-danco = skdim.gid.DANCo().fit(data)
+danco = skdim.id.DANCo().fit(data)
 #fit a global or local estimator in k-nearest-neighborhoods of each point:
-lpca_pw = skdim.lid.lPCA().fit_pw(data,
+lpca_pw = skdim.id.lPCA().fit_pw(data,
                                     n_neighbors = 100,
                                     n_jobs = 1)
                             
