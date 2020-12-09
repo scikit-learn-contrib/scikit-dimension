@@ -81,7 +81,7 @@ class DANCo(BaseEstimator, PointwiseEstimator):
 
     ----------
     References
-    
+
     Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
 
     Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
@@ -425,4 +425,3 @@ class DANCo(BaseEstimator, PointwiseEstimator):
             return de_fractal[0], kl[de - 1], cal
         else:
             return de, kl[de - 1], cal
-

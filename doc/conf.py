@@ -294,7 +294,7 @@ latex_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 # intersphinx configuration
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None),
+    "python": ("https://docs.python.org/{.major}".format(sys.version_info), None,),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "matplotlib": ("https://matplotlib.org/", None),
@@ -313,4 +313,3 @@ intersphinx_mapping = {
 def setup(app):
     # a copy button to copy snippet of code from the documentation
     app.add_stylesheet("css/custom.css")
-

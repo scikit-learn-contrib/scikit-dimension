@@ -148,14 +148,17 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
 
     Returns
     -------
-    
+
     np.array, (npoints x ndim)
     """
     random_state = check_random_state(random_state)
 
     if n_swiss > 0:
         omega = 2 * np.pi * nturn
-        dl = lambda r: np.sqrt(b ** 2 + omega ** 2 * (a + b * r) ** 2)
+
+        def dl(r):
+            return np.sqrt(b ** 2 + omega ** 2 * (a + b * r) ** 2)
+
         ok = np.zeros(1)
         while sum(ok) < n_swiss:
             r_samp = random_state.uniform(size=3 * n_swiss)
@@ -296,7 +299,7 @@ class BenchmarkManifolds:
     ):
         """
         Generates all datasets. A ground truth dict of intrinsic dimension and embedding dimension is in BenchmarkManifolds.dict_truth.keys()
-        
+
         Parameters
         ----------
         n: int
@@ -411,7 +414,7 @@ class BenchmarkManifolds:
         p = 2.0 * self.random_state.rand(n)
 
         data = np.vstack(
-            [np.sin(t), p, np.sign(t) * (np.cos(t) - 1), np.zeros((dim - d - 1, n))]
+            [np.sin(t), p, np.sign(t) * (np.cos(t) - 1), np.zeros((dim - d - 1, n)),]
         ).T
         assert data.shape == (n, dim)
         return data
@@ -421,7 +424,7 @@ class BenchmarkManifolds:
 
         V = self.random_state.randn(n, d + 1)
         data = np.hstack(
-            [V / np.sqrt((V ** 2).sum(axis=1))[:, None], np.zeros((n, dim - d - 1))]
+            [V / np.sqrt((V ** 2).sum(axis=1))[:, None], np.zeros((n, dim - d - 1)),]
         )
         assert data.shape == (n, dim)
         return data
@@ -590,4 +593,3 @@ class BenchmarkManifolds:
         # Create the final dataset:
         data = np.concatenate([temp1, temp2, temp1, temp2], axis=1)
         return data
-

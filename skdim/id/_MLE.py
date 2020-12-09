@@ -74,7 +74,7 @@ class MLE(BaseEstimator):
 
     ---------  
     References
-    
+
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
 
     Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.

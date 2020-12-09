@@ -53,15 +53,15 @@ class KNN(BaseEstimator, PointwiseEstimator):
         Number of bootstrap samples for each sample size.
     gamma : int, default=2
         Weighting constant.
-        
+
     Returns
     -------
-    
+
     dimension_ : float
         The estimated intrinsic dimension
     residual_ : float
         Residuals
-        
+
 
     References
     ----------

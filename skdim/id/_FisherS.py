@@ -508,7 +508,7 @@ class FisherS(BaseEstimator, PointwiseEstimator):
     def buildSeparabilityGraph(data, alpha, top_edges=10000):
         """weighted directed separability graph, represented by a list of tuples (point i, point j) and an array of weights
         each tuple is the observation that point i is inseparable from j, the weight is <x_i,x_j>/<xi,xi>-alpha
-        
+
         data is a matrix of data which is assumed to be properly normalized
         alpha parameter is a signle value in this case
         top_edges is the number of edges to return. if top_edges is negative then all edges will be returned
@@ -652,7 +652,9 @@ class FisherS(BaseEstimator, PointwiseEstimator):
 
             plt.figure()
             plt.plot(self._alphas[0, :], n_alpha, "ko-")
-            plt.plot(self._alphas[0, alpha_ind_selected], n_single, "rx", markersize=16)
+            plt.plot(
+                self._alphas[0, alpha_ind_selected], n_single, "rx", markersize=16,
+            )
             plt.xlabel("\u03B1", fontsize=16)
             plt.ylabel("Effective dimension", fontsize=16)
             locs, labels = plt.xticks()
@@ -705,4 +707,11 @@ class FisherS(BaseEstimator, PointwiseEstimator):
                 "FisherS selected several dimensions as equally probable. Taking the maximum"
             )
 
-        return n_alpha, n_single.max(), p_alpha, self._alphas, separable_fraction, Xp
+        return (
+            n_alpha,
+            n_single.max(),
+            p_alpha,
+            self._alphas,
+            separable_fraction,
+            Xp,
+        )

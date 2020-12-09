@@ -67,9 +67,9 @@ class ESS(BaseEstimator, PointwiseEstimator):
 
     -----------
     References
-    
+
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    
+
     Johnsson, K., Soneson, C., & Fontes, M. (2015). Low Bias Local Intrinsic Dimension Estimation from Expected Simplex Skewness. IEEE Trans. Pattern Anal. Mach. Intell., 37(1), 196-202. 
 
     """
@@ -243,7 +243,7 @@ class ESS(BaseEstimator, PointwiseEstimator):
 
         if maxdim <= self.d + 2:
             raise ValueError(
-                "maxdim (", maxdim, ") must be larger than d + 2 (", self.d + 2, ")"
+                "maxdim (", maxdim, ") must be larger than d + 2 (", self.d + 2, ")",
             )
 
         if self.ver == "a":
@@ -353,4 +353,3 @@ class ESS(BaseEstimator, PointwiseEstimator):
             raise ValueError('For ver == "b", d > 1 is not supported.')
 
         raise ValueError("Not a valid version")
-

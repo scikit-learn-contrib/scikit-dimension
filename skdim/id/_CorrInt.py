@@ -42,7 +42,7 @@ class CorrInt(BaseEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
     A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.
-    
+
     Attributes
     ----------
     k1 : int
@@ -57,11 +57,11 @@ class CorrInt(BaseEstimator, PointwiseEstimator):
 
     dimension_ : float
         The estimated intrinsic dimension
-    
+
     References
     ----------
     Code translated and description taken from the ider R package by Hideitsu Hino.
-    
+
     P. Grassberger and I. Procaccia. Measuring the strangeness of strange attractors. Physica, 1983.
     """
 

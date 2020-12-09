@@ -162,4 +162,3 @@ def test_datasets():
     skdim.datasets.BenchmarkManifolds(noise_type="normal").generate(
         name="M5b_Helix2d", n=456, dim=3, d=2
     )
-

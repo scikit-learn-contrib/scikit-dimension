@@ -75,7 +75,7 @@ def test_ess_results(data):
     #     rx3=intdimr.essLocalDimEst(data,d=2)
     #     rx_results = np.array([rx[0],rx[1],rx2[0],rx2[1],rx3[0],rx3[1]]).T
     rx_results = np.array(
-        [[5.08681575, 0.88546915, 5.11274497, 0.371001, 5.06259738, 0.66653896]]
+        [[5.08681575, 0.88546915, 5.11274497, 0.371001, 5.06259738, 0.66653896,]]
     )
 
     assert np.allclose(
@@ -277,4 +277,3 @@ def test_twonn_results(data):
             == 4.11323,
         )
     )
-

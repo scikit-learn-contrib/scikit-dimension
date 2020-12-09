@@ -221,19 +221,19 @@ class PointwiseEstimator:
 def mean_local_id(local_id, knnidx):
     """
     Compute point mean local ID: the mean ID of all neighborhoods in which a point appears
-    
+
     Parameters
     ----------
     local_id : list or np.array
         list of local ID for each point
     knnidx : np.array 
         indices of kNN for each point returned by function get_nn
-    
+
     Results
     -------
     dimension_pw_smooth_ : np.array
         list of mean local ID for each point
-        
+
     """
     dimension_pw_smooth_ = np.zeros(len(local_id))
     for point_i in range(len(local_id)):
@@ -299,4 +299,3 @@ def check_random_generator(seed):
         "%r cannot be used to seed a numpy.random._generator.Generator"
         " instance" % seed
     )
-

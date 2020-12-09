@@ -40,7 +40,7 @@ class MADA(BaseEstimator):
 
     """ Local intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
     A variant of fractal dimension called the local information  dimension i  considered. The local information  dimension is estimated by using the  probability mass function. Mada considers first order expansion of the probability mass around the inspection point, and it estimates the local information dimension by using two different radii from the inspection point. 
- 
+
     Attributes
     ----------
     k : int, default=20
@@ -49,13 +49,13 @@ class MADA(BaseEstimator):
         How to combine local estimates if local=False. Possible values : "average", "median"
     local : bool, default=False
         Whether to return local estimates
-        
+
     Returns
     -------
-    
+
     self.dimension_ : float
         The estimated intrinsic dimension
-        
+
     References
     ----------
     Code translated and description taken from the ider R package by Hideitsu Hino.

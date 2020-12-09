@@ -57,7 +57,7 @@ class MiND_ML(BaseEstimator, PointwiseEstimator):
 
     -----------
     References
-    
+
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
 
     Rozza, A., Lombardi, G., Ceruti, C., Casiraghi, E., & Campadelli, P. (2012). Novel high intrinsic dimensionality estimators. 
