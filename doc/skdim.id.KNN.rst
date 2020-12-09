@@ -1,7 +1,7 @@
-skdim.gid.KNN
-=============
+skdim.id.KNN
+============
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: KNN
 
@@ -16,6 +16,7 @@ skdim.gid.KNN
       ~KNN.__init__
       ~KNN.fit
       ~KNN.fit_pw
+      ~KNN.fit_transform
       ~KNN.fit_transform_pw
       ~KNN.get_params
       ~KNN.set_params

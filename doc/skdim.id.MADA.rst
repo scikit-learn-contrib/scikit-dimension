@@ -1,7 +1,7 @@
-skdim.lid.MADA
-==============
+skdim.id.MADA
+=============
 
-.. currentmodule:: skdim.lid
+.. currentmodule:: skdim.id
 
 .. autoclass:: MADA
 
@@ -15,6 +15,7 @@ skdim.lid.MADA
    
       ~MADA.__init__
       ~MADA.fit
+      ~MADA.fit_transform
       ~MADA.get_params
       ~MADA.set_params
    

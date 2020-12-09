@@ -7,32 +7,24 @@ Import skdim as::
 
    import skdim
 
-Local ID
---------
+ID estimators
+-------------
 
 .. autosummary::
    :toctree: .
 
-   lid.ESS
-   lid.FisherS
-   lid.lPCA
-   lid.MOM
-   lid.TLE
-   lid.MADA
-
-
-Global ID
----------
-
-.. autosummary::
-   :toctree: .
-
-   gid.CorrInt
-   gid.DANCo
-   gid.MiND_ML
-   gid.KNN
-   gid.MLE
-   gid.TwoNN
+   id.CorrInt
+   id.DANCo
+   id.ESS
+   id.FisherS
+   id.KNN
+   id.lPCA
+   id.MADA
+   id.MiND_ML
+   id.MLE
+   id.MOM
+   id.TLE
+   id.TwoNN
 
 
 Datasets

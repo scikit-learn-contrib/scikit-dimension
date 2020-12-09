@@ -44,7 +44,7 @@ class lPCA(BaseEstimator, PointwiseEstimator):
     Parameters
     ----------
     ver : str 	
-        Version. Possible values: 'FO', 'fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
+        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
     alphaRatio : float
         Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
     alphaFO: float
@@ -124,7 +124,7 @@ class lPCA(BaseEstimator, PointwiseEstimator):
 
         if self.ver == "FO":
             return self._FO(explained_var)
-        elif self.ver == "fan":
+        elif self.ver == "Fan":
             return self._fan(explained_var)
         elif self.ver == "maxgap":
             return self._maxgap(explained_var)

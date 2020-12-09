@@ -86,9 +86,11 @@ def test_mom_params(data):
 
 def test_lpca_params(data):
     x = skdim.id.lPCA().fit(data)
-    x = skdim.id.lPCA(ver="fan").fit(data)
+    x = skdim.id.lPCA(ver="Fan").fit(data)
     x = skdim.id.lPCA(ver="ratio").fit(data)
     x = skdim.id.lPCA(ver="maxgap").fit(data)
+    x = skdim.id.lPCA(ver="Kaiser").fit(data)
+    x = skdim.id.lPCA(ver="broken_stick").fit(data)
 
 
 def test_tle_params(data):

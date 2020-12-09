@@ -1,7 +1,7 @@
-skdim.lid.FisherS
-=================
+skdim.id.FisherS
+================
 
-.. currentmodule:: skdim.lid
+.. currentmodule:: skdim.id
 
 .. autoclass:: FisherS
 
@@ -18,6 +18,7 @@ skdim.lid.FisherS
       ~FisherS.check_symmetric
       ~FisherS.fit
       ~FisherS.fit_pw
+      ~FisherS.fit_transform
       ~FisherS.fit_transform_pw
       ~FisherS.getSeparabilityGraph
       ~FisherS.get_params

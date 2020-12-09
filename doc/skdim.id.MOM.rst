@@ -1,7 +1,7 @@
-skdim.lid.MOM
-=============
+skdim.id.MOM
+============
 
-.. currentmodule:: skdim.lid
+.. currentmodule:: skdim.id
 
 .. autoclass:: MOM
 
@@ -16,6 +16,7 @@ skdim.lid.MOM
       ~MOM.__init__
       ~MOM.fit
       ~MOM.fit_pw
+      ~MOM.fit_transform
       ~MOM.fit_transform_pw
       ~MOM.get_params
       ~MOM.set_params

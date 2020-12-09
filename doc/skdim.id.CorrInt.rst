@@ -1,7 +1,7 @@
-skdim.gid.CorrInt
-=================
+skdim.id.CorrInt
+================
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: CorrInt
 
@@ -15,6 +15,9 @@ skdim.gid.CorrInt
    
       ~CorrInt.__init__
       ~CorrInt.fit
+      ~CorrInt.fit_pw
+      ~CorrInt.fit_transform
+      ~CorrInt.fit_transform_pw
       ~CorrInt.get_params
       ~CorrInt.set_params
    

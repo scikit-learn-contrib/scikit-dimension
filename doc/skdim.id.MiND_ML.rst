@@ -1,7 +1,7 @@
-skdim.gid.MiND\_ML
-==================
+skdim.id.MiND\_ML
+=================
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: MiND_ML
 
@@ -16,6 +16,7 @@ skdim.gid.MiND\_ML
       ~MiND_ML.__init__
       ~MiND_ML.fit
       ~MiND_ML.fit_pw
+      ~MiND_ML.fit_transform
       ~MiND_ML.fit_transform_pw
       ~MiND_ML.get_params
       ~MiND_ML.set_params

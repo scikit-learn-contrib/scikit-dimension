@@ -1,7 +1,7 @@
-skdim.lid.TLE
-=============
+skdim.id.TLE
+============
 
-.. currentmodule:: skdim.lid
+.. currentmodule:: skdim.id
 
 .. autoclass:: TLE
 
@@ -15,8 +15,7 @@ skdim.lid.TLE
    
       ~TLE.__init__
       ~TLE.fit
-      ~TLE.fit_pw
-      ~TLE.fit_transform_pw
+      ~TLE.fit_transform
       ~TLE.get_params
       ~TLE.set_params
    

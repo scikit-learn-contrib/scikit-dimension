@@ -1,7 +1,7 @@
-skdim.gid.MLE
-=============
+skdim.id.MLE
+============
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: MLE
 
@@ -15,6 +15,7 @@ skdim.gid.MLE
    
       ~MLE.__init__
       ~MLE.fit
+      ~MLE.fit_transform
       ~MLE.get_params
       ~MLE.maxLikGlobalDimEst
       ~MLE.maxLikLocalDimEst

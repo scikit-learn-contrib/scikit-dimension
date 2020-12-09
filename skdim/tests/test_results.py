@@ -117,7 +117,7 @@ def test_lpca_results(data):
     assert all(
         (
             skdim.id.lPCA().fit(data).dimension_ == 5,
-            skdim.id.lPCA(ver="fan").fit(data).dimension_ == 3,
+            skdim.id.lPCA(ver="Fan").fit(data).dimension_ == 3,
             skdim.id.lPCA(ver="maxgap").fit(data).dimension_ == 5,
         )
     )

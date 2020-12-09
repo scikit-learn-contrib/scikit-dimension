@@ -1,7 +1,7 @@
-skdim.lid.lPCA
-==============
+skdim.id.lPCA
+=============
 
-.. currentmodule:: skdim.lid
+.. currentmodule:: skdim.id
 
 .. autoclass:: lPCA
 
@@ -16,6 +16,7 @@ skdim.lid.lPCA
       ~lPCA.__init__
       ~lPCA.fit
       ~lPCA.fit_pw
+      ~lPCA.fit_transform
       ~lPCA.fit_transform_pw
       ~lPCA.get_params
       ~lPCA.set_params

@@ -1,7 +1,7 @@
-skdim.gid.TwoNN
-===============
+skdim.id.TwoNN
+==============
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: TwoNN
 
@@ -16,6 +16,7 @@ skdim.gid.TwoNN
       ~TwoNN.__init__
       ~TwoNN.fit
       ~TwoNN.fit_pw
+      ~TwoNN.fit_transform
       ~TwoNN.fit_transform_pw
       ~TwoNN.get_params
       ~TwoNN.set_params

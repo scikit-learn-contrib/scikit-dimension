@@ -1,7 +1,7 @@
-skdim.gid.DANCo
-===============
+skdim.id.DANCo
+==============
 
-.. currentmodule:: skdim.gid
+.. currentmodule:: skdim.id
 
 .. autoclass:: DANCo
 
@@ -16,6 +16,7 @@ skdim.gid.DANCo
       ~DANCo.__init__
       ~DANCo.fit
       ~DANCo.fit_pw
+      ~DANCo.fit_transform
       ~DANCo.fit_transform_pw
       ~DANCo.get_params
       ~DANCo.set_params
