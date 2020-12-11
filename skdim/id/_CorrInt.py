@@ -41,7 +41,6 @@ from sklearn.utils.validation import check_array
 class CorrInt(BaseEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
-    A variant of fractal dimension called the correlation dimension is considered. The correlation dimension is defined by the notion of the correlation integral, is calculated by using the power law for the definition of the correlation dimension.
 
     Attributes
     ----------
@@ -51,12 +50,6 @@ class CorrInt(BaseEstimator, PointwiseEstimator):
         Last neighborhood size considered
     DM : bool, default=False
         Is the input a precomputed distance matrix (dense)
-
-    Returns
-    ----------
-
-    dimension_ : float
-        The estimated intrinsic dimension
 
     References
     ----------

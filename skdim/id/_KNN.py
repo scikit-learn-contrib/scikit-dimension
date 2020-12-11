@@ -37,8 +37,10 @@ from .._commonfuncs import PointwiseEstimator
 
 
 class KNN(BaseEstimator, PointwiseEstimator):
-    """ Intrinsic dimension estimation with the kNN algorithm.
-    This is a somewhat simplified version of the kNN dimension estimation method described by Carter et al. (2010), the difference being that block bootstrapping is not used.
+    """ 
+    Intrinsic dimension estimation with the kNN algorithm.
+    This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
+    the difference being that block bootstrapping is not used.
 
     Attributes
     ----------
@@ -54,20 +56,12 @@ class KNN(BaseEstimator, PointwiseEstimator):
     gamma : int, default=2
         Weighting constant.
 
-    Returns
-    -------
-
-    dimension_ : float
-        The estimated intrinsic dimension
-    residual_ : float
-        Residuals
-
-
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
 
-    Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. IEEE Trans. on Sig. Proc., 58(2), 650-663. 
+    Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. 
+    IEEE Trans. on Sig. Proc., 58(2), 650-663. 
     """
 
     def __init__(self, k=None, ps=None, M=1, gamma=2):
@@ -86,8 +80,12 @@ class KNN(BaseEstimator, PointwiseEstimator):
 
         Returns
         -------
-        self : object
+        self: object
             Returns self.
+        self.dimension_: float
+            The estimated intrinsic dimension
+        self.residual_: float
+            Residuals
         """
         X = check_array(X, accept_sparse=False)
         if len(X) == 1:

@@ -68,17 +68,6 @@ class DANCo(BaseEstimator, PointwiseEstimator):
     fractal : bool, default=True
         Whether to return fractal rather than integer dimension
     verbose : bool, default=False
-
-    ----------
-    Returns
-
-    dimension_ : int (or float if fractal is True)
-        The estimated intrinsic dimension
-    kl_divergence : float
-        The KL divergence between data and reference data for the estimated dimension (if ver == 'DANCo').
-    calibration_data : dict
-        Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
-
     ----------
     References
 
@@ -119,6 +108,12 @@ class DANCo(BaseEstimator, PointwiseEstimator):
         -------
         self : object
             Returns self.
+        self.dimension_ : int (or float if fractal is True)
+            The estimated intrinsic dimension
+        self.kl_divergence : float
+            The KL divergence between data and reference data for the estimated dimension (if ver == 'DANCo').
+        self.calibration_data : dict
+            Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
         """
         X = check_array(X, accept_sparse=False)
         if len(X) == 1:

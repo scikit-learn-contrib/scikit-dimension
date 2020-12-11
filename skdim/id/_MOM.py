@@ -40,21 +40,13 @@ class MOM(BaseEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Method Of Moments algorithm.
 
-    -----------
     Attributes
-
+    ----------
     k : int
         Number of nearest neighbors considered
-
-    -----------
-    Returns
-
-    dimension_ : int
-        Intrinsic dimension of the dataset
-
-    -----------
+    
     References
-
+    ----------
     Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).
 
      L.  Amsaleg,  O.  Chelly,  T.  Furon,  S.  Girard,  M.  E.Houle,  K.  Kawarabayashi,  and  M.  Nett. Extreme-value-theoretic estimation of local intrinsic dimensionality.DAMI, 32(6):1768–1805, 2018.

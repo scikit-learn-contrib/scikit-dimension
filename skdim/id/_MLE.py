@@ -38,11 +38,18 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(BaseEstimator):
-    """ Intrinsic dimension estimation with the Maximum Likelihood method. The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. The estimator in the paper is obtained using default parameters and dnoise = dnoiseGaussH.
+    """ 
+    Intrinsic dimension estimation with the Maximum Likelihood method. 
 
-    With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. With integral.approximation = 'iteration', five iterations is used to determine m.
+    The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 
+    The estimator in the paper is obtained using default parameters and dnoise = 'dnoiseGaussH'.
+    With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. 
+    With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. 
+    This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. 
+    With integral.approximation = 'iteration', five iterations is used to determine m.
 
-    mode='local' and 'pointwise' assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). See localIntrinsicDimension. 
+    mode='local' and 'pointwise' assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set
+    is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). 
 
     ----------
     Attributes
@@ -65,12 +72,6 @@ class MLE(BaseEstimator):
         How to aggregate the pointwise estimates. Possible values 'maximum.likelihood', 'mean', 'median'
     K : int, default=5
         Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
-
-    ---------
-    Returns
-
-    dimension_ : float
-        The estimated intrinsic dimension
 
     ---------  
     References

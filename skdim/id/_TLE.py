@@ -43,15 +43,8 @@ class TLE(BaseEstimator):
 
     Attributes
     ----------
-
     epsilon : float
-
-    Returns
-    -------
-
-
-    dimension_ : int
-        Intrinsic dimension of the dataset
+    
 
     References
     ----------

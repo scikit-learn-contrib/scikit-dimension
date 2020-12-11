@@ -47,8 +47,8 @@ class FisherS(BaseEstimator, PointwiseEstimator):
     """
     Local intrinsic dimension estimation using the FisherS algorithm.
 
-    -----------
     Attributes
+    ----------
     conditional_number : - a positive real value used to select the top
             princinpal components. We consider only PCs with eigen values
             which are not less than the maximal eigenvalue divided by
@@ -64,22 +64,9 @@ class FisherS(BaseEstimator, PointwiseEstimator):
         Whether to print number of retained principal components
     limit_maxdim : bool
         Whether to cap estimated maxdim to the embedding dimension
-
-    -----------
-    Returns
-
-    n_alpha : 1D np.array, float
-        Effective dimension profile as a function of alpha
-    n_single : float
-        A single estimate for the effective dimension 
-    p_alpha : 2D np.array, float
-        Distributions as a function of alpha, matrix with columns corresponding to the alpha values, and with rows corresponding to objects. 
-    separable_fraction : 1D np.array, float
-        Separable fraction of data points as a function of alpha
-    alphas : 2D np.array, float
-        Input alpha values    
-    -----------
+ 
     References
+    ----------
     """
 
     def __init__(
@@ -100,7 +87,9 @@ class FisherS(BaseEstimator, PointwiseEstimator):
         self.limit_maxdim = limit_maxdim
 
     def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
+        """
+        A reference implementation of a fitting function.
+
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
@@ -111,6 +100,16 @@ class FisherS(BaseEstimator, PointwiseEstimator):
         -------
         self : object
             Returns self.
+        self.n_alpha : 1D np.array, float
+            Effective dimension profile as a function of alpha
+        self.n_single : float
+            A single estimate for the effective dimension 
+        self.p_alpha : 2D np.array, float
+            Distributions as a function of alpha, matrix with columns corresponding to the alpha values, and with rows corresponding to objects. 
+        self.separable_fraction : 1D np.array, float
+            Separable fraction of data points as a function of alpha
+        self.alphas : 2D np.array, float
+            Input alpha values   
         """
 
         X = check_array(X, accept_sparse=False)
