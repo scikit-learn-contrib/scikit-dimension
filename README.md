@@ -37,9 +37,9 @@ import numpy as np
 data = np.zeros((1000,10))
 data[:,:5] = skdim.datasets.hyperBall(n = 1000, d = 5, radius = 1, random_state = 0)
 
-#fit an estimator of global intrinsic dimension (gid)
+#estimate global intrinsic dimension
 danco = skdim.id.DANCo().fit(data)
-#fit a global or local estimator in k-nearest-neighborhoods of each point:
+#estimate local intrinsic dimension (dimension in k-nearest-neighborhoods around each point):
 lpca_pw = skdim.id.lPCA().fit_pw(data,
                                     n_neighbors = 100,
                                     n_jobs = 1)
@@ -49,6 +49,7 @@ print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))
 ```
 
 Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API and examples.
+
 
 ### Credits and links to original implementations:
 

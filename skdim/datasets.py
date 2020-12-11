@@ -34,7 +34,28 @@ from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
 
 
-def hyperBall(n, d, radius=1, center=[], random_state=None):
+def hyperBall(n, d, radius=1.0, center=[], random_state=None):
+    """
+    Generates a sample from a uniform distribution on the hyperball
+
+    Parameters
+    ----------
+    n: int 
+        Number of data points.
+    d: int
+        Dimension of the hyperball
+    radius: float
+        Radius of the hyperball
+    center: list, tuple, np.array
+        Center of the hyperball
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data
+    """
     random_state_ = check_random_state(random_state)
     if center == []:
         center = np.array([0] * d)
@@ -49,7 +70,23 @@ def hyperBall(n, d, radius=1, center=[], random_state=None):
 
 def hyperSphere(n, d, random_state=None):
     """
-    Generates a sample from a uniform distribution on an hypersphere surface
+    Generates a sample from a uniform distribution on the hypersphere
+
+    Parameters
+    ----------
+    n: int 
+        Number of data points.
+    d: int
+        Dimension of the hypersphere
+    center: list, tuple, np.array
+        Center of the hypersphere
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data
     """
     random_state = check_random_state(random_state)
     vec = random_state.randn(n, d)
@@ -57,10 +94,27 @@ def hyperSphere(n, d, random_state=None):
     return vec
 
 
-def hyperTwinPeaks(n, d=2, height=1, random_state=None):
+def hyperTwinPeaks(n, d=2, height=1.0, random_state=None):
     """ 
-    Translated from Kerstin Johnsson's R package intrinsicDimension
+    Generates a sample from a plane with protruding peaks. Translated from Kerstin Johnsson's R package intrinsicDimension
+
+    Parameters
+    ----------
+    n: int 
+        Number of data points.
+    d: int
+        Dimension of the dataset
+    height: float
+        Height of the peaks
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data
     """
+
     random_state = check_random_state(random_state)
     base_coord = random_state.uniform(size=(n, d))
     _height = height * np.prod(np.sin(2 * np.pi * base_coord), axis=1, keepdims=1)
@@ -71,7 +125,20 @@ def lineDiskBall(n, random_state=None):
     """ 
     Generates a sample from a uniform distribution on a line, an oblong disk and an oblong ball
     Translated from ldbl function in Hideitsu Hino's package
+
+        Parameters
+    ----------
+    n: int 
+        Number of data points.
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data
     """
+
     random_state = check_random_state(random_state)
 
     line = np.hstack(
@@ -127,29 +194,23 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
 
     Parameters
     ----------
-
-    Ns : int 
+    n_swiss: int 
         Number of data points on the Swiss roll.
-
-    Nsph : int
+    n_sphere: int
         Number of data points on the 3-sphere.
-
-    a : int or float, default=1
+    a: int or float, default=1
         Minimal radius of Swiss roll and radius of 3-sphere.
-
-    b : int or float, default=2
+    b: int or float, default=2
         Maximal radius of Swiss roll.
-
-    nturn : int or float, default=1.5
+    nturn: int or float, default=1.5
         Number of turns of the surface. 
-
-    h : int or float, default=4
+    h: int or float, default=4
         Height of Swiss roll.
 
     Returns
     -------
-
-    np.array, (npoints x ndim)
+    data: np.array, (npoints x ndim)
+        Generated data
     """
     random_state = check_random_state(random_state)
 
@@ -189,11 +250,8 @@ class BenchmarkManifolds:
 
     Attributes
     ----------
-
-    type_noise : str, 'uniform' or 'gaussian'
+    noise_type : str, 'uniform' or 'gaussian'
         Type of noise to generate
-    d : int, default=1
-        For ver ='a', any value of d is possible,  for ver ='b', only d = 1 is supported.
 
     References
     ----------
