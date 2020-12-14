@@ -114,7 +114,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 class PointwiseEstimator:
     """Superclass: use a global estimator as a pointwise one by creating kNN neighborhoods"""
 
-    def fit_pw(self, X, precomputed_knn=False, smooth=False, n_neighbors=100, n_jobs=1):
+    def fit_pw(self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1):
         """
         Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
 
@@ -123,7 +123,7 @@ class PointwiseEstimator:
         X: np.array (n_samples x n_neighbors)
             Dataset to fit
         precomputed_knn: bool
-            Whether X is an array of precomputed (sorted) nearest neighbor indices
+            An array of precomputed (sorted) nearest neighbor indices
         n_neighbors:
             Number of nearest neighbors to use (ignored when using precomputed_knn)
         n_jobs: int
@@ -138,8 +138,8 @@ class PointwiseEstimator:
             Returns self
         """
 
-        if precomputed_knn:
-            knnidx = X
+        if precomputed_knn is not None:
+            knnidx = precomputed_knn
         else:
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
@@ -162,7 +162,7 @@ class PointwiseEstimator:
         return self
 
     def fit_transform_pw(
-        self, X, precomputed_knn=False, smooth=False, n_neighbors=100, n_jobs=1
+        self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1
     ):
         """
         Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
@@ -172,7 +172,7 @@ class PointwiseEstimator:
         X: np.array (n_samples x n_neighbors)
             Dataset to fit
         precomputed_knn: bool
-            Whether X is an array of precomputed (sorted) nearest neighbor indices
+            An array of precomputed (sorted) nearest neighbor indices
         n_neighbors:
             Number of nearest neighbors to use (ignored when using precomputed_knn)
         n_jobs: int
@@ -189,8 +189,8 @@ class PointwiseEstimator:
             If smooth is True, additionally returns smoothed pointwise ID estimates
         """
 
-        if precomputed_knn:
-            knnidx = X
+        if precomputed_knn is not None:
+            knnidx = precomputed_knn
         else:
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
