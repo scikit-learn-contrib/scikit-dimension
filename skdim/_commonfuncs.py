@@ -34,6 +34,7 @@ import itertools
 import numbers
 import multiprocessing as mp
 from sklearn.neighbors import NearestNeighbors
+from sklearn.utils.validation import check_array, check_is_fitted
 
 
 def indComb(NN):
@@ -112,7 +113,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 
 
 class PointwiseEstimator:
-    """Superclass: use a global estimator as a pointwise one by creating kNN neighborhoods"""
+    """ Superclass: predict, fit_pw, fit_predict_pw """
 
     def fit_pw(self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1):
         """
@@ -161,7 +162,38 @@ class PointwiseEstimator:
                 )
         return self
 
-    def fit_transform_pw(
+    def fit_predict(self, X, y=None):
+        """Fit estimator and return dimension
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        return self.fit(X).dimension_
+
+    def predict(self):
+        """ Predict dimension after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        check_is_fitted(self, "is_fitted_")
+        return self.dimension_
+
+    def fit_predict_pw(
         self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1
     ):
         """
@@ -181,6 +213,7 @@ class PointwiseEstimator:
             Additionally computes a smoothed version of pointwise estimates by 
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
            smooth_ 
+
         Returns
         -------
         dimension_pw : np.array 
@@ -212,15 +245,39 @@ class PointwiseEstimator:
         else:
             return dimension_pw_
 
-    def fit_transform(self, X, y=None):
-        if not self.is_fitted_:
-            self.fit(X)
-        return self.dimension_
+    def predict_pw(self):
+        """ Predict dimension after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_pw : np.array 
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array 
+            If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
+        """
+        check_is_fitted(
+            self,
+            "dimension_pw_",
+            msg=(
+                "This class instance is not fitted yet. Call 'fit_pw' with "
+                "appropriate arguments before using this method."
+            ),
+        )
+
+        if hasattr(self, "dimension_pw_smooth_"):
+            return self.dimension_pw_, self.dimension_pw_smooth_
+        else:
+            return self.dimension_pw_
 
 
 def mean_local_id(local_id, knnidx):
     """
-    Compute point mean local ID: the mean ID of all neighborhoods in which a point appears
+    Compute the mean ID of all neighborhoods in which a point appears
 
     Parameters
     ----------

@@ -38,8 +38,7 @@ from sklearn.utils.validation import check_array
 
 class MADA(BaseEstimator):
 
-    """ 
-    Local intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
+    """ Intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
     A variant of fractal dimension called the local information dimension is considered. 
     MADA considers first order expansion of the probability mass around the inspection point, 
     and it estimates the local information dimension by using two different radii from the inspection point. 

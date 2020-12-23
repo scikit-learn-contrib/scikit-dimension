@@ -38,8 +38,7 @@ from sklearn.utils.validation import check_array
 
 
 class MiND_ML(BaseEstimator, PointwiseEstimator):
-    """
-    Intrinsic dimension estimation with the MiND_MLx algorithms.
+    """ Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
 
     -----------
     Attributes

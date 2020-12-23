@@ -37,7 +37,7 @@ from .._commonfuncs import PointwiseEstimator
 
 
 class lPCA(BaseEstimator, PointwiseEstimator):
-    """ Local intrinsic dimension estimation using PCA.
+    """ Intrinsic dimension estimation using the local PCA algorithm.
     Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
     Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.
 

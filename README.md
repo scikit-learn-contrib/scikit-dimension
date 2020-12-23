@@ -48,25 +48,4 @@ lpca_pw = skdim.id.lPCA().fit_pw(data,
 print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))
 ```
 
-Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API and examples.
-
-
-### Credits and links to original implementations:
-
-##### R
-- Kerstin Johnsson
-https://cran.r-project.org/web/packages/intrinsicDimension/index.html
-
-- Hideitsu Hino
-https://cran.r-project.org/web/packages/ider/index.html
-
-#### MATLAB
-- Gabriele Lombardi https://fr.mathworks.com/matlabcentral/fileexchange/40112-intrinsic-dimensionality-estimation-techniques
-- Miloš Radovanović https://perun.pmf.uns.ac.rs/radovanovic/tle/
-
-#### C++ TwoNN
-- Elena Facco https://github.com/efacco/TWO-NN
-
-#### Python TwoNN 
-- Francesco Mottes https://github.com/fmottes/TWO-NN 
-and my modified fork https://github.com/j-bac/TWO-NN
+Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API, examples and references

@@ -52,7 +52,7 @@ from .._commonfuncs import (
 
 class DANCo(BaseEstimator, PointwiseEstimator):
 
-    """ Intrinsic dimension estimation with the DANCo (Ceruti et al. 2012), MIND_MLi and MIND_MLk (Rozza et al. 2012) methods. 
+    """ Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
 
     ----------
     Attributes
@@ -74,8 +74,6 @@ class DANCo(BaseEstimator, PointwiseEstimator):
     Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
 
     Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
-
-    Rozza, A et al. (2012) Novel high intrinsic dimensionality estimators. Machine learning 89, 37-65. 
     """
 
     def __init__(

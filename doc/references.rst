@@ -1,16 +1,16 @@
 References
 ==========
-
+.. [Bergen20] Bergen *et al.* (2020),
+   *Generalizing RNA velocity to transient cell states through dynamical modeling*,
+   `Nature Biotech <https://doi.org/10.1038/s41587-020-0591-3>`__.
+   
 Credits and links to other implementations
-------------------------------------------
+==========================================
 
 R
 ^
-- Kerstin Johnsson
-https://cran.r-project.org/web/packages/intrinsicDimension/index.html
-
-- Hideitsu Hino
-https://cran.r-project.org/web/packages/ider/index.html
+- Kerstin Johnsson https://cran.r-project.org/web/packages/intrinsicDimension/index.html
+- Hideitsu Hino https://cran.r-project.org/web/packages/ider/index.html
 
 MATLAB
 ^^^^^^
@@ -23,7 +23,7 @@ C++
 
 Python 
 ^^^^^^
-- TwoNN by Francesco Mottes https://github.com/fmottes/TWO-NN and my modified fork https://github.com/j-bac/TWO-NN
+- TwoNN by Francesco Mottes https://github.com/fmottes/TWO-NN
 
 
 Articles
