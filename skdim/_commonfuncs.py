@@ -34,7 +34,7 @@ import itertools
 import numbers
 import multiprocessing as mp
 from sklearn.neighbors import NearestNeighbors
-from sklearn.utils.validation import check_array, check_is_fitted
+from sklearn.utils.validation import check_is_fitted
 
 
 def indComb(NN):
@@ -177,7 +177,7 @@ class PointwiseEstimator:
         """
         return self.fit(X).dimension_
 
-    def predict(self):
+    def predict(self, X=None):
         """ Predict dimension after a previous call to self.fit
 
         Parameters
@@ -245,7 +245,7 @@ class PointwiseEstimator:
         else:
             return dimension_pw_
 
-    def predict_pw(self):
+    def predict_pw(self, X=None):
         """ Predict dimension after a previous call to self.fit
 
         Parameters

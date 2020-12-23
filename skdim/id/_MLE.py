@@ -34,7 +34,7 @@ import scipy.integrate
 import numpy as np
 from .._commonfuncs import lens, get_nn
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array
+from sklearn.utils.validation import check_array, check_is_fitted
 
 
 class MLE(BaseEstimator):
@@ -142,9 +142,35 @@ class MLE(BaseEstimator):
         # `fit` should always return `self`
         return self
 
-    def fit_transform(self, X, y=None):
-        if not self.is_fitted_:
-            self.fit(X)
+    def fit_predict(self, X, y=None):
+        """Fit estimator and return dimension
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        return self.fit(X).dimension_
+
+    def predict(self, X=None):
+        """ Predict dimension after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        check_is_fitted(self, "is_fitted_")
         return self.dimension_
 
     def maxLikGlobalDimEst(self, X):

@@ -34,12 +34,11 @@ import warnings
 from .._commonfuncs import get_nn
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
-from sklearn.utils.validation import check_array
+from sklearn.utils.validation import check_array, check_is_fitted
 
 
 class TLE(BaseEstimator):
-    """
-    Local intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm.
+    """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm.
 
     Attributes
     ----------
@@ -91,9 +90,35 @@ class TLE(BaseEstimator):
         # `fit` should always return `self`
         return self
 
-    def fit_transform(self, X, y=None):
-        if not self.is_fitted_:
-            self.fit(X)
+    def fit_predict(self, X, y=None):
+        """Fit estimator and return dimension
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        return self.fit(X).dimension_
+
+    def predict(self, X=None):
+        """ Predict dimension after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+        check_is_fitted(self, "is_fitted_")
         return self.dimension_
 
     def _idtle(self, nn, dists):
