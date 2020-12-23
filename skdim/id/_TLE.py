@@ -31,13 +31,13 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn
+from .._commonfuncs import get_nn, GlobalEstimator
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_is_fitted
 
 
-class TLE(BaseEstimator):
+class TLE(BaseEstimator, GlobalEstimator):
     """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm.
 
     Attributes
@@ -70,13 +70,8 @@ class TLE(BaseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+
         if self.k >= len(X):
             warnings.warn("k >= len(X), using k = len(X)-1")
 
@@ -89,37 +84,6 @@ class TLE(BaseEstimator):
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self
-
-    def fit_predict(self, X, y=None):
-        """Fit estimator and return dimension
-
-        Parameters
-        ----------
-        X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
-
-        Returns
-        -------
-        dimension_ : {int, float}
-            The estimated intrinsic dimension
-        """
-        return self.fit(X).dimension_
-
-    def predict(self, X=None):
-        """ Predict dimension after a previous call to self.fit
-
-        Parameters
-        ----------
-        X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
-
-        Returns
-        -------
-        dimension_ : {int, float}
-            The estimated intrinsic dimension
-        """
-        check_is_fitted(self, "is_fitted_")
-        return self.dimension_
 
     def _idtle(self, nn, dists):
         # nn - matrix of nearest neighbors (k x d), sorted by distance

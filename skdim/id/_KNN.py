@@ -33,10 +33,10 @@ import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
-from .._commonfuncs import PointwiseEstimator
+from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 
 
-class KNN(BaseEstimator, PointwiseEstimator):
+class KNN(BaseEstimator, GlobalEstimator, PointwiseEstimator):
     """ Intrinsic dimension estimation using the kNN algorithm.
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
     the difference being that block bootstrapping is not used.
@@ -86,13 +86,7 @@ class KNN(BaseEstimator, PointwiseEstimator):
         self.residual_: float
             Residuals
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         self._k = 2 if self.k is None else self.k
         self._ps = np.arange(self._k + 1, self._k + 5) if self.ps is None else self.ps

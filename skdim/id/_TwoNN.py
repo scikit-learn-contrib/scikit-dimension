@@ -41,10 +41,10 @@ from sklearn.utils.validation import check_array
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances_chunked
 from sklearn.linear_model import LinearRegression
-from .._commonfuncs import get_nn, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
 
 
-class TwoNN(BaseEstimator, PointwiseEstimator):
+class TwoNN(BaseEstimator, GlobalEstimator, PointwiseEstimator):
     """Intrinsic dimension estimation using the TwoNN algorithm.
 
     
@@ -86,13 +86,7 @@ class TwoNN(BaseEstimator, PointwiseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         self.dimension_, self.x_, self.y_ = self._twonn(X)
 

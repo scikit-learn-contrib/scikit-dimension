@@ -46,11 +46,12 @@ from .._commonfuncs import (
     get_nn,
     lens,
     indnComb,
+    GlobalEstimator,
     PointwiseEstimator,
 )
 
 
-class DANCo(BaseEstimator, PointwiseEstimator):
+class DANCo(BaseEstimator, GlobalEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
 
@@ -113,13 +114,7 @@ class DANCo(BaseEstimator, PointwiseEstimator):
         self.calibration_data : dict
             Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         if self.k >= len(X):
             warnings.warn("k larger or equal to len(X), using len(X)-2")

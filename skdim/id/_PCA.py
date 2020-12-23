@@ -33,10 +33,10 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
-from .._commonfuncs import PointwiseEstimator
+from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 
 
-class lPCA(BaseEstimator, PointwiseEstimator):
+class lPCA(BaseEstimator, GlobalEstimator, PointwiseEstimator):
     """ Intrinsic dimension estimation using the local PCA algorithm.
     Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
     Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.

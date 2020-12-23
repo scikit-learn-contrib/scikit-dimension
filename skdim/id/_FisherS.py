@@ -37,13 +37,13 @@ import numpy as np
 import sklearn.decomposition as sk
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
-from .._commonfuncs import PointwiseEstimator
+from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 import warnings
 
 warnings.filterwarnings("ignore")
 
 
-class FisherS(BaseEstimator, PointwiseEstimator):
+class FisherS(BaseEstimator, GlobalEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Fisher Separability algorithm.
 
@@ -112,13 +112,7 @@ class FisherS(BaseEstimator, PointwiseEstimator):
             Input alpha values   
         """
 
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         # test_alphas introduced to pass sklearn checks (sklearn doesn't take arrays as default parameters)
         if self.alphas is None:

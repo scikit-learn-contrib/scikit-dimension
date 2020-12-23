@@ -43,7 +43,7 @@ from .._commonfuncs import (
 )
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
-from .._commonfuncs import PointwiseEstimator
+from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 
 
 class ESS(BaseEstimator, PointwiseEstimator):
@@ -92,13 +92,7 @@ class ESS(BaseEstimator, PointwiseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         self.random_generator_ = check_random_generator(self.random_generator)
 

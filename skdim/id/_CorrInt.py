@@ -32,13 +32,13 @@
 import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
-from .._commonfuncs import get_nn, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
 
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class CorrInt(BaseEstimator, PointwiseEstimator):
+class CorrInt(BaseEstimator, GlobalEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
 
@@ -76,13 +76,7 @@ class CorrInt(BaseEstimator, PointwiseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         if self.k2 >= len(X):
             warnings.warn("k2 larger or equal to len(X), using len(X)-1")

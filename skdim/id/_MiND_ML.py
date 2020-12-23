@@ -31,13 +31,13 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
 from scipy.optimize import minimize
 from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class MiND_ML(BaseEstimator, PointwiseEstimator):
+class MiND_ML(BaseEstimator, GlobalEstimator, PointwiseEstimator):
     """ Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
 
     -----------
@@ -82,13 +82,8 @@ class MiND_ML(BaseEstimator, PointwiseEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, accept_sparse=False)
-        if len(X) == 1:
-            raise ValueError("Can't fit with 1 sample")
-        if X.shape[1] == 1:
-            raise ValueError("Can't fit with n_features = 1")
-        if not np.isfinite(X).all():
-            raise ValueError("X contains inf or NaN")
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+
         if self.k + 1 >= len(X):
             warnings.warn("k+1 >= len(X), using k+1 = len(X)-1")
 
