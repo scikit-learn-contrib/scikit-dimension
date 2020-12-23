@@ -127,7 +127,7 @@ class GlobalEstimator:
         dimension_ : {int, float}
             The estimated intrinsic dimension
         """
-        if X:
+        if X is not None:
             X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
         check_is_fitted(self, "is_fitted_")
         return self.dimension_
