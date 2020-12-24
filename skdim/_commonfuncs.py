@@ -115,6 +115,11 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 class GlobalEstimator:
     """ Superclass: predict, fit_predict """
 
+    def _more_tags(self):
+        return {
+            "_skip_test": "check_methods_subset_invariance"
+        }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
+
     def predict(self, X=None):
         """ Predict dimension after a previous call to self.fit
 
