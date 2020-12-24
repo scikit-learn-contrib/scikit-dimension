@@ -29,9 +29,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
-
 import numba as nb
 import numpy as np
 import sklearn.decomposition as sk
@@ -43,7 +41,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-class FisherS(BaseEstimator, GlobalEstimator, PointwiseEstimator):
+class FisherS(GlobalEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Fisher Separability algorithm.
 

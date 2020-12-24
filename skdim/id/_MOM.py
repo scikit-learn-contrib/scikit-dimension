@@ -32,11 +32,10 @@
 import numpy as np
 import warnings
 from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class MOM(BaseEstimator, GlobalEstimator, PointwiseEstimator):
+class MOM(GlobalEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Method Of Moments algorithm.
 

@@ -41,12 +41,11 @@ from .._commonfuncs import (
     efficient_indnComb,
     check_random_generator,
 )
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 
 
-class ESS(BaseEstimator, PointwiseEstimator):
+class ESS(GlobalEstimator, PointwiseEstimator):
     """
     Intrinsic dimension estimation using the Expected Simplex Skewness algorithm.
     The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 

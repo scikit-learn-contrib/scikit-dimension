@@ -35,6 +35,7 @@ import numbers
 import multiprocessing as mp
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
+from sklearn.base import BaseEstimator
 
 
 def indComb(NN):
@@ -112,7 +113,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
 
 
-class GlobalEstimator:
+class GlobalEstimator(BaseEstimator):
     """ Superclass: predict, fit_predict """
 
     def _more_tags(self):
@@ -132,8 +133,6 @@ class GlobalEstimator:
         dimension_ : {int, float}
             The estimated intrinsic dimension
         """
-        if X is not None:
-            X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
         check_is_fitted(self, "is_fitted_")
         return self.dimension_
 

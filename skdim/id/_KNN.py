@@ -31,12 +31,11 @@
 #
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 from .._commonfuncs import GlobalEstimator, PointwiseEstimator
 
 
-class KNN(BaseEstimator, GlobalEstimator, PointwiseEstimator):
+class KNN(GlobalEstimator, PointwiseEstimator):
     """ Intrinsic dimension estimation using the kNN algorithm.
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
     the difference being that block bootstrapping is not used.

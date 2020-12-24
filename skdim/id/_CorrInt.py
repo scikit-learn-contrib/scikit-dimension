@@ -33,12 +33,10 @@ import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
 from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
-
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array
 
 
-class CorrInt(BaseEstimator, GlobalEstimator, PointwiseEstimator):
+class CorrInt(GlobalEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
 

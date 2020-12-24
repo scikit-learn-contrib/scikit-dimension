@@ -32,12 +32,11 @@
 import warnings
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from sklearn.base import BaseEstimator
 from .._commonfuncs import GlobalEstimator
 from sklearn.utils.validation import check_array
 
 
-class MADA(BaseEstimator, GlobalEstimator):
+class MADA(GlobalEstimator):
 
     """ Intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
     A variant of fractal dimension called the local information dimension is considered. 

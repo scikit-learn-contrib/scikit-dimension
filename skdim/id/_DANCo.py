@@ -31,7 +31,6 @@
 #
 
 
-from sklearn.base import BaseEstimator
 from sklearn.utils.validation import check_array, check_random_state
 
 import sys
@@ -51,7 +50,7 @@ from .._commonfuncs import (
 )
 
 
-class DANCo(BaseEstimator, GlobalEstimator, PointwiseEstimator):
+class DANCo(GlobalEstimator, PointwiseEstimator):
 
     """ Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
 
