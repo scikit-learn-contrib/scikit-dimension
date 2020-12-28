@@ -32,11 +32,11 @@
 import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
-from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator
 from sklearn.utils.validation import check_array
 
 
-class CorrInt(GlobalEstimator, PointwiseEstimator):
+class CorrInt(GlobalEstimator):
 
     """ Intrinsic dimension estimation using the Correlation Dimension.
 
@@ -78,8 +78,11 @@ class CorrInt(GlobalEstimator, PointwiseEstimator):
 
         if self.k2 >= len(X):
             warnings.warn("k2 larger or equal to len(X), using len(X)-1")
-        if self.k1 >= len(X):
-            warnings.warn("k1 larger or equal to len(X), using len(X)-2")
+            self.k2 = min(self.k2, len(X) - 1)
+
+        if self.k1 >= len(X) or self.k1 > self.k2:
+            warnings.warn("k1 larger than k2 or len(X), using k2-1")
+        self.k1 = min(self.k1, self.k2 - 1)
 
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True
@@ -90,14 +93,14 @@ class CorrInt(GlobalEstimator, PointwiseEstimator):
 
         n_elements = len(X) ** 2  # number of elements
 
-        dists, _ = get_nn(X, min(self.k2, len(X) - 1))
+        dists, _ = get_nn(X, self.k2)
 
         if self.DM is False:
             chunked_distmat = pairwise_distances_chunked(X)
         else:
             chunked_distmat = X
 
-        r1 = np.median(dists[:, min(self.k1 - 1, len(X) - 2)])
+        r1 = np.median(dists[:, self.k2])
         r2 = np.median(dists[:, -1])
 
         n_diagonal_entries = len(X)  # remove diagonal from sum count

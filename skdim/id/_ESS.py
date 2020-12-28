@@ -42,10 +42,10 @@ from .._commonfuncs import (
     check_random_generator,
 )
 from sklearn.utils.validation import check_array
-from .._commonfuncs import GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import LocalEstimator
 
 
-class ESS(GlobalEstimator, PointwiseEstimator):
+class ESS(LocalEstimator):
     """
     Intrinsic dimension estimation using the Expected Simplex Skewness algorithm.
     The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 
@@ -73,17 +73,26 @@ class ESS(GlobalEstimator, PointwiseEstimator):
 
     """
 
-    def __init__(self, ver="a", d=1, random_generator=None):
+    def __init__(self, ver="a", d=1, random_state=None):
         self.ver = ver
         self.d = d
-        self.random_generator = random_generator
+        self.random_state = random_state
 
-    def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
+    def _fit(self, X, dists, knnidx):
+        self.random_state_ = check_random_generator(self.random_state)
+
+        self.dimension_pw_, self.essval_ = np.zeros(len(X)), np.zeros(len(X))
+        for i in range(len(X)):
+            self.dimension_pw_[i], self.essval_[i] = self._essLocalDimEst(
+                X[knnidx[i, :]]
+            )
+
+    def _fit_once(self, X, y=None):
+        """ Fit ESS on a single neighborhood. /!\ Not meant to be used on a complete dataset - X should be a local patch of a dataset, otherwise call .fit()
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
+            The training input samples. /!\ Should be a local patch of a dataset
         y : dummy parameter to respect the sklearn API
 
         Returns
@@ -92,8 +101,6 @@ class ESS(GlobalEstimator, PointwiseEstimator):
             Returns self.
         """
         X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
-
-        self.random_generator_ = check_random_generator(self.random_generator)
 
         self.dimension_, self.essval_ = self._essLocalDimEst(X)
 
@@ -156,7 +163,7 @@ class ESS(GlobalEstimator, PointwiseEstimator):
         #    groups = groups[np.random.choice(range(len(groups)),size=5000, replace=False),:]
 
         #         if len(vectors)>100: #sample 5000 combinations
-        groups = efficient_indnComb(len(vectors), p, self.random_generator_)
+        groups = efficient_indnComb(len(vectors), p, self.random_state_)
         #         else: #generate all combs with the original function
         #             groups = indnComb(len(vectors), p)
 

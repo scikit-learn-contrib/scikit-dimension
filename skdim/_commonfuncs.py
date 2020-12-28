@@ -33,9 +33,11 @@ import numpy as np
 import itertools
 import numbers
 import multiprocessing as mp
+import warnings
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
+from abc import ABC, abstractmethod
 
 
 def indComb(NN):
@@ -113,8 +115,8 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
 
 
-class GlobalEstimator(BaseEstimator):
-    """ Superclass: predict, fit_predict """
+class GlobalEstimator(ABC, BaseEstimator):
+    """ Abstract superclass: inherit BaseEstimator, define predict, fit_predict, fit_pw, predict_pw, fit_predict_pw """
 
     def _more_tags(self):
         return {
@@ -131,14 +133,13 @@ class GlobalEstimator(BaseEstimator):
         Returns
         -------
         dimension_ : {int, float}
-            The estimated intrinsic dimension
+            The estimated ID
         """
         check_is_fitted(self, "is_fitted_")
         return self.dimension_
 
     def fit_predict(self, X, y=None):
-        """Fit estimator and return dimension
-
+        """Fit estimator and return ID
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
@@ -151,10 +152,6 @@ class GlobalEstimator(BaseEstimator):
         """
         return self.fit(X).dimension_
 
-
-class PointwiseEstimator:
-    """ Superclass: fit_pw, predict_pw, fit_predict_pw """
-
     def fit_pw(self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1):
         """
         Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
@@ -163,7 +160,7 @@ class PointwiseEstimator:
         ----------
         X: np.array (n_samples x n_neighbors)
             Dataset to fit
-        precomputed_knn: bool
+        precomputed_knn: np.array (n_samples x n_dims)
             An array of precomputed (sorted) nearest neighbor indices
         n_neighbors:
             Number of nearest neighbors to use (ignored when using precomputed_knn)
@@ -204,7 +201,7 @@ class PointwiseEstimator:
         return self
 
     def predict_pw(self, X=None):
-        """ Predict dimension after a previous call to self.fit
+        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
         ----------
@@ -236,7 +233,7 @@ class PointwiseEstimator:
         self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1
     ):
         """
-        Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
+        Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
 
         Parameters
         ----------
@@ -285,6 +282,222 @@ class PointwiseEstimator:
             return dimension_pw_, dimension_pw_smooth_
         else:
             return dimension_pw_
+
+
+class LocalEstimator(ABC, BaseEstimator):
+    """ Abstract superclass: generic _fit, fit, predict_pw for local ID estimators """
+
+    _N_NEIGHBORS: int = 100  # default neighborhood parameter
+
+    def _more_tags(self):
+        """Skips a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant"""
+        return {"_skip_test": "check_methods_subset_invariance"}
+
+    @abstractmethod
+    def _fit(self, X, dists=None, knnidx=None):
+        """ Custom method to each local ID estimator, called in fit """
+        self._my_ID_estimator_func(X, dists, knnidx)
+
+    def fit(
+        self,
+        X,
+        y=None,
+        precomputed_knn_arrays=None,
+        smooth=False,
+        n_neighbors=None,
+        comb="mean",
+        n_jobs=1,
+    ):
+        """Fitting method for local ID estimators
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : dummy parameter to respect the sklearn API
+        precomputed_knn_arrays: tuple[ np.array (n_samples x n_dims), np.array (n_samples x n_dims) ]
+            Provide two precomputed arrays: (sorted nearest neighbor distances, sorted nearest neighbor indices)
+        n_neighbors: int, default=self._N_NEIGHBORS
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            smooth_ 
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        # check inputs and define internal parameters
+        if n_neighbors is None:
+            n_neighbors = self._N_NEIGHBORS
+        if n_neighbors >= len(X):
+            warnings.warn("n_neighbors >= len(X), setting n_neighbors = len(X)-1")
+            n_neighbors = len(X) - 1
+        self.n_neighbors = n_neighbors
+        self.comb = comb
+
+        X = check_array(
+            X, ensure_min_samples=self.n_neighbors + 1, ensure_min_features=2
+        )
+
+        if precomputed_knn_arrays is not None:
+            dists, knnidx = precomputed_knn_arrays
+        else:
+            dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
+
+        # fit
+        self._fit(X, dists=dists, knnidx=knnidx)
+
+        # combine local estimates
+        if comb == "mean":
+            self.dimension_ = np.mean(self.dimension_pw_)
+        elif comb == "median":
+            self.dimension_ = np.median(self.dimension_pw_)
+        else:
+            raise ValueError("Invalid comb parameter. It has to be 'mean' or 'median'")
+
+        # compute smoothed local estimates
+        if smooth:
+            self.dimension_pw_smooth_ = np.zeros(len(knnidx))
+            for i, point_nn in enumerate(knnidx):
+                self.dimension_pw_smooth_[i] = np.mean(
+                    np.append(self.dimension_pw_[i], self.dimension_pw_[point_nn])
+                )
+            self.is_fitted_pw_smooth_ = True
+        self.is_fitted_pw_ = True
+        self.is_fitted_ = True
+        return self
+
+    def predict(self, X=None):
+        """ Predict ID after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : Dummy parameter
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated ID
+        """
+        check_is_fitted(self, "is_fitted_")
+        return self.dimension_
+
+    def fit_predict(
+        self,
+        X,
+        y=None,
+        precomputed_knn_arrays=None,
+        smooth=False,
+        n_neighbors=None,
+        comb="mean",
+        n_jobs=1,
+    ):
+        """Fit-predict method for local ID estimators
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : dummy parameter to respect the sklearn API
+        precomputed_knn_arrays: tuple[ np.array (n_samples x n_dims), np.array (n_samples x n_dims) ]
+            Provide two precomputed arrays: (sorted nearest neighbor distances, sorted nearest neighbor indices)
+        n_neighbors: int, default=self._N_NEIGHBORS
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            smooth_ 
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+
+        return self.fit(
+            X,
+            precomputed_knn_arrays=precomputed_knn_arrays,
+            smooth=smooth,
+            n_neighbors=n_neighbors,
+            comb=comb,
+            n_jobs=n_jobs,
+        ).dimension_
+
+    def predict_pw(self, X=None):
+        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
+
+        Parameters
+        ----------
+        X : Dummy parameter
+
+        Returns
+        -------
+        dimension_pw : np.array 
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array 
+            If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
+        """
+
+        check_is_fitted(
+            self,
+            "dimension_pw_",
+            msg=(
+                "This class instance is not fitted yet. Call 'fit_pw' with "
+                "appropriate arguments before using this method."
+            ),
+        )
+
+        if hasattr(self, "dimension_pw_smooth_"):
+            return self.dimension_pw_, self.dimension_pw_smooth_
+        else:
+            return self.dimension_pw_
+
+    def fit_predict_pw(
+        self, X, precomputed_knn_arrays=None, smooth=False, n_neighbors=None, n_jobs=1
+    ):
+        """
+        Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
+
+        Parameters
+        ----------
+        X: np.array (n_samples x n_neighbors)
+            Dataset to fit
+        precomputed_knn_arrays: tuple[ np.array (n_samples x n_dims), np.array (n_samples x n_dims) ]
+            Provide two precomputed arrays: (sorted nearest neighbor distances, sorted nearest neighbor indices)
+        n_neighbors: int, default=self._N_NEIGHBORS
+            Number of nearest neighbors to use (ignored when using precomputed_knn).
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+           smooth_ 
+
+        Returns
+        -------
+        dimension_pw : np.array 
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array 
+            If smooth is True, additionally returns smoothed pointwise ID estimates
+        """
+
+        self.fit(
+            X,
+            precomputed_knn_arrays=precomputed_knn_arrays,
+            smooth=smooth,
+            n_neighbors=n_neighbors,
+            n_jobs=n_jobs,
+        )
+
+        if smooth:
+            return self.dimension_pw_, self.dimension_pw_smooth_
+        else:
+            return self.dimension_pw_
 
 
 def mean_local_id(local_id, knnidx):

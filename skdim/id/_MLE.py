@@ -32,11 +32,11 @@
 import inspect
 import scipy.integrate
 import numpy as np
-from .._commonfuncs import lens, get_nn, GlobalEstimator
+from .._commonfuncs import lens, get_nn, LocalEstimator
 from sklearn.utils.validation import check_array
 
 
-class MLE(GlobalEstimator):
+class MLE(LocalEstimator):
     """ Intrinsic dimension estimation using the Maximum Likelihood algorithm. 
 
     The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 
@@ -54,8 +54,6 @@ class MLE(GlobalEstimator):
 
     mode : str, default='global'
         Whether to compute 'global', 'local' or 'pointwise' intrinsic dimension
-    k : int
-        Number of neighbors used for each dimension estimation.
     dnoise : None or 'dnoiseGaussH'
         Vector valued function giving the transition density. 'dnoiseGaussH' is the one used in Haro
     sigma : float, default=0
@@ -66,8 +64,8 @@ class MLE(GlobalEstimator):
         Can take values 'Haro', 'guaranteed.convergence', 'iteration'
     neighborhood.based : bool, default='True'
         Means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
-    neighborhood_aggregation : str, default='maximum.likelihood'
-        How to aggregate the pointwise estimates. Possible values 'maximum.likelihood', 'mean', 'median'
+    comb : str, default='maximum.likelihood'
+        How to aggregate the pointwise estimates. Possible values 'mle', 'mean', 'median'
     K : int, default=5
         Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
 
@@ -84,89 +82,160 @@ class MLE(GlobalEstimator):
 
     """
 
+    _N_NEIGHBORS = 20
+
     def __init__(
         self,
-        mode="global",
-        k=20,
         dnoise=None,
         sigma=0,
         n=None,
         integral_approximation="Haro",
         unbiased=False,
         neighborhood_based=True,
-        neighborhood_aggregation="maximum.likelihood",
         K=5,
     ):
 
-        args, _, _, values = inspect.getargvalues(inspect.currentframe())
+        _, _, _, values = inspect.getargvalues(inspect.currentframe())
         values.pop("self")
 
         for arg, val in values.items():
             setattr(self, arg, val)
 
-    def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
+    def fit(
+        self,
+        X,
+        y=None,
+        precomputed_knn_arrays=None,
+        smooth=False,
+        n_neighbors=None,
+        comb="mle",
+        n_jobs=1,
+    ):
+        """Fitting method for local ID estimators
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            A data set for which the intrinsic dimension is estimated.
+            The training input samples.
         y : dummy parameter to respect the sklearn API
+        precomputed_knn_arrays: tuple[ np.array (n_samples x n_dims), np.array (n_samples x n_dims) ]
+            Provide two precomputed arrays: (sorted nearest neighbor distances, sorted nearest neighbor indices)
+        n_neighbors: int, default=self._N_NEIGHBORS
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            smooth_ 
 
         Returns
         -------
         self : object
             Returns self.
         """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        # check inputs and define internal parameters
+        if n_neighbors is None:
+            n_neighbors = self._N_NEIGHBORS
+        if n_neighbors >= len(X):
+            warnings.warn("n_neighbors >= len(X), setting n_neighbors = len(X)-1")
+            n_neighbors = len(X) - 1
+        if self.K >= len(X):
+            warnings.warn("self.K >= len(X), setting n_neighbors = len(X)-1")
+            self.K = len(X) - 1
+        self.n_neighbors = n_neighbors
+        self.comb = comb
 
-        # if self.k >= len(X):
-        #    warnings.warn('k larger or equal to len(X), using len(X)-1')
-        # if self.K >= len(X):
-        #    warnings.warn('k larger or equal to len(X), using len(X)-1')
+        X = check_array(
+            X, ensure_min_samples=self.n_neighbors + 1, ensure_min_features=2
+        )
 
-        if self.mode == "global":
-            self.dimension_ = self.maxLikGlobalDimEst(X)
-        elif self.mode == "pointwise":
-            self.dimension_ = self.maxLikPointwiseDimEst(X)
-        elif self.mode == "local":
-            self.dimension_ = self.maxLikLocalDimEst(X)
-
-        self.is_fitted_ = True
-        # `fit` should always return `self`
-        return self
-
-    def maxLikGlobalDimEst(self, X):
-        # 'k' is the number of neighbors used for each dimension estimation.
-        # 'dnoise' is a vector valued function giving the transition density.
-        # 'sigma' is the estimated standard deviation for the noise.
-        # 'n' is the dimension of the noise (at least dim(data)[2])
-        # integral.approximation can take values 'Haro', 'guaranteed.convergence', 'iteration'
-        # neighborhood.based means that estimation is made for each neighborhood,
-        # otherwise estimation is based on distances in entire data set.
-        # 'K' is number of neighbors per data point that is considered, only used for
-        # neighborhood.based = False
+        if precomputed_knn_arrays is not None:
+            dists, knnidx = precomputed_knn_arrays
+        else:
+            if self.neighborhood_based:
+                dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
+            else:
+                dists, knnidx = get_nn(X, k=self.K, n_jobs=n_jobs)
 
         if self.neighborhood_based:
-            mi = self.maxLikPointwiseDimEst(X)
+            self.dimension_pw_ = self._maxLikPointwiseDimEst(dists)
+            # combine local estimates
+            if self.comb == "mean":
+                self.dimension_ = np.mean(self.dimension_pw_)
+            elif self.comb == "median":
+                self.dimension_ = np.median(self.dimension_pw_)
+            elif self.comb == "mle":
+                self.dimension_ = 1 / np.mean(1 / self.dimension_pw_)
+            else:
+                raise ValueError(
+                    "Invalid comb parameter. It has to be 'mean' or 'median'"
+                )
 
-            if self.neighborhood_aggregation == "maximum.likelihood":
-                de = 1 / np.mean(1 / mi)
-            elif self.neighborhood_aggregation == "mean":
-                de = np.mean(mi)
-            elif self.neighborhood_aggregation == "median":
-                de = np.median(mi)
-            return de
+            # compute smoothed local estimates
+            if smooth:
+                self.dimension_pw_smooth_ = np.zeros(len(knnidx))
+                for i, point_nn in enumerate(knnidx):
+                    self.dimension_pw_smooth_[i] = np.mean(
+                        np.append(self.dimension_pw_[i], self.dimension_pw_[point_nn])
+                    )
+                self.is_fitted_pw_smooth_ = True
+            self.is_fitted_pw_ = True
 
         else:
-            dist, idx = get_nn(X, min(self.K, len(X) - 1))
-            Rs = np.sort(np.array(list(set(dist.flatten(order="F")))))[: self.k]
+            Rs = np.sort(np.array(list(set(dists.flatten(order="F")))))[
+                : self.n_neighbors
+            ]
             # Since distances between points are used, noise is
-            de = self._maxLikDimEstFromR(Rs, np.sqrt(2) * self.sigma)
+            self.dimension_ = self._fit(Rs, np.sqrt(2) * self.sigma)
             # added at both ends, i.e. variance is doubled.
             # likelihood = np.nan
-            return de
 
-    def maxLikPointwiseDimEst(self, X):
+        self.is_fitted_ = True
+        return self
+
+    def fit_predict(
+        self,
+        X,
+        y=None,
+        precomputed_knn_arrays=None,
+        smooth=False,
+        n_neighbors=None,
+        comb="mle",
+        n_jobs=1,
+    ):
+        """Fit-predict method for local ID estimators
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            The training input samples.
+        y : dummy parameter to respect the sklearn API
+        precomputed_knn_arrays: tuple[ np.array (n_samples x n_dims), np.array (n_samples x n_dims) ]
+            Provide two precomputed arrays: (sorted nearest neighbor distances, sorted nearest neighbor indices)
+        n_neighbors: int, default=self._N_NEIGHBORS
+            Number of nearest neighbors to use (ignored when using precomputed_knn)
+        n_jobs: int
+            Number of processes
+        smooth: bool, default = False
+            Additionally computes a smoothed version of pointwise estimates by 
+            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            smooth_ 
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated intrinsic dimension
+        """
+
+        return self.fit(
+            X,
+            precomputed_knn_arrays=precomputed_knn_arrays,
+            smooth=smooth,
+            n_neighbors=n_neighbors,
+            comb=comb,
+            n_jobs=n_jobs,
+        ).dimension_
+
+    def _maxLikPointwiseDimEst(self, dists):
         # estimates dimension around each point in data[indices, ]
         #
         # 'indices' give the indexes for which local dimension estimation should
@@ -176,33 +245,31 @@ class MLE(GlobalEstimator):
         # 'sigma' is the estimated standard deviation for the noise.
         # 'n' is the dimension of the noise (at least dim(data)[2])
 
-        N = len(X)
-        nbh_dist, idx = get_nn(X, min(self.k, len(X) - 1))
         # This vector will hold local dimension estimates
-        de = np.repeat(np.nan, N)
+        de = np.repeat(np.nan, len(dists))
 
-        for i in range(N):
-            Rs = nbh_dist[i, :]
-            de[i] = self._maxLikDimEstFromR(Rs, self.sigma)
+        for i in range(len(dists)):
+            Rs = dists[i, :]
+            de[i] = self._fit(Rs, self.sigma)
 
         return de
 
-    def maxLikLocalDimEst(self, X):
+    def _fit_once(self, X):
         # assuming data set is local
         center = np.mean(X, axis=0)
         cent_X = X - center
         Rs = np.sort(lens(cent_X))
-        de = self._maxLikDimEstFromR(Rs, sigma)
+        de = self._fit(Rs, self.sigma)
         return de
 
-    def _maxLikDimEstFromR(self, Rs, sigma):
-
+    def _fit(self, Rs, sigma):
+        """ fit maxLikDimEstFromR """
         if self.integral_approximation not in [
             "Haro",
             "guaranteed.convergence",
             "iteration",
         ]:
-            raise ValueError("Wrong integral approximation")
+            raise ValueError("Unknown integral_approximation parameter")
 
         if self.dnoise == "dnoiseGaussH":
             self.dnoise = self._dnoiseGaussH
@@ -213,7 +280,7 @@ class MLE(GlobalEstimator):
         de = self._maxLikDimEstFromR_haro_approx(Rs, self.sigma)
         if self.integral_approximation == "iteration":
             raise ValueError(
-                "integral_approximation='iteration' not implemented yet. See R intdim package"
+                "integral_approximation='iteration' not implemented yet. See R intrinsicDimension package"
             )
             # de = maxLikDimEstFromRIterative(Rs, dnoise_orig, sigma, n, de, unbiased)
 

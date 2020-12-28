@@ -30,19 +30,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
-import warnings
-from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
-from sklearn.utils.validation import check_array
+from .._commonfuncs import LocalEstimator
 
 
-class MOM(GlobalEstimator, PointwiseEstimator):
+class MOM(LocalEstimator):
     """
     Intrinsic dimension estimation using the Method Of Moments algorithm.
 
     Attributes
     ----------
-    k : int
-        Number of nearest neighbors considered
+    None
     
     References
     ----------
@@ -51,36 +48,10 @@ class MOM(GlobalEstimator, PointwiseEstimator):
      L.  Amsaleg,  O.  Chelly,  T.  Furon,  S.  Girard,  M.  E.Houle,  K.  Kawarabayashi,  and  M.  Nett. Extreme-value-theoretic estimation of local intrinsic dimensionality.DAMI, 32(6):1768–1805, 2018.
     """
 
-    def __init__(self, k=20):
-        self.k = k
+    def _fit(self, **kwargs):
+        self.dimension_pw_ = self._mom(kwargs["dists"])
 
-    def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
-        Parameters
-        ----------
-        X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
-        y : dummy parameter to respect the sklearn API
-
-        Returns
-        -------
-        self : object
-            Returns self.
-        """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
-
-        if self.k >= len(X):
-            warnings.warn("k >= len(X), using k = len(X)-1")
-
-        dists, inds = get_nn(X, min(self.k, len(X) - 1))
-
-        self.dimension_ = self._idmom(dists)
-
-        self.is_fitted_ = True
-        # `fit` should always return `self`
-        return self
-
-    def _idmom(self, dists):
+    def _mom(self, dists):
         # dists - nearest-neighbor distances (k x 1, or k x n), sorted
         w = dists[:, -1]
         m1 = np.sum(dists, axis=1) / dists.shape[1]

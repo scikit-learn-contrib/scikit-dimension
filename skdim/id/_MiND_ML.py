@@ -31,12 +31,12 @@
 #
 import numpy as np
 import warnings
-from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator
 from scipy.optimize import minimize
 from sklearn.utils.validation import check_array
 
 
-class MiND_ML(GlobalEstimator, PointwiseEstimator):
+class MiND_ML(GlobalEstimator):
     """ Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
 
     -----------

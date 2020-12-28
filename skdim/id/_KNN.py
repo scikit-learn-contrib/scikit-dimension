@@ -32,10 +32,10 @@
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from sklearn.utils.validation import check_array
-from .._commonfuncs import GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import GlobalEstimator
 
 
-class KNN(GlobalEstimator, PointwiseEstimator):
+class KNN(GlobalEstimator):
     """ Intrinsic dimension estimation using the kNN algorithm.
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
     the difference being that block bootstrapping is not used.
@@ -85,10 +85,11 @@ class KNN(GlobalEstimator, PointwiseEstimator):
         self.residual_: float
             Residuals
         """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         self._k = 2 if self.k is None else self.k
         self._ps = np.arange(self._k + 1, self._k + 5) if self.ps is None else self.ps
+
+        X = check_array(X, ensure_min_samples=self._k + 1, ensure_min_features=2)
 
         self.dimension_, self.residual_ = self._knnDimEst(X)
         self.is_fitted_ = True

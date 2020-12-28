@@ -32,11 +32,10 @@
 import warnings
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from .._commonfuncs import GlobalEstimator
-from sklearn.utils.validation import check_array
+from .._commonfuncs import LocalEstimator
 
 
-class MADA(GlobalEstimator):
+class MADA(LocalEstimator):
 
     """ Intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
     A variant of fractal dimension called the local information dimension is considered. 
@@ -45,12 +44,8 @@ class MADA(GlobalEstimator):
 
     Attributes
     ----------
-    k : int, default=20
-        Number of neighbors to consider
-    comb : str, default="average"
-        How to combine local estimates if local=False. Possible values : "average", "median"
-    local : bool, default=False
-        Whether to return local estimates
+    DM: bool
+        Whether input is a precomputed distance matrix
 
     References
     ----------
@@ -59,42 +54,16 @@ class MADA(GlobalEstimator):
     A. M. Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.
     """
 
-    def __init__(self, k=20, comb="average", DM=False, local=False):
-        self.k = k
-        self.comb = comb
+    def __init__(self, DM=False):
         self.DM = DM
-        self.local = local
 
-    def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
-        Parameters
-        ----------
-        X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
-        y : dummy parameter to respect the sklearn API
-
-        Returns
-        -------
-        self : object
-            Returns self.
-        """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
-
-        if self.k >= len(X):
-            warnings.warn("k larger or equal to len(X), using len(X)-1")
-
-        self._k = len(X) - 1 if self.k >= len(X) else self.k
-
-        self.dimension_ = self._mada(X)
-        self.is_fitted_ = True
-        # `fit` should always return `self`
-        return self
+    def _fit(self, X, dists, knnidx):
+        self.dimension_pw_ = self._mada(X)
 
     def _mada(self, X):
 
-        if self.DM == False:
+        if self.DM is False:
             distmat = squareform(pdist(X))
-
         else:
             distmat = X
 
@@ -114,14 +83,4 @@ class MADA(GlobalEstimator):
         RK2 = sortedD[int(np.floor(self._k / 2) - 1), :]
         ests = np.log(2) / np.log(RK / RK2)
 
-        if self.local == True:
-            return ests
-
-        if self.comb == "average":
-            return np.mean(ests)
-        elif self.comb == "median":
-            return np.median(ests)
-        else:
-            raise ValueError(
-                "Invalid comb parameter. It has to be 'average' or 'median'"
-            )
+        return ests

@@ -46,17 +46,15 @@ from .._commonfuncs import (
     lens,
     indnComb,
     GlobalEstimator,
-    PointwiseEstimator,
 )
 
 
-class DANCo(GlobalEstimator, PointwiseEstimator):
+class DANCo(GlobalEstimator):
 
     """ Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
 
-    ----------
     Attributes
-
+    ----------
     k : 
         Neighborhood parameter.
     D : 
@@ -68,9 +66,9 @@ class DANCo(GlobalEstimator, PointwiseEstimator):
     fractal : bool, default=True
         Whether to return fractal rather than integer dimension
     verbose : bool, default=False
-    ----------
+    
     References
-
+    ----------
     Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
 
     Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
@@ -113,7 +111,7 @@ class DANCo(GlobalEstimator, PointwiseEstimator):
         self.calibration_data : dict
             Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
         """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        X = check_array(X, ensure_min_samples=self.k + 1, ensure_min_features=2)
 
         if self.k >= len(X):
             warnings.warn("k larger or equal to len(X), using len(X)-2")

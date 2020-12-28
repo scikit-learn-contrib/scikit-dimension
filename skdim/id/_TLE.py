@@ -30,19 +30,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
-import warnings
-from .._commonfuncs import get_nn, GlobalEstimator
+from .._commonfuncs import LocalEstimator
 from scipy.spatial.distance import pdist, squareform
-from sklearn.utils.validation import check_array, check_is_fitted
 
 
-class TLE(GlobalEstimator):
+class TLE(LocalEstimator):
     """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm.
 
     Attributes
     ----------
     epsilon : float
-    
 
     References
     ----------
@@ -52,50 +49,30 @@ class TLE(GlobalEstimator):
     Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović and Weeris Treeratanajaru. Intrinsic dimensionality estimation within tight localities. In Proceedings of the SIAM International Conference on Data Mining (SDM), pages 181–189, Calgary, Alberta, Canada, 2019
     """
 
-    def __init__(self, k=20, epsilon=1e-4):
-        self.k = k
+    _N_NEIGHBORS = 20
+
+    def __init__(
+        self, epsilon=1e-4,
+    ):
         self.epsilon = epsilon
 
-    def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
-        Parameters
-        ----------
-        X : {array-like}, shape (n_samples, n_features)
-            The training input samples.
-        y : dummy parameter to respect the sklearn API
-
-        Returns
-        -------
-        self : object
-            Returns self.
-        """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
-
-        if self.k >= len(X):
-            warnings.warn("k >= len(X), using k = len(X)-1")
-
-        dists, inds = get_nn(X, min(self.k, len(X) - 1))
-
-        self.dimension_ = np.zeros(len(X))
+    def _fit(self, X, dists, knnidx):
+        self.dimension_pw_ = np.zeros(len(X))
         for i in range(len(X)):
-            self.dimension_[i] = self._idtle(X[inds[i, :]], dists[[i], :])
-
-        self.is_fitted_ = True
-        # `fit` should always return `self`
-        return self
+            self.dimension_pw_[i] = self._idtle(X[knnidx[i, :]], dists[[i], :])
 
     def _idtle(self, nn, dists):
-        # nn - matrix of nearest neighbors (k x d), sorted by distance
-        # dists - nearest-neighbor distances (1 x k), sorted
-        r = dists[0, -1]  # distance to k-th neighbor
+        # nn - matrix of nearest neighbors (n_neighbors x d), sorted by distance
+        # dists - nearest-neighbor distances (1 x n_neighbors), sorted
+        r = dists[0, -1]  # distance to n_neighbors-th neighbor
 
         # Boundary case 1: If $r = 0$, this is fatal, since the neighborhood would be degenerate.
         if r == 0:
             raise ValueError("All k-NN distances are zero!")
         # Main computation
-        k = dists.shape[1]
+        n_neighbors = dists.shape[1]
         V = squareform(pdist(nn))
-        Di = np.tile(dists.T, (1, k))
+        Di = np.tile(dists.T, (1, n_neighbors))
         Dj = Di.T
         Z2 = 2 * Di ** 2 + 2 * Dj ** 2 - V ** 2
         S = (
@@ -119,11 +96,11 @@ class TLE(GlobalEstimator):
         Dr = (dists == r).squeeze()
         S[Dr, :] = r * V[Dr, :] ** 2 / (r ** 2 + V[Dr, :] ** 2 - Dj[Dr, :] ** 2)
         T[Dr, :] = r * Z2[Dr, :] / (r ** 2 + Z2[Dr, :] - Dj[Dr, :] ** 2)
-        # Boundary case 2: If $u_i = 0$, then for all $1\leq j\leq k$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $u_j$.
+        # Boundary case 2: If $u_i = 0$, then for all $1\leq j\leq n_neighbors$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $u_j$.
         Di0 = (Di == 0).squeeze()
         T[Di0] = Dj[Di0]
         S[Di0] = Dj[Di0]
-        # Boundary case 3: If $u_j = 0$, then for all $1\leq j\leq k$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $\frac{r v_{ij}}{r + v_{ij}}$.
+        # Boundary case 3: If $u_j = 0$, then for all $1\leq j\leq n_neighbors$ the measurements $s_{ij}$ and $t_{ij}$ reduce to $\frac{r v_{ij}}{r + v_{ij}}$.
         Dj0 = (Dj == 0).squeeze()
         T[Dj0] = r * V[Dj0] / (r + V[Dj0])
         S[Dj0] = r * V[Dj0] / (r + V[Dj0])
@@ -155,5 +132,5 @@ class TLE(GlobalEstimator):
         dists = dists[nDeps:]
         s2 = np.sum(np.log(dists / r))
         # Compute ID, subtracting numbers of dropped measurements
-        ID = -2 * (k ** 2 - nTSeps - nDeps - nV0) / (s1t + s1s + 2 * s2)
+        ID = -2 * (n_neighbors ** 2 - nTSeps - nDeps - nV0) / (s1t + s1s + 2 * s2)
         return ID

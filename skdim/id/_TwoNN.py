@@ -40,10 +40,10 @@ from sklearn.utils.validation import check_array
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances_chunked
 from sklearn.linear_model import LinearRegression
-from .._commonfuncs import get_nn, GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import get_nn, GlobalEstimator
 
 
-class TwoNN(GlobalEstimator, PointwiseEstimator):
+class TwoNN(GlobalEstimator):
     """Intrinsic dimension estimation using the TwoNN algorithm.
 
     

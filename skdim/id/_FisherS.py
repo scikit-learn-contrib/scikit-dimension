@@ -35,13 +35,13 @@ import numpy as np
 import sklearn.decomposition as sk
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
-from .._commonfuncs import GlobalEstimator, PointwiseEstimator
+from .._commonfuncs import GlobalEstimator
 import warnings
 
 warnings.filterwarnings("ignore")
 
 
-class FisherS(GlobalEstimator, PointwiseEstimator):
+class FisherS(GlobalEstimator):
     """
     Intrinsic dimension estimation using the Fisher Separability algorithm.
 
@@ -141,24 +141,20 @@ class FisherS(GlobalEstimator, PointwiseEstimator):
 
     def _preprocessing(self, X, center, dimred, whiten):
         """
-        %preprocessing of the dataset
-        %
-        %Inputs
-        %   X is n-by-d data matrix with n d-dimensional datapoints.
-        %   center is boolean. True means subtraction of mean vector.
-        %   dimred is boolean. True means applying of dimensionality reduction with
-        %       PCA. Number of used PCs is defined by conditional_number argument.
-        %   whiten is boolean. True means applying of whitenning. True whiten
-        %       automatically caused true dimred.
-        %   project_on_sphere is boolean. True means projecting data onto unit sphere
-        %   varargin contains Name Value pairs. One possible value can be:
-        %       'conditional_number' - a positive real value used to select the top
-        %           principal components. We consider only PCs with eigen values
-        %           which are not less than the maximal eigenvalue divided by
-        %           conditional_number Default value is 10. 
-        %
-        %Outputs:
-        %   X is preprocessed data matrix."""
+        Preprocessing of the dataset
+    
+        Inputs
+          X is n-by-d data matrix with n d-dimensional datapoints.
+          center is boolean. True means subtraction of mean vector.
+          dimred is boolean. True means applying of dimensionality reduction with
+              PCA. Number of used PCs is defined by conditional_number argument.
+          whiten is boolean. True means applying of whitenning. True whiten
+              automatically caused true dimred.
+          project_on_sphere is boolean. True means projecting data onto unit sphere
+    
+        Outputs
+          X is preprocessed data matrix.
+        """
 
         # centering
         sampleMean = np.mean(X, axis=0)
