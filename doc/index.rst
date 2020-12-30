@@ -1,10 +1,19 @@
-.. image:: https://travis-ci.com/j-bac/scikit-dimension.svg?branch=master :alt: Build Status
-.. image:: https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true :alt: Build Status
-.. image:: https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg :alt: codecov
-.. image:: https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield :alt: CircleCI
-.. image:: https://readthedocs.org/projects/scikit-dimension/badge/?version=latest :alt: Documentation Status
-.. image:: https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18 :alt: Language grade: Python
-.. image:: https://img.shields.io/github/license/j-bac/scikit-dimension.svg :alt: GitHub license
+|Travis|_ |Appveyor|_ |Codecov|_ |CircleCI|_ |Documentation|_ |LanguageGrade|_ |License|_
+
+.. |Travis| image:: https://travis-ci.com/j-bac/scikit-dimension.svg?branch=master
+.. _Travis: https://travis-ci.com/j-bac/scikit-dimension
+.. |Appveyor| image:: https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true
+.. _Appveyor: https://ci.appveyor.com/project/j-bac/scikit-dimension/branch/master
+.. |Codecov| image:: https://codecov.io/gh/j-bac/scikit-dimension/badge.svg?branch=master&service=github
+.. _Codecov: https://codecov.io/gh/j-bac/scikit-dimension/
+.. |CircleCI| image:: https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield
+.. _CircleCI: https://circleci.com/gh/j-bac/scikit-dimension/tree/master
+.. |Documentation| image:: https://readthedocs.org/projects/scikit-dimension/badge/?version=latest
+.. _Documentation: https://scikit-dimension.readthedocs.io
+.. |LanguageGrade| image:: https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18
+.. _LanguageGrade: https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python
+.. |License| image:: https://img.shields.io/github/license/j-bac/scikit-dimension.svg
+.. _License: https://github.com/j-bac/scikit-dimension/blob/master/LICENSE
 
 scikit-dimension - Intrinsic dimension estimation in Python
 ===========================================================
@@ -45,6 +54,7 @@ Feel free to report an `issue <https://github.com/j-bac/scikit-dimension/issues/
    api
    release_notes
    references
+   contributing
 
 .. toctree::
    :caption: Tutorials

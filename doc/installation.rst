@@ -1,5 +1,5 @@
 Installation
-------------
+============
 
 scikit-dimension requires Python 3.6 or later.
 

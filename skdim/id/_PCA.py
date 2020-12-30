@@ -37,13 +37,17 @@ from .._commonfuncs import GlobalEstimator
 
 class lPCA(GlobalEstimator):
     """ Intrinsic dimension estimation using the local PCA algorithm.
-    Version 'FO' is the method by Fukunaga-Olsen, version 'fan' is the method by Fan et al..
-    Version 'maxgap' returns the position of the largest relative gap in the sequence of singular values.
+    Version 'FO' is the method by Fukunaga-Olsen
+    Version 'Fan' is the method by Fan et al.
+    Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.
+    Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.
+    Version 'Kaiser' returns the number of eigenvalues above average plus 1
+    Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution
 
     Parameters
     ----------
     ver : str 	
-        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
+        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'Kaiser1', 'broken_stick'.
     alphaRatio : float
         Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
     alphaFO: float
@@ -153,6 +157,8 @@ class lPCA(GlobalEstimator):
         elif self.ver == "ratio":
             return self._ratio(explained_var)
         elif self.ver == "Kaiser":
+            return self._Kaiser(explained_var)
+        elif self.ver == "Kaiser1":
             return self._Kaiser(explained_var)
         elif self.ver == "broken_stick":
             return self._broken_stick(explained_var)

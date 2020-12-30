@@ -1,5 +1,5 @@
 Quick Start
-^^^^^^^^^^^
+===========
 
 Local and global estimators can be used in this way:
 

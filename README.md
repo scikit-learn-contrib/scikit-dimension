@@ -11,6 +11,8 @@
 
 scikit-dimension is a (work-in-progress /!\\) Python module for intrinsic dimension estimation built according to the [scikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
 
+Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API, examples and references
+
 ### Installation
 
 Using pip:
@@ -47,5 +49,3 @@ lpca_pw = skdim.id.lPCA().fit_pw(data,
 #get estimated intrinsic dimension
 print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))
 ```
-
-Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for detailed API, examples and references
