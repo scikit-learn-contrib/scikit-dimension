@@ -37,7 +37,7 @@ from .._commonfuncs import GlobalEstimator
 
 class lPCA(GlobalEstimator):
     """ Intrinsic dimension estimation using the local PCA algorithm.
-    Version 'FO' is the method by Fukunaga-Olsen
+    Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.
     Version 'Fan' is the method by Fan et al.
     Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.
     Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.
@@ -47,10 +47,10 @@ class lPCA(GlobalEstimator):
     Parameters
     ----------
     ver : str 	
-        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'Kaiser1', 'broken_stick'.
-    alphaRatio : float
+        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
+    alphaRatio : float in (0,1)
         Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
-    alphaFO: float
+    alphaFO: float in (0,1)
         Only for ver = 'FO'. An eigenvalue is considered significant if it is larger than alpha times the largest eigenvalue.
     alphaFan : float
         Only for ver = 'Fan'. The alpha parameter (large gap threshold).
@@ -146,7 +146,7 @@ class lPCA(GlobalEstimator):
             explained_var = X
         else:
             pca = PCA().fit(X)
-            explained_var = pca.explained_variance_
+            self.explained_var_ = explained_var = pca.explained_variance_
 
         if self.ver == "FO":
             return self._FO(explained_var)
@@ -157,8 +157,6 @@ class lPCA(GlobalEstimator):
         elif self.ver == "ratio":
             return self._ratio(explained_var)
         elif self.ver == "Kaiser":
-            return self._Kaiser(explained_var)
-        elif self.ver == "Kaiser1":
             return self._Kaiser(explained_var)
         elif self.ver == "broken_stick":
             return self._broken_stick(explained_var)
