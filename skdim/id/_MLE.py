@@ -254,8 +254,9 @@ class MLE(LocalEstimator):
 
         return de
 
-    def _fit_once(self, X):
+    def fit_once(self, X):
         # assuming data set is local
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
         center = np.mean(X, axis=0)
         cent_X = X - center
         Rs = np.sort(lens(cent_X))

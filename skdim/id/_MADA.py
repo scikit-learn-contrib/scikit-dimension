@@ -29,7 +29,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import warnings
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from .._commonfuncs import LocalEstimator
@@ -59,8 +58,8 @@ class MADA(LocalEstimator):
     def __init__(self, DM=False):
         self.DM = DM
 
-    def _fit(self, X, dists, knnidx):
-        self.dimension_pw_ = self._mada(X)
+    def _fit(self, **kwargs):
+        self.dimension_pw_ = self._mada(kwargs["X"])
 
     def _mada(self, X):
 
@@ -69,20 +68,11 @@ class MADA(LocalEstimator):
         else:
             distmat = X
 
-        n = len(distmat)
+        distmat[distmat == 0] = np.max(distmat)
 
-        if self.local == False and n > 10000:
-            ID = np.random.choice(n, size=int(np.round(n / 2)), replace=False)
-            tmpD = distmat[ID, :]
-            tmpD[tmpD == 0] = np.max(tmpD)
-
-        else:
-            tmpD = distmat
-            tmpD[tmpD == 0] = np.max(tmpD)
-
-        sortedD = np.sort(tmpD, axis=0, kind="mergesort")
-        RK = sortedD[self._k - 1, :]
-        RK2 = sortedD[int(np.floor(self._k / 2) - 1), :]
+        sortedD = np.sort(distmat, axis=0, kind="mergesort")
+        RK = sortedD[self.n_neighbors - 1, :]
+        RK2 = sortedD[int(np.floor(self.n_neighbors / 2) - 1), :]
         ests = np.log(2) / np.log(RK / RK2)
 
         return ests

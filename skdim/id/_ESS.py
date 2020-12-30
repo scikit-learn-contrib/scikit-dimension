@@ -87,7 +87,7 @@ class ESS(LocalEstimator):
                 X[knnidx[i, :]]
             )
 
-    def _fit_once(self, X, y=None):
+    def fit_once(self, X, y=None):
         """ Fit ESS on a single neighborhood. /!\ Not meant to be used on a complete dataset - X should be a local patch of a dataset, otherwise call .fit()
         Parameters
         ----------
@@ -100,6 +100,7 @@ class ESS(LocalEstimator):
         self : object
             Returns self.
         """
+        self.random_state_ = check_random_generator(self.random_state)
         X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         self.dimension_, self.essval_ = self._essLocalDimEst(X)

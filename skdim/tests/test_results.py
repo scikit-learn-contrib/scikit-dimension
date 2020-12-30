@@ -66,9 +66,9 @@ def data():
 
 # test default and non-default parameters
 def test_ess_results(data):
-    x = skdim.id.ESS().fit(data)
-    x2 = skdim.id.ESS(ver="b").fit(data)
-    x3 = skdim.id.ESS(d=2).fit(data)
+    x = skdim.id.ESS().fit_once(data)
+    x2 = skdim.id.ESS(ver="b").fit_once(data)
+    x3 = skdim.id.ESS(d=2).fit_once(data)
 
     #     rx=intdimr.essLocalDimEst(data)
     #     rx2=intdimr.essLocalDimEst(data,ver='b')
@@ -208,11 +208,11 @@ def test_mle_results(data):
     assert np.allclose(
         (
             skdim.id.MLE().fit(data).dimension_,
-            skdim.id.MLE(k=5).fit(data).dimension_,
+            skdim.id.MLE().fit(data, n_neighbors=5).dimension_,
             skdim.id.MLE(n=20, sigma=0.1, dnoise="dnoiseGaussH").fit(data).dimension_,
             skdim.id.MLE(unbiased=True).fit(data).dimension_,
             skdim.id.MLE(K=10, neighborhood_based=False).fit(data).dimension_,
-            skdim.id.MLE(neighborhood_aggregation="mean").fit(data).dimension_,
+            skdim.id.MLE().fit(data, comb="mean").dimension_,
         ),
         (
             3.341161830518472,

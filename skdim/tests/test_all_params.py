@@ -58,6 +58,9 @@ def test_ess_params(data):
     x = skdim.id.ESS().fit(data)
     x = skdim.id.ESS(ver="b").fit(data)
     x = skdim.id.ESS(d=2).fit(data)
+    x = skdim.id.ESS().fit_local(data)
+    x = skdim.id.ESS(ver="b").fit_local(data)
+    x = skdim.id.ESS(d=2).fit_local(data)
 
 
 def test_fisher_params(data, monkeypatch):
@@ -81,7 +84,6 @@ def test_mind_ml_params(data):
 
 def test_mom_params(data):
     x = skdim.id.MOM()
-    x = skdim.id.MOM(k=5)
 
 
 def test_lpca_params(data):
@@ -122,20 +124,13 @@ def test_knn_params(data):
 
 def test_mada_params(data):
     x = skdim.id.MADA().fit(data)
-    x = skdim.id.MADA(k=5).fit(data)
-    x = skdim.id.MADA(comb="average").fit(data)
-    x = skdim.id.MADA(comb="median").fit(data)
-    x = skdim.id.MADA(local=True).fit(data)
 
 
 def test_mle_params(data):
     x = skdim.id.MLE().fit(data)
-    x = skdim.id.MLE(k=5).fit(data)
     x = skdim.id.MLE(n=20, sigma=0.1, dnoise="dnoiseGaussH").fit(data)
     x = skdim.id.MLE(unbiased=True).fit(data)
     x = skdim.id.MLE(K=10, neighborhood_based=False).fit(data)
-    x = skdim.id.MLE(neighborhood_aggregation="mean").fit(data)
-    x = skdim.id.MLE(neighborhood_aggregation="median").fit(data)
 
 
 def test_twonn_params(data):
@@ -147,8 +142,8 @@ def test_twonn_params(data):
 
 
 def test_aspointwise(data):
-    x = skdim.asPointwise(data, skdim.id.lPCA(), n_neighbors=50)
-    x = skdim.asPointwise(data, skdim.id.lPCA(), n_neighbors=50, n_jobs=2)
+    x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50)
+    x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50, n_jobs=2)
     assert len(x) == len(data)
 
 

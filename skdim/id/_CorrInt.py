@@ -78,11 +78,11 @@ class CorrInt(GlobalEstimator):
 
         if self.k2 >= len(X):
             warnings.warn("k2 larger or equal to len(X), using len(X)-1")
-            self.k2 = min(self.k2, len(X) - 1)
+            self.k2 = len(X) - 1
 
         if self.k1 >= len(X) or self.k1 > self.k2:
             warnings.warn("k1 larger than k2 or len(X), using k2-1")
-        self.k1 = min(self.k1, self.k2 - 1)
+            self.k1 = self.k2 - 1
 
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True
@@ -100,8 +100,8 @@ class CorrInt(GlobalEstimator):
         else:
             chunked_distmat = X
 
-        r1 = np.median(dists[:, self.k2])
-        r2 = np.median(dists[:, -1])
+        r1 = np.median(dists[:, self.k1 - 1])
+        r2 = np.median(dists[:, self.k2 - 1])
 
         n_diagonal_entries = len(X)  # remove diagonal from sum count
         s1 = -n_diagonal_entries

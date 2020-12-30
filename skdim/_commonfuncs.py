@@ -349,7 +349,7 @@ class LocalEstimator(ABC, BaseEstimator):
             dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
 
         # fit
-        self._fit(X, dists=dists, knnidx=knnidx)
+        self._fit(X=X, dists=dists, knnidx=knnidx)
 
         # combine local estimates
         if comb == "mean":
