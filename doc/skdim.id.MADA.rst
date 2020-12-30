@@ -1,4 +1,4 @@
-skdim.id.MADA
+﻿skdim.id.MADA
 =============
 
 .. currentmodule:: skdim.id
@@ -15,8 +15,11 @@ skdim.id.MADA
    
       ~MADA.__init__
       ~MADA.fit
-      ~MADA.fit_transform
+      ~MADA.fit_predict
+      ~MADA.fit_predict_pw
       ~MADA.get_params
+      ~MADA.predict
+      ~MADA.predict_pw
       ~MADA.set_params
    
    

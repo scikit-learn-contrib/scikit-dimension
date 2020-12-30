@@ -1,4 +1,4 @@
-skdim.id.MOM
+﻿skdim.id.MOM
 ============
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,11 @@ skdim.id.MOM
    
       ~MOM.__init__
       ~MOM.fit
-      ~MOM.fit_pw
-      ~MOM.fit_transform
-      ~MOM.fit_transform_pw
+      ~MOM.fit_predict
+      ~MOM.fit_predict_pw
       ~MOM.get_params
+      ~MOM.predict
+      ~MOM.predict_pw
       ~MOM.set_params
    
    

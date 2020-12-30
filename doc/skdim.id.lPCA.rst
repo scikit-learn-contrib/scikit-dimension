@@ -1,4 +1,4 @@
-skdim.id.lPCA
+﻿skdim.id.lPCA
 =============
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.lPCA
    
       ~lPCA.__init__
       ~lPCA.fit
+      ~lPCA.fit_predict
+      ~lPCA.fit_predict_pw
       ~lPCA.fit_pw
-      ~lPCA.fit_transform
-      ~lPCA.fit_transform_pw
       ~lPCA.get_params
+      ~lPCA.predict
+      ~lPCA.predict_pw
       ~lPCA.set_params
    
    

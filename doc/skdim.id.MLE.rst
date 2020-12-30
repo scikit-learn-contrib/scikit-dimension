@@ -1,4 +1,4 @@
-skdim.id.MLE
+﻿skdim.id.MLE
 ============
 
 .. currentmodule:: skdim.id
@@ -15,11 +15,12 @@ skdim.id.MLE
    
       ~MLE.__init__
       ~MLE.fit
-      ~MLE.fit_transform
+      ~MLE.fit_once
+      ~MLE.fit_predict
+      ~MLE.fit_predict_pw
       ~MLE.get_params
-      ~MLE.maxLikGlobalDimEst
-      ~MLE.maxLikLocalDimEst
-      ~MLE.maxLikPointwiseDimEst
+      ~MLE.predict
+      ~MLE.predict_pw
       ~MLE.set_params
    
    

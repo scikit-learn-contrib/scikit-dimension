@@ -1,4 +1,4 @@
-skdim.id.TLE
+﻿skdim.id.TLE
 ============
 
 .. currentmodule:: skdim.id
@@ -15,8 +15,11 @@ skdim.id.TLE
    
       ~TLE.__init__
       ~TLE.fit
-      ~TLE.fit_transform
+      ~TLE.fit_predict
+      ~TLE.fit_predict_pw
       ~TLE.get_params
+      ~TLE.predict
+      ~TLE.predict_pw
       ~TLE.set_params
    
    

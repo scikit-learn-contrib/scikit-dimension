@@ -1,4 +1,4 @@
-skdim.id.MiND\_ML
+﻿skdim.id.MiND\_ML
 =================
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.MiND\_ML
    
       ~MiND_ML.__init__
       ~MiND_ML.fit
+      ~MiND_ML.fit_predict
+      ~MiND_ML.fit_predict_pw
       ~MiND_ML.fit_pw
-      ~MiND_ML.fit_transform
-      ~MiND_ML.fit_transform_pw
       ~MiND_ML.get_params
+      ~MiND_ML.predict
+      ~MiND_ML.predict_pw
       ~MiND_ML.set_params
    
    

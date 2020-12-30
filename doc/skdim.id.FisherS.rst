@@ -1,4 +1,4 @@
-skdim.id.FisherS
+﻿skdim.id.FisherS
 ================
 
 .. currentmodule:: skdim.id
@@ -17,13 +17,15 @@ skdim.id.FisherS
       ~FisherS.buildSeparabilityGraph
       ~FisherS.check_symmetric
       ~FisherS.fit
+      ~FisherS.fit_predict
+      ~FisherS.fit_predict_pw
       ~FisherS.fit_pw
-      ~FisherS.fit_transform
-      ~FisherS.fit_transform_pw
       ~FisherS.getSeparabilityGraph
       ~FisherS.get_params
       ~FisherS.plotSeparabilityGraph
       ~FisherS.point_inseparability_to_pointID
+      ~FisherS.predict
+      ~FisherS.predict_pw
       ~FisherS.set_params
    
    

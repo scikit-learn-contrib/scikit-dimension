@@ -1,4 +1,4 @@
-skdim.id.DANCo
+﻿skdim.id.DANCo
 ==============
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.DANCo
    
       ~DANCo.__init__
       ~DANCo.fit
+      ~DANCo.fit_predict
+      ~DANCo.fit_predict_pw
       ~DANCo.fit_pw
-      ~DANCo.fit_transform
-      ~DANCo.fit_transform_pw
       ~DANCo.get_params
+      ~DANCo.predict
+      ~DANCo.predict_pw
       ~DANCo.set_params
    
    

@@ -1,4 +1,4 @@
-skdim.id.ESS
+﻿skdim.id.ESS
 ============
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.ESS
    
       ~ESS.__init__
       ~ESS.fit
-      ~ESS.fit_pw
-      ~ESS.fit_transform
-      ~ESS.fit_transform_pw
+      ~ESS.fit_once
+      ~ESS.fit_predict
+      ~ESS.fit_predict_pw
       ~ESS.get_params
+      ~ESS.predict
+      ~ESS.predict_pw
       ~ESS.set_params
    
    

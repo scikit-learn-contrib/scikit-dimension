@@ -1,3 +1,11 @@
+.. image:: https://travis-ci.com/j-bac/scikit-dimension.svg?branch=master :alt: Build Status
+.. image:: https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true :alt: Build Status
+.. image:: https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg :alt: codecov
+.. image:: https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield :alt: CircleCI
+.. image:: https://readthedocs.org/projects/scikit-dimension/badge/?version=latest :alt: Documentation Status
+.. image:: https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18 :alt: Language grade: Python
+.. image:: https://img.shields.io/github/license/j-bac/scikit-dimension.svg :alt: GitHub license
+
 scikit-dimension - Intrinsic dimension estimation in Python
 ===========================================================
 

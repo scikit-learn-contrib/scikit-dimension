@@ -1,4 +1,4 @@
-skdim.id.KNN
+﻿skdim.id.KNN
 ============
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.KNN
    
       ~KNN.__init__
       ~KNN.fit
+      ~KNN.fit_predict
+      ~KNN.fit_predict_pw
       ~KNN.fit_pw
-      ~KNN.fit_transform
-      ~KNN.fit_transform_pw
       ~KNN.get_params
+      ~KNN.predict
+      ~KNN.predict_pw
       ~KNN.set_params
    
    

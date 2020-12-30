@@ -1,4 +1,4 @@
-skdim.id.CorrInt
+﻿skdim.id.CorrInt
 ================
 
 .. currentmodule:: skdim.id
@@ -15,10 +15,12 @@ skdim.id.CorrInt
    
       ~CorrInt.__init__
       ~CorrInt.fit
+      ~CorrInt.fit_predict
+      ~CorrInt.fit_predict_pw
       ~CorrInt.fit_pw
-      ~CorrInt.fit_transform
-      ~CorrInt.fit_transform_pw
       ~CorrInt.get_params
+      ~CorrInt.predict
+      ~CorrInt.predict_pw
       ~CorrInt.set_params
    
    
