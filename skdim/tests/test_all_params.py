@@ -58,9 +58,7 @@ def test_ess_params(data):
     x = skdim.id.ESS().fit(data)
     x = skdim.id.ESS(ver="b").fit(data)
     x = skdim.id.ESS(d=2).fit(data)
-    x = skdim.id.ESS().fit_local(data)
-    x = skdim.id.ESS(ver="b").fit_local(data)
-    x = skdim.id.ESS(d=2).fit_local(data)
+    x = skdim.id.ESS().fit_once(data)
 
 
 def test_fisher_params(data, monkeypatch):
