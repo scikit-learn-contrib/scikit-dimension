@@ -150,7 +150,7 @@ def test_mada_results(data):
     #     assert np.allclose(skdim.id.Mada(local=True,k=20).fit(data).dimension_,np.array(ider.mada(data,local=True,k=20)))
     #
     assert np.allclose(
-        skdim.id.MADA(local=True, k=20).fit(data).dimension_,
+        skdim.id.MADA().fit(data).dimension_pw_,
         np.array(
             [
                 2.73873109,
@@ -228,7 +228,7 @@ def test_mle_results(data):
 def test_tle_results(data):
     #     assert np.allclose(np.round(skdim.id.TLE().fit(data).dimension_,4),radovanovic_estimators_matlab(data,k=20)['id_tle'])
     assert np.allclose(
-        np.round(skdim.id.TLE().fit(data).dimension_, 4),
+        np.round(skdim.id.TLE().fit(data).dimension_pw_, 4),
         np.array(
             [
                 3.1975,

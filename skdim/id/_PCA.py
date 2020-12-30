@@ -114,6 +114,29 @@ class lPCA(GlobalEstimator):
         # `fit` should always return `self`
         return self
 
+    def _fit_once(self, X, y=None):
+        """A reference implementation of a fitting function.
+        Parameters
+        ----------
+        X : {array-like}, shape (n_samples, n_features)
+            A local dataset of training input samples.
+        y : dummy parameter to respect the sklearn API
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        if self.fit_explained_variance:
+            X = check_array(X, ensure_2d=False, ensure_min_samples=2)
+        else:
+            X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+
+        self.dimension_, self.gap_ = self._pcaLocalDimEst(X)
+        self.is_fitted_ = True
+        # `fit` should always return `self`
+        return self
+
     def _pcaLocalDimEst(self, X):
         if self.fit_explained_variance:
             explained_var = X

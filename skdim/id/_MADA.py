@@ -54,6 +54,8 @@ class MADA(LocalEstimator):
     A. M. Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.
     """
 
+    _N_NEIGHBORS = 20
+
     def __init__(self, DM=False):
         self.DM = DM
 
