@@ -60,6 +60,13 @@ def test_ess_params(data):
     x = skdim.id.ESS(d=2).fit(data)
     x = skdim.id.ESS().fit_once(data)
 
+    ### additionally test all common LocalEstimator base functions
+    x = skdim.id.ESS().fit(data).predict()
+    x = skdim.id.ESS().fit(data).predict_pw()
+    x = skdim.id.ESS().fit_predict(data)
+    x = skdim.id.ESS().fit_predict_pw(data)
+    x = skdim.id.ESS().fit_predict_pw(data, smooth=True)
+
 
 def test_fisher_params(data, monkeypatch):
     monkeypatch.setattr(plt, "show", lambda: None)
@@ -70,6 +77,12 @@ def test_fisher_params(data, monkeypatch):
     x = skdim.id.FisherS(verbose=True).fit(data)
     x = skdim.id.FisherS(limit_maxdim=True).fit(data)
     x = skdim.id.FisherS().fit(data).point_inseparability_to_pointID()
+
+    ### additionally test all common GlobalEstimator base functions
+    x = skdim.id.FisherS().fit(data).predict()
+    x = skdim.id.FisherS().fit_pw(data).predict_pw()
+    x = skdim.id.FisherS().fit_predict(data)
+    x = skdim.id.FisherS().fit_predict_pw(data)
 
 
 def test_mind_ml_params(data):
@@ -91,6 +104,7 @@ def test_lpca_params(data):
     x = skdim.id.lPCA(ver="maxgap").fit(data)
     x = skdim.id.lPCA(ver="Kaiser").fit(data)
     x = skdim.id.lPCA(ver="broken_stick").fit(data)
+    x = skdim.id.lPCA(ver="participation_ratio").fit(data)
 
 
 def test_tle_params(data):

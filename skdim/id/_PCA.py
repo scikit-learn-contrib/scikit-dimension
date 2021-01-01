@@ -36,12 +36,13 @@ from .._commonfuncs import GlobalEstimator
 
 
 class lPCA(GlobalEstimator):
-    """ Intrinsic dimension estimation using the local PCA algorithm.
+    """ Intrinsic dimension estimation using the PCA algorithm.
     Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.
     Version 'Fan' is the method by Fan et al.
     Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.
     Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.
-    Version 'Kaiser' returns the number of eigenvalues above average plus 1
+    Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)
+    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1) plus 1
     Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution
 
     Parameters
@@ -156,6 +157,8 @@ class lPCA(GlobalEstimator):
             return self._maxgap(explained_var)
         elif self.ver == "ratio":
             return self._ratio(explained_var)
+        elif self.ver == "participation_ratio":
+            return self._participation_ratio(explained_var)
         elif self.ver == "Kaiser":
             return self._Kaiser(explained_var)
         elif self.ver == "broken_stick":
@@ -189,15 +192,15 @@ class lPCA(GlobalEstimator):
             return de, gaps[de - 1]
         else:
             return de, gaps[-1]
-        # X - data set (n x d)
-        # theta - ratio of variance to preserve (theta \in [0,1])
-        # sumexp = np.cumsum(explained_var)
-        # idx_threshold = np.where(sumexp > self.alphaRatio)[0]
-        # if len(idx_threshold) == 0:
-        #    de = len(explained_var)
-        # else:
-        #    de = idx_threshold.min() + 1
-        # return de
+
+    def _participation_ratio(self, explained_var):
+        PR = sum(explained_var) ** 2 / sum(explained_var ** 2)
+        de = int(PR)
+        gaps = explained_var[:-1] / explained_var[1:]
+        if de - 1 < len(gaps):
+            return de, gaps[de - 1]
+        else:
+            return de, gaps[-1]
 
     def _fan(self, explained_var):
         r = np.where(np.cumsum(explained_var) / sum(explained_var) > self.PFan)[0][0]
