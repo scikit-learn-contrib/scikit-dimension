@@ -51,7 +51,7 @@ from .._commonfuncs import (
 
 class DANCo(GlobalEstimator):
 
-    """ Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
+    """Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
 
     Attributes
     ----------

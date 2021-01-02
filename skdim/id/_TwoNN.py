@@ -46,21 +46,20 @@ from .._commonfuncs import get_nn, GlobalEstimator
 class TwoNN(GlobalEstimator):
     """Intrinsic dimension estimation using the TwoNN algorithm.
 
-    
     Attributes
     ----------  
-    discard_fraction : float between 0 and 1
-        Fraction of largest distances to discard (heuristic from the paper)
-    dist : bool (default=False)
+    discard_fraction 
+        Fraction of largest distances to discard (heuristic from the paper) between 0 and 1
+    dist
         Whether data is a precomputed distance matrix
 
     Returns
     -------
-    dimension_ : float
+    dimension_: float
         Intrinsic dimension of the dataset according to TWO-NN.
-    x_ : 1d array 
+    x_: 1d array 
         np.array with the -log(mu) values.
-    y_ : 1d array 
+    y_: 1d array 
         np.array with the -log(F(mu_{sigma(i)})) values.
     
     References
@@ -68,7 +67,7 @@ class TwoNN(GlobalEstimator):
     E. Facco, M. d’Errico, A. Rodriguez & A. Laio Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
     """
 
-    def __init__(self, discard_fraction=0.1, dist=False):
+    def __init__(self, discard_fraction: float = 0.1, dist: bool = False):
         self.discard_fraction = discard_fraction
         self.dist = dist
 

@@ -36,7 +36,7 @@ from .._commonfuncs import GlobalEstimator
 
 
 class lPCA(GlobalEstimator):
-    """ Intrinsic dimension estimation using the PCA algorithm.
+    """Intrinsic dimension estimation using the PCA algorithm.
     Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.
     Version 'Fan' is the method by Fan et al.
     Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.
@@ -47,45 +47,41 @@ class lPCA(GlobalEstimator):
 
     Parameters
     ----------
-    ver : str 	
+    ver: str 	
         Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
-    alphaRatio : float in (0,1)
-        Only for ver = 'ratio'. Intrinsic dimension is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
+    alphaRatio: float in (0,1)
+        Only for ver = 'ratio'. ID is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
     alphaFO: float in (0,1)
         Only for ver = 'FO'. An eigenvalue is considered significant if it is larger than alpha times the largest eigenvalue.
-    alphaFan : float
+    alphaFan: float
         Only for ver = 'Fan'. The alpha parameter (large gap threshold).
-    betaFan : float
+    betaFan: float
         Only for ver = 'Fan'. The beta parameter (total covariance threshold).
-    PFan : float
+    PFan: float
         Only for ver = 'Fan'. Total covariance in non-noise.
-    verbose : bool, default=False
-    explained_variance : bool, default=False
+    verbose: bool, default=False
+    explained_variance: bool, default=False
         If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
 
 
     References
     ----------
-
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-
     Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.
-
     Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050. 
-
     Cangelosi R, Goriely A. Component retention in principal component analysis with application to cDNA microarray data. 2007. Biol. Direct 2:2.
     """
 
     def __init__(
         self,
-        ver="FO",
-        alphaRatio=0.05,
-        alphaFO=0.05,
-        alphaFan=10,
-        betaFan=0.8,
-        PFan=0.95,
-        verbose=True,
-        fit_explained_variance=False,
+        ver: str = "FO",
+        alphaRatio: float = 0.05,
+        alphaFO: float = 0.05,
+        alphaFan: float = 10,
+        betaFan: float = 0.8,
+        PFan: float = 0.95,
+        verbose: bool = True,
+        fit_explained_variance: bool = False,
     ):
         self.ver = ver
         self.alphaRatio = alphaRatio

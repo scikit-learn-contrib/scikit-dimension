@@ -37,7 +37,7 @@ from sklearn.utils.validation import check_array
 
 
 class MiND_ML(GlobalEstimator):
-    """ Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
+    """Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
 
     -----------
     Attributes

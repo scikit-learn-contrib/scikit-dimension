@@ -42,8 +42,7 @@ warnings.filterwarnings("ignore")
 
 
 class FisherS(GlobalEstimator):
-    """
-    Intrinsic dimension estimation using the Fisher Separability algorithm.
+    """Intrinsic dimension estimation using the Fisher Separability algorithm.
 
     Attributes
     ----------

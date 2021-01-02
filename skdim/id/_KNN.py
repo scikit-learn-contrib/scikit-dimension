@@ -36,7 +36,7 @@ from .._commonfuncs import GlobalEstimator
 
 
 class KNN(GlobalEstimator):
-    """ Intrinsic dimension estimation using the kNN algorithm.
+    """Intrinsic dimension estimation using the kNN algorithm.
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
     the difference being that block bootstrapping is not used.
 

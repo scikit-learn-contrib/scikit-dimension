@@ -37,7 +37,7 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(LocalEstimator):
-    """ Intrinsic dimension estimation using the Maximum Likelihood algorithm. 
+    """Intrinsic dimension estimation using the Maximum Likelihood algorithm. 
 
     The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 
     The estimator in the paper is obtained using default parameters and dnoise = 'dnoiseGaussH'.
