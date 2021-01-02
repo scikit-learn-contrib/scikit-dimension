@@ -29,7 +29,7 @@ Dependencies
 - `scipy <https://docs.scipy.org/>`_
 - `scikit-learn <https://scikit-learn.org/>`_
 - `matplotlib <https://matplotlib.org/>`_
-
+- `pandas <https://pandas.pydata.org/>`_
 
 If you run into issues, do not hesitate to approach us or raise a `GitHub issue`_.
 
