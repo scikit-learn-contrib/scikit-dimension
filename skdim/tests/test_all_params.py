@@ -80,7 +80,7 @@ def test_fisher_params(data, monkeypatch):
 
     ### additionally test all common GlobalEstimator base functions
     x = skdim.id.FisherS().fit(data).predict()
-    x = skdim.id.FisherS().fit_pw(data).predict_pw()
+    x = skdim.id.FisherS().fit_pw(data, n_neighbors=50).predict_pw()
     x = skdim.id.FisherS().fit_predict(data)
     x = skdim.id.FisherS().fit_predict_pw(data, n_neighbors=50)
 
