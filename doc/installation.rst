@@ -8,7 +8,7 @@ PyPI
 
 Install scikit-dimension from PyPI_ using::
 
-    pip install scikit-dimension
+    pip install scikit-dimension #will come with first release
 
 Development Version
 ^^^^^^^^^^^^^^^^^^^
