@@ -30,6 +30,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+import pandas as pd
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
 
@@ -259,7 +260,7 @@ class BenchmarkManifolds:
     Campadelli et al., Intrinsic Dimension Estimation: Relevant Techniques and 
     a Benchmark Framework, https://doi.org/10.1155/2015/759567
 
-    M. Hein and J.-Y. Audibert, Intrinsic dimensionality estimation of submanifolds in Euclidean space, 
+    M. Hein and J.-Y. Audibert, IntrinsicDity estimation of submanifolds in Euclidean space, 
     Proceedings of the 22nd Internatical Conference on Machine Learning (ICML), 289--296. (Eds.) L. de Raedt and S. Wrobel (2005). 
     """
 
@@ -292,32 +293,64 @@ class BenchmarkManifolds:
         self.random_state = check_random_state(random_state)
         self.noise_type = noise_type
 
-        self.dict_truth = {
-            "M1_Sphere": (10, 11),
-            "M2_Affine_3to5": (3, 5),
-            "M3_Nonlinear_4to6": (4, 6),
-            "M4_Nonlinear": (4, 8),
-            "M5a_Helix1d": (1, 3),
-            "M5b_Helix2d": (2, 3),
-            "M6_Nonlinear": (6, 36),
-            "M7_Roll": (2, 3),
-            "M8_Nonlinear": (12, 72),
-            "M9_Affine": (20, 20),
-            "M10a_Cubic": (10, 11),
-            "M10b_Cubic": (17, 18),
-            "M10c_Cubic": (24, 25),
-            "M10d_Cubic": (70, 71),
-            "M11_Moebius": (2, 3),
-            "M12_Norm": (20, 20),
-            "M13a_Scurve": (2, 3),
-            "M13b_Spiral": (1, 13),
-            "Mbeta": (10, 40),
-            "Mn1_Nonlinear": (18, 72),
-            "Mn2_Nonlinear": (24, 96),
-            "Mp1_Paraboloid": (3, 12),
-            "Mp2_Paraboloid": (6, 21),
-            "Mp3_Paraboloid": (9, 30),
+        self._dict_truth = {
+            "M1_Sphere": (10, 11, "10D sphere linearly embedded"),
+            "M2_Affine_3to5": (3, 5, "Affine space"),
+            "M3_Nonlinear_4to6": (
+                4,
+                6,
+                "Concentrated figure, mistakable with a 3D one",
+            ),
+            "M4_Nonlinear": (4, 8, "Nonlinear manifold"),
+            "M5a_Helix1d": (1, 3, "1D helix"),
+            "M5b_Helix2d": (2, 3, "2D helix"),
+            "M6_Nonlinear": (6, 36, "Nonlinear manifold"),
+            "M7_Roll": (2, 3, "Swiss Roll"),
+            "M8_Nonlinear": (12, 72, "Nonlinear (highly curved) manifold"),
+            "M9_Affine": (20, 20, "Affine space"),
+            "M10a_Cubic": (10, 11, "10D hypercube"),
+            "M10b_Cubic": (17, 18, "17D hypercube"),
+            "M10c_Cubic": (24, 25, "24D hypercube"),
+            "M10d_Cubic": (70, 71, "70D hypercube"),
+            "M11_Moebius": (2, 3, "Möebius band 10-times twisted"),
+            "M12_Norm": (20, 20, "Isotropic multivariate Gaussian"),
+            "M13a_Scurve": (2, 3, "2D S-curve"),
+            "M13b_Spiral": (1, 13, "1D helix curve"),
+            "Mbeta": (
+                10,
+                40,
+                "Manifold generated with a smooth nonuniform pdf (see paper for description)",
+            ),
+            "Mn1_Nonlinear": (
+                18,
+                72,
+                "Nonlinearly embedded manifold of high ID (see paper for description)",
+            ),
+            "Mn2_Nonlinear": (
+                24,
+                96,
+                "Nonlinearly embedded manifold of high ID (see paper for description)",
+            ),
+            "Mp1_Paraboloid": (
+                3,
+                12,
+                "3D paraboloid, nonlinearly embedded in (3(3+1))D space, according to a multivariate Burr distribution (alpha=1)",
+            ),
+            "Mp2_Paraboloid": (
+                6,
+                21,
+                "6D paraboloid, nonlinearly embedded in (3*(6+1))D space, according to a multivariate Burr distribution (alpha=1)",
+            ),
+            "Mp3_Paraboloid": (
+                9,
+                30,
+                "9D paraboloid, nonlinearly embedded in (3*(9+1))D space, according to a multivariate Burr distribution (alpha=1)",
+            ),
         }
+        self.truth = pd.DataFrame(
+            self._dict_truth,
+            index=["Intrinsic Dimension", "Number of variables", "Description"],
+        ).T
 
         self.dict_gen = {
             # synthetic data
@@ -386,12 +419,19 @@ class BenchmarkManifolds:
 
         dict_data = {}
         if name == "all":
-            for k, (d, dim) in self.dict_truth.items():
+            for k, (d, dim, _) in self._dict_truth.items():
                 data = self.dict_gen[k](n=n, dim=dim, d=d)
                 dict_data[k] = data + self.gen_noise(n, dim, noise)
             return dict_data
 
-        elif name in self.dict_truth.keys():
+        elif name in self._dict_truth.keys():
+            if dim is None and d is None:
+                data = self.dict_gen[name](n=n)
+            elif dim is None:
+                data = self.dict_gen[name](n=n, d=d)
+            elif d is None:
+                data = self.dict_gen[name](n=n, dim=dim)
+
             data = self.dict_gen[name](n=n, dim=dim, d=d)
             return data + self.gen_noise(n, dim, noise)
 
@@ -625,7 +665,7 @@ class BenchmarkManifolds:
         temp1 = np.zeros((n, d))
         temp2 = np.zeros((n, d))
 
-        # Extend the embedding dimensionality:
+        # Extend the embeddingDity:
         for i in range(d):
             temp1[:, i] = np.tan(X[:, i] * np.cos(X[:, d - 1 - i]))
             temp2[:, i] = np.arctan(X[:, d - 1 - i] * np.sin(X[:, i]))
@@ -643,7 +683,7 @@ class BenchmarkManifolds:
         temp1 = np.zeros((n, d))
         temp2 = np.zeros((n, d))
 
-        # Extend the embedding dimensionality:
+        # Extend the embeddingDity:
         for i in range(d):
             temp1[:, i] = X[:, i] * np.sin(np.cos(2 * np.pi * (X[:, i])))
             temp2[:, i] = X[:, i] * np.cos(np.sin(2 * np.pi * (X[:, i])))
