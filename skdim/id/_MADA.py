@@ -48,7 +48,7 @@ class MADA(LocalEstimator):
     References
     ----------
     Code translated and description taken from the ider R package by Hideitsu Hino.
-    [Farahmand2007]_
+    [Farahmand2007]_, [IDHino]_
     """
 
     _N_NEIGHBORS = 20

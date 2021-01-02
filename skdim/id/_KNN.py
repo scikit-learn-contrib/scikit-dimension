@@ -55,8 +55,7 @@ class KNN(GlobalEstimator):
 
     References
     ----------
-    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-    [Carter2010]_
+    [Carter2010]_, [IDJohnsson]_
     """
 
     def __init__(self, k=None, ps=None, M=1, gamma=2):

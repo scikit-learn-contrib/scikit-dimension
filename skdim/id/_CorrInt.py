@@ -50,8 +50,7 @@ class CorrInt(GlobalEstimator):
 
     References
     ----------
-    Code translated and description taken from the ider R package by Hideitsu Hino.
-    [Grassberger1983]_
+    [Grassberger1983]_, [IDHino]_
     """
 
     def __init__(self, k1=10, k2=20, DM=False):

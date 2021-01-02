@@ -54,8 +54,7 @@ class MiND_ML(GlobalEstimator):
 
     References
     ----------
-    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    [Rozza2012]_
+    [Rozza2012]_, [IDJohnsson]_
     """
 
     def __init__(self, k=20, D=10, ver="MLk"):

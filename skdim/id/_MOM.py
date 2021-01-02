@@ -42,8 +42,7 @@ class MOM(LocalEstimator):
     
     References
     ----------
-    Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).
-    [Amsaleg2018]_
+    [Amsaleg2018]_, [IDRadovanović]_
     """
 
     def _fit(self, **kwargs):

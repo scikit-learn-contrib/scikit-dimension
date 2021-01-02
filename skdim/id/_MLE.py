@@ -70,8 +70,7 @@ class MLE(LocalEstimator):
   
     References
     ----------
-    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-    [Haro2008]_, [Hill1975]_, [Levina2005]_
+    [Haro2008]_, [Hill1975]_, [Levina2005]_, [IDJohnsson]_
     """
 
     _N_NEIGHBORS = 20

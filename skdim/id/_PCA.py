@@ -65,8 +65,7 @@ class lPCA(GlobalEstimator):
 
     References
     ----------
-    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    [Cangelosi2007]_, [Fan2010]_, [Fukunaga2010]_
+    [Cangelosi2007]_, [Fan2010]_, [Fukunaga2010]_, [IDJohnsson]_
     """
 
     def __init__(

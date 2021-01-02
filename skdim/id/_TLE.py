@@ -43,8 +43,7 @@ class TLE(LocalEstimator):
 
     References
     ----------
-    Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).
-    [Amsaleg2019]_
+    [Amsaleg2019]_, [IDRadovanović]_
     """
 
     _N_NEIGHBORS = 20

@@ -68,8 +68,7 @@ class DANCo(GlobalEstimator):
     
     References
     ----------
-    Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
-    [Ceruti2012]_
+    [Ceruti2012]_, [IDJohnsson]_
     """
 
     def __init__(

@@ -65,8 +65,7 @@ class ESS(LocalEstimator):
 
     References
     ----------
-    Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    [Johnsson2015]_
+    [Johnsson2015]_, [IDJohnsson]_
     """
 
     def __init__(self, ver="a", d=1, random_state=None):
