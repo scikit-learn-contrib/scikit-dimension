@@ -5,7 +5,7 @@ Articles
 --------
 .. [Albergante2019] Albergante, L., *et al.* (2019),
    *Estimating the effective dimension of large biological datasets using Fisher separability analysis.*,
-   `2019 International Joint Conference on Neural Networks (IJCNN), IEEE`.
+   `2019 International Joint Conference on Neural Networks, IEEE`.
 .. [Amsaleg2018] Amsaleg, L., *et al.* (2018)
    *Extreme-value-theoretic estimation of local intrinsic dimensionality.*
    `DAMI, 32(6):1768–1805.`
@@ -14,7 +14,7 @@ Articles
    `Proceedings of the SIAM International Conference on Data Mining (SDM), pages 181–189, Calgary, Alberta, Canada`
 .. [Cangelosi2007] Cangelosi, R., and Goriely, A. (2007),
    *Component retention in principal component analysis with application to cDNA microarray data.*,
-    `Biol. Direct 2:2.`
+   `Biol. Direct 2:2.`
 .. [Carter2010] Carter, K.M., *et al.* (2010),
    *On local intrinsic dimension estimation and its applications.*,
    `IEEE Trans. on Sig. Proc., 58(2), 650-663`.
@@ -23,7 +23,7 @@ Articles
    `arXiv preprint 1206.3881`. 
 .. [Facco2019] Facco, E. *et al.* (2019),
    *Estimating the intrinsic dimension of datasets by a minimal neighborhood information.*,
-    `Nature`.
+   `Nature`.
 .. [Fan2010] Fan, M. *et al.* (2010). 
    *Intrinsic dimension estimation of data by principal component analysis.*
    `arXiv preprint 1002.2050.`
@@ -50,7 +50,7 @@ Articles
    `Advances in Neural Information Processing Systems 17, 777-784. MIT Press.`
 .. [Rozza2012] Rozza, A., *et al.* (2012).,
    *Novel high intrinsic dimensionality estimators.*, 
-    `Machine Learning, 89(1-2), 37–65. doi:10.1007/s10994-012-5294-7`.
+   `Machine Learning, 89(1-2), 37–65. doi:10.1007/s10994-012-5294-7`.
 
 Credits and links to other implementations
 ------------------------------------------
