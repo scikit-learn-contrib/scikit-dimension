@@ -66,9 +66,7 @@ class lPCA(GlobalEstimator):
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    Fukunaga, K. and Olsen, D. R. (1971). An algorithm for finding intrinsic dimensionality of data. IEEE Trans. Comput., c-20(2):176-183.
-    Fan, M. et al. (2010). Intrinsic dimension estimation of data by principal component analysis. arXiv preprint 1002.2050. 
-    Cangelosi R, Goriely A. Component retention in principal component analysis with application to cDNA microarray data. 2007. Biol. Direct 2:2.
+    [Cangelosi2007]_, [Fan2010]_, [Fukunaga2010]_
     """
 
     def __init__(

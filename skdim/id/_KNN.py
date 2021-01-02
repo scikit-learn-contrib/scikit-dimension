@@ -56,8 +56,7 @@ class KNN(GlobalEstimator):
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-    Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. 
-    IEEE Trans. on Sig. Proc., 58(2), 650-663. 
+    [Carter2010]_
     """
 
     def __init__(self, k=None, ps=None, M=1, gamma=2):

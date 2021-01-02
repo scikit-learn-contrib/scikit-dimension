@@ -44,7 +44,7 @@ class TLE(LocalEstimator):
     References
     ----------
     Code translated from the original implementation by Miloš Radovanović (https://perun.pmf.uns.ac.rs/radovanovic/tle/).
-    Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović and Weeris Treeratanajaru. Intrinsic dimensionality estimation within tight localities. In Proceedings of the SIAM International Conference on Data Mining (SDM), pages 181–189, Calgary, Alberta, Canada, 2019
+    [Amsaleg2019]_
     """
 
     _N_NEIGHBORS = 20

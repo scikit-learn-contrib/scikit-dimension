@@ -66,8 +66,7 @@ class ESS(LocalEstimator):
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    Johnsson, K., Soneson, C., & Fontes, M. (2015). Low Bias Local Intrinsic Dimension Estimation from Expected Simplex Skewness. IEEE Trans. Pattern Anal. Mach. Intell., 37(1), 196-202. 
-
+    [Johnsson2015]_
     """
 
     def __init__(self, ver="a", d=1, random_state=None):

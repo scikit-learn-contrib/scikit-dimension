@@ -64,7 +64,7 @@ class TwoNN(GlobalEstimator):
     
     References
     ----------
-    E. Facco, M. d’Errico, A. Rodriguez & A. Laio Estimating the intrinsic dimension of datasets by a minimal neighborhood information (https://doi.org/10.1038/s41598-017-11873-y)
+    [Facco2019]_
     """
 
     def __init__(self, discard_fraction: float = 0.1, dist: bool = False):

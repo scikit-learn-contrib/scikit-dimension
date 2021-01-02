@@ -51,8 +51,7 @@ class CorrInt(GlobalEstimator):
     References
     ----------
     Code translated and description taken from the ider R package by Hideitsu Hino.
-
-    P. Grassberger and I. Procaccia. Measuring the strangeness of strange attractors. Physica, 1983.
+    [Grassberger1983]_
     """
 
     def __init__(self, k1=10, k2=20, DM=False):

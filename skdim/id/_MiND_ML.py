@@ -55,8 +55,7 @@ class MiND_ML(GlobalEstimator):
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-    Rozza, A., Lombardi, G., Ceruti, C., Casiraghi, E., & Campadelli, P. (2012). Novel high intrinsic dimensionality estimators. 
-    Machine Learning, 89(1-2), 37–65. doi:10.1007/s10994-012-5294-7 
+    [Rozza2012]_
     """
 
     def __init__(self, k=20, D=10, ver="MLk"):

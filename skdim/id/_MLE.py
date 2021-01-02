@@ -71,9 +71,7 @@ class MLE(LocalEstimator):
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-    Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.
-    Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.
-    Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press. 
+    [Haro2008]_, [Hill1975]_, [Levina2005]_
     """
 
     _N_NEIGHBORS = 20

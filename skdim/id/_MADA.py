@@ -48,7 +48,7 @@ class MADA(LocalEstimator):
     References
     ----------
     Code translated and description taken from the ider R package by Hideitsu Hino.
-    A. M. Farahmand, C. Szepesvari and J-Y. Audibert.  Manifold-adaptive dimension estimation.  International Conference on Machine Learning, 2007.
+    [Farahmand2007]_
     """
 
     _N_NEIGHBORS = 20

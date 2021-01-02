@@ -64,6 +64,7 @@ class FisherS(GlobalEstimator):
  
     References
     ----------
+    [Albergante2019]_
     """
 
     def __init__(

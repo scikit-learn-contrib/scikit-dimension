@@ -69,8 +69,7 @@ class DANCo(GlobalEstimator):
     References
     ----------
     Code translated from the intrinsicDimension R package by Kerstin Johnsson (dancoDimEst)
-
-    Ceruti, C. et al. (2012) DANCo: Dimensionality from Angle and Norm Concentration. arXiv preprint 1206.3881.
+    [Ceruti2012]_
     """
 
     def __init__(
