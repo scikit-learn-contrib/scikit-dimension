@@ -42,22 +42,20 @@ class KNN(GlobalEstimator):
 
     Attributes
     ----------
-
-    X : 2D numeric array
+    X: 2D numeric array
         A 2D data set with each row describing a data point.
-    k : int
+    k: int
         Number of distances to neighbors used at a time.
-    ps : 1D numeric array
+    ps: 1D numeric array
         Vector with sample sizes; each sample size has to be larger than k and smaller than nrow(data).
-    M : int, default=1
+    M: int, default=1
         Number of bootstrap samples for each sample size.
-    gamma : int, default=2
+    gamma: int, default=2
         Weighting constant.
 
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-
     Carter, K.M., Raich, R. and Hero, A.O. (2010) On local intrinsic dimension estimation and its applications. 
     IEEE Trans. on Sig. Proc., 58(2), 650-663. 
     """

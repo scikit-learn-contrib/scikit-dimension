@@ -63,11 +63,9 @@ class ESS(LocalEstimator):
     ess_: float
         The Expected Simplex Skewness value.
 
-    
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-
     Johnsson, K., Soneson, C., & Fontes, M. (2015). Low Bias Local Intrinsic Dimension Estimation from Expected Simplex Skewness. IEEE Trans. Pattern Anal. Mach. Intell., 37(1), 196-202. 
 
     """

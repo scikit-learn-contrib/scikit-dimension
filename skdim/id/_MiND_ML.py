@@ -38,26 +38,23 @@ from sklearn.utils.validation import check_array
 
 class MiND_ML(GlobalEstimator):
     """Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
-
-    -----------
+    
     Attributes
+    ----------
 
-    k : int, default=20
+    k: int, default=20
         Neighborhood parameter for ver='MLk' or ver='MLi'.
-    ver : str
+    ver: str
         'MLk' or 'MLi'. See the reference paper
 
-    -----------
     Returns
-
+    -------
     dimension_ : float
         Intrinsic dimension of the dataset
 
-    -----------
     References
-
+    ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
-
     Rozza, A., Lombardi, G., Ceruti, C., Casiraghi, E., & Campadelli, P. (2012). Novel high intrinsic dimensionality estimators. 
     Machine Learning, 89(1-2), 37–65. doi:10.1007/s10994-012-5294-7 
     """

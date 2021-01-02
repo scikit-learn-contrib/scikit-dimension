@@ -45,7 +45,7 @@ class lPCA(GlobalEstimator):
     Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1) plus 1
     Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution
 
-    Parameters
+    Attributes
     ----------
     ver: str 	
         Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
@@ -63,7 +63,6 @@ class lPCA(GlobalEstimator):
     explained_variance: bool, default=False
         If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
 
-
     References
     ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson (https://cran.r-project.org/web/packages/intrinsicDimension/index.html).
@@ -74,14 +73,14 @@ class lPCA(GlobalEstimator):
 
     def __init__(
         self,
-        ver: str = "FO",
-        alphaRatio: float = 0.05,
-        alphaFO: float = 0.05,
-        alphaFan: float = 10,
-        betaFan: float = 0.8,
-        PFan: float = 0.95,
-        verbose: bool = True,
-        fit_explained_variance: bool = False,
+        ver="FO",
+        alphaRatio=0.05,
+        alphaFO=0.05,
+        alphaFan=10,
+        betaFan=0.8,
+        PFan=0.95,
+        verbose=True,
+        fit_explained_variance=False,
     ):
         self.ver = ver
         self.alphaRatio = alphaRatio

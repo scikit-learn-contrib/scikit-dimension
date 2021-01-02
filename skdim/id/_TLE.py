@@ -39,7 +39,7 @@ class TLE(LocalEstimator):
 
     Attributes
     ----------
-    epsilon
+    epsilon: float
 
     References
     ----------
@@ -50,7 +50,7 @@ class TLE(LocalEstimator):
     _N_NEIGHBORS = 20
 
     def __init__(
-        self, epsilon: float = 1e-4,
+        self, epsilon=1e-4,
     ):
         self.epsilon = epsilon
 

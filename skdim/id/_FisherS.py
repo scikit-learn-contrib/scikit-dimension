@@ -46,20 +46,20 @@ class FisherS(GlobalEstimator):
 
     Attributes
     ----------
-    conditional_number : - a positive real value used to select the top
+    conditional_number: - a positive real value used to select the top
             princinpal components. We consider only PCs with eigen values
             which are not less than the maximal eigenvalue divided by
             conditional_number Default value is 10.
-    project_on_sphere :  a boolean value indicating if projecting on a
+    project_on_sphere:  a boolean value indicating if projecting on a
             sphere should be performed. Default value is true.
-    test_alphas : 2D np.array, float
+    test_alphas: 2D np.array, float
         A row vector of floats, with alpha range, the values must be given increasing
             within (0,1) interval. Default is np.arange(.6,1,.02)[None].
-    produce_plots : bool, default=False
+    produce_plots: bool, default=False
         A boolean value indicating if the standard plots need to be drawn.
-    verbose : bool
+    verbose: bool
         Whether to print number of retained principal components
-    limit_maxdim : bool
+    limit_maxdim: bool
         Whether to cap estimated maxdim to the embedding dimension
  
     References

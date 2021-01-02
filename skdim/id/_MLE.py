@@ -49,37 +49,31 @@ class MLE(LocalEstimator):
     mode='local' and 'pointwise' assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set
     is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). 
 
-    ----------
     Attributes
-
-    mode : str, default='global'
+    ----------
+    mode: str, default='global'
         Whether to compute 'global', 'local' or 'pointwise' intrinsic dimension
-    dnoise : None or 'dnoiseGaussH'
+    dnoise: None or 'dnoiseGaussH'
         Vector valued function giving the transition density. 'dnoiseGaussH' is the one used in Haro
-    sigma : float, default=0
+    sigma: float, default=0
         Estimated standard deviation for the noise.
-    n : int, default='None'
+    n: int, default='None'
         Dimension of the noise (at least data.shape[1])
-    integral.approximation : str, default='Haro'
+    integral.approximation: str, default='Haro'
         Can take values 'Haro', 'guaranteed.convergence', 'iteration'
-    neighborhood.based : bool, default='True'
+    neighborhood.based: bool, default='True'
         Means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
-    comb : str, default='maximum.likelihood'
+    comb: str, default='maximum.likelihood'
         How to aggregate the pointwise estimates. Possible values 'mle', 'mean', 'median'
-    K : int, default=5
+    K: int, default=5
         Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
-
-    ---------  
+  
     References
-
+    ----------
     Code translated and description taken from the intrinsicDimension R package by Kerstin Johnsson.
-
     Haro, G., Randall, G. and Sapiro, G. (2008) Translated Poisson Mixture Model for Stratification Learning. Int. J. Comput. Vis., 80, 358-374.
-
     Hill, B. M. (1975) A simple general approach to inference about the tail of a distribution. Ann. Stat., 3(5) 1163-1174.
-
     Levina, E. and Bickel., P. J. (2005) Maximum likelihood estimation of intrinsic dimension. Advances in Neural Information Processing Systems 17, 777-784. MIT Press. 
-
     """
 
     _N_NEIGHBORS = 20

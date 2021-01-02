@@ -48,9 +48,9 @@ class TwoNN(GlobalEstimator):
 
     Attributes
     ----------  
-    discard_fraction 
-        Fraction of largest distances to discard (heuristic from the paper) between 0 and 1
-    dist
+    discard_fraction: float 
+        Fraction (between 0 and 1) of largest distances to discard (heuristic from the paper)
+    dist: bool
         Whether data is a precomputed distance matrix
 
     Returns
