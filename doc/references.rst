@@ -11,6 +11,7 @@ R
 ^
 - Kerstin Johnsson https://cran.r-project.org/web/packages/intrinsicDimension/index.html
 - Hideitsu Hino https://cran.r-project.org/web/packages/ider/index.html
+- Kisung You https://github.com/kyoustat/Rdimtools
 
 MATLAB
 ^^^^^^
