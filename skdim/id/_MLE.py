@@ -32,6 +32,7 @@
 import inspect
 import scipy.integrate
 import numpy as np
+import warnings
 from .._commonfuncs import lens, get_nn, LocalEstimator
 from sklearn.utils.validation import check_array
 
