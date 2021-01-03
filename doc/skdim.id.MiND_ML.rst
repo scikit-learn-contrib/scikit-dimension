@@ -1,27 +1,31 @@
-﻿skdim.id.MiND\_ML
+skdim.id.MiND\_ML
 =================
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: MiND_ML
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~MiND_ML.__init__
-      ~MiND_ML.fit
-      ~MiND_ML.fit_predict
-      ~MiND_ML.fit_predict_pw
-      ~MiND_ML.fit_pw
-      ~MiND_ML.get_params
-      ~MiND_ML.predict
-      ~MiND_ML.predict_pw
-      ~MiND_ML.set_params
+      ~skdim.id.MiND_ML.fit
+      ~skdim.id.MiND_ML.fit_predict
+      ~skdim.id.MiND_ML.fit_predict_pw
+      ~skdim.id.MiND_ML.fit_pw
+      ~skdim.id.MiND_ML.get_params
+      ~skdim.id.MiND_ML.predict
+      ~skdim.id.MiND_ML.predict_pw
+      ~skdim.id.MiND_ML.set_params
    
    
 

@@ -37,7 +37,7 @@ import warnings
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 
 def indComb(NN):
@@ -115,8 +115,58 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
 
 
-class GlobalEstimator(ABC, BaseEstimator):
-    """ Abstract superclass: inherit BaseEstimator, define predict, fit_predict, fit_pw, predict_pw, fit_predict_pw """
+class DocInheritorBase(type):
+    """ A metaclass to append GlobalEstimator or LocalEstimator Attributes section docstring to each estimator"""
+
+    def __new__(mcs, class_name, class_bases, class_dict):
+        # inherit class docstring: the docstring is constructed by traversing
+        # the mro for the class and merging their docstrings, with each next
+        # docstring as serving as the 'parent', and the accumulated docstring
+        # serving as the 'child'
+        this_doc = class_dict.get("__doc__", None)
+        for mro_cls in (mro_cls for base in class_bases for mro_cls in base.mro()):
+            prnt_cls_doc = mro_cls.__doc__
+            if prnt_cls_doc is not None:
+                if prnt_cls_doc == "The most base type":
+                    prnt_cls_doc = None
+            this_doc = mcs.class_doc_inherit(prnt_cls_doc, this_doc)
+
+        class_dict["__doc__"] = this_doc
+
+        return type.__new__(mcs, class_name, class_bases, class_dict)
+
+    @staticmethod
+    def class_doc_inherit(prnt_doc, child_doc):
+        """ Merge the docstrings of a parent class and its child.
+        Parameters
+        ----------
+        prnt_cls_doc: Union[None, str]
+        child_doc: Union[None, str]
+        """
+        if prnt_doc is None or "dimension_" not in prnt_doc:
+            return child_doc
+        else:
+            if "Attributes" in child_doc:
+                prnt_doc_attr = prnt_doc.index("dimension_")
+                child_doc = child_doc + prnt_doc[prnt_doc_attr:] + "\n"
+            else:
+                prnt_doc_attr = prnt_doc.index("Attributes")
+                child_doc = child_doc + "\n    " + prnt_doc[prnt_doc_attr:]
+        return child_doc
+
+
+class GlobalEstimator(BaseEstimator, metaclass=DocInheritorBase):
+    """ Template base class: inherit BaseEstimator, define predict, fit_predict, fit_pw, predict_pw, fit_predict_pw 
+    
+    Attributes
+    ----------
+    dimension_ : {int, float}
+        The estimated intrinsic dimension 
+    dimension_pw_ : np.array with dtype {int, float}
+        Pointwise ID estimates
+    dimension_pw_smooth_ : np.array with dtype float
+        Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
+    """
 
     def _more_tags(self):
         return {
@@ -209,10 +259,10 @@ class GlobalEstimator(ABC, BaseEstimator):
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw_ : np.array with dtype {int, float}
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
-            If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
+        dimension_pw_smooth_ : np.array with dtype float
+            Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
         """
 
         check_is_fitted(
@@ -252,10 +302,10 @@ class GlobalEstimator(ABC, BaseEstimator):
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw_ : np.array with dtype {int, float}
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
-            If smooth is True, additionally returns smoothed pointwise ID estimates
+        dimension_pw_smooth_ : np.array with dtype float
+            Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
         """
 
         X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
@@ -284,8 +334,18 @@ class GlobalEstimator(ABC, BaseEstimator):
             return dimension_pw_
 
 
-class LocalEstimator(ABC, BaseEstimator):
-    """ Abstract superclass: generic _fit, fit, predict_pw for local ID estimators """
+class LocalEstimator(BaseEstimator, metaclass=DocInheritorBase):
+    """ Template base class: generic _fit, fit, predict_pw for local ID estimators 
+    
+    Attributes
+    ----------
+    dimension_ : {int, float}
+        The estimated intrinsic dimension 
+    dimension_pw_ : np.array with dtype {int, float}
+        Pointwise ID estimates
+    dimension_pw_smooth_ : np.array with dtype float
+        Smoothed pointwise ID estimates returned if self.fit(smooth=True)
+    """
 
     _N_NEIGHBORS: int = 100  # default neighborhood parameter
 

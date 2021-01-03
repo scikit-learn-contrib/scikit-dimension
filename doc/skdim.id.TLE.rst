@@ -1,26 +1,30 @@
-﻿skdim.id.TLE
+skdim.id.TLE
 ============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: TLE
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~TLE.__init__
-      ~TLE.fit
-      ~TLE.fit_predict
-      ~TLE.fit_predict_pw
-      ~TLE.get_params
-      ~TLE.predict
-      ~TLE.predict_pw
-      ~TLE.set_params
+      ~skdim.id.TLE.fit
+      ~skdim.id.TLE.fit_predict
+      ~skdim.id.TLE.fit_predict_pw
+      ~skdim.id.TLE.get_params
+      ~skdim.id.TLE.predict
+      ~skdim.id.TLE.predict_pw
+      ~skdim.id.TLE.set_params
    
    
 

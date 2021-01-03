@@ -1,26 +1,30 @@
-﻿skdim.id.MADA
+skdim.id.MADA
 =============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: MADA
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~MADA.__init__
-      ~MADA.fit
-      ~MADA.fit_predict
-      ~MADA.fit_predict_pw
-      ~MADA.get_params
-      ~MADA.predict
-      ~MADA.predict_pw
-      ~MADA.set_params
+      ~skdim.id.MADA.fit
+      ~skdim.id.MADA.fit_predict
+      ~skdim.id.MADA.fit_predict_pw
+      ~skdim.id.MADA.get_params
+      ~skdim.id.MADA.predict
+      ~skdim.id.MADA.predict_pw
+      ~skdim.id.MADA.set_params
    
    
 

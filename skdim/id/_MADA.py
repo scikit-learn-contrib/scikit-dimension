@@ -35,20 +35,16 @@ from .._commonfuncs import LocalEstimator
 
 
 class MADA(LocalEstimator):
-    """Intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm.
-    A variant of fractal dimension called the local information dimension is considered. 
-    MADA considers first order expansion of the probability mass around the inspection point, 
+    """Intrinsic dimension estimation using the Manifold-Adaptive Dimension Estimation algorithm. [Farahmand2007]_, [IDHino]_
+
+    MADA uses a variant of fractal dimension called the local information dimension.
+    MADA considers the first order expansion of the probability mass around the inspection point,
     and it estimates the local information dimension by using two different radii from the inspection point. 
 
-    Attributes
+    Parameters
     ----------
     DM: bool
         Whether input is a precomputed distance matrix
-
-    References
-    ----------
-    Code translated and description taken from the ider R package by Hideitsu Hino.
-    [Farahmand2007]_, [IDHino]_
     """
 
     _N_NEIGHBORS = 20

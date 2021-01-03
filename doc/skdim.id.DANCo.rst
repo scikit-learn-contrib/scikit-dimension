@@ -1,27 +1,31 @@
-﻿skdim.id.DANCo
+skdim.id.DANCo
 ==============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: DANCo
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~DANCo.__init__
-      ~DANCo.fit
-      ~DANCo.fit_predict
-      ~DANCo.fit_predict_pw
-      ~DANCo.fit_pw
-      ~DANCo.get_params
-      ~DANCo.predict
-      ~DANCo.predict_pw
-      ~DANCo.set_params
+      ~skdim.id.DANCo.fit
+      ~skdim.id.DANCo.fit_predict
+      ~skdim.id.DANCo.fit_predict_pw
+      ~skdim.id.DANCo.fit_pw
+      ~skdim.id.DANCo.get_params
+      ~skdim.id.DANCo.predict
+      ~skdim.id.DANCo.predict_pw
+      ~skdim.id.DANCo.set_params
    
    
 

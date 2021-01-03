@@ -50,13 +50,13 @@ from .._commonfuncs import (
 
 
 class DANCo(GlobalEstimator):
-    """Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm.
+    """Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm. [Ceruti2012]_ [IDJohnsson]_
 
-    Attributes
+    Parameters
     ----------
-    k: 
+    k: int, default=10
         Neighborhood parameter.
-    D: 
+    D: int, default=None
         Maximal dimension
     ver: str, default='DANCo'
         Version to use. possible values: 'DANCo', 'MIND_MLi', 'MIND_MLk'.
@@ -65,10 +65,6 @@ class DANCo(GlobalEstimator):
     fractal: bool, default=True
         Whether to return fractal rather than integer dimension
     verbose: bool, default=False
-    
-    References
-    ----------
-    [Ceruti2012]_, [IDJohnsson]_
     """
 
     def __init__(

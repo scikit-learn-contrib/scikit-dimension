@@ -37,24 +37,14 @@ from sklearn.utils.validation import check_array
 
 
 class MiND_ML(GlobalEstimator):
-    """Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms.
+    """Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms. [Rozza2012]_ [IDJohnsson]_
     
-    Attributes
+    Parameters
     ----------
-
     k: int, default=20
         Neighborhood parameter for ver='MLk' or ver='MLi'.
     ver: str
         'MLk' or 'MLi'. See the reference paper
-
-    Returns
-    -------
-    dimension_ : float
-        Intrinsic dimension of the dataset
-
-    References
-    ----------
-    [Rozza2012]_, [IDJohnsson]_
     """
 
     def __init__(self, k=20, D=10, ver="MLk"):

@@ -34,15 +34,11 @@ from .._commonfuncs import LocalEstimator
 
 
 class MOM(LocalEstimator):
-    """Intrinsic dimension estimation using the Method Of Moments algorithm.
+    """Intrinsic dimension estimation using the Method Of Moments algorithm. [Amsaleg2018]_ [IDRadovanović]_
 
-    Attributes
+    Parameters
     ----------
     None
-    
-    References
-    ----------
-    [Amsaleg2018]_, [IDRadovanović]_
     """
 
     def _fit(self, **kwargs):

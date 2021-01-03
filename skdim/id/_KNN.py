@@ -36,11 +36,12 @@ from .._commonfuncs import GlobalEstimator
 
 
 class KNN(GlobalEstimator):
-    """Intrinsic dimension estimation using the kNN algorithm.
+    """Intrinsic dimension estimation using the kNN algorithm. [Carter2010]_ [IDJohnsson]_
+
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
     the difference being that block bootstrapping is not used.
 
-    Attributes
+    Parameters
     ----------
     X: 2D numeric array
         A 2D data set with each row describing a data point.
@@ -52,10 +53,6 @@ class KNN(GlobalEstimator):
         Number of bootstrap samples for each sample size.
     gamma: int, default=2
         Weighting constant.
-
-    References
-    ----------
-    [Carter2010]_, [IDJohnsson]_
     """
 
     def __init__(self, k=None, ps=None, M=1, gamma=2):

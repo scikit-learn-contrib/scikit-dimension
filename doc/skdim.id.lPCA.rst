@@ -1,27 +1,31 @@
-﻿skdim.id.lPCA
+skdim.id.lPCA
 =============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: lPCA
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~lPCA.__init__
-      ~lPCA.fit
-      ~lPCA.fit_predict
-      ~lPCA.fit_predict_pw
-      ~lPCA.fit_pw
-      ~lPCA.get_params
-      ~lPCA.predict
-      ~lPCA.predict_pw
-      ~lPCA.set_params
+      ~skdim.id.lPCA.fit
+      ~skdim.id.lPCA.fit_predict
+      ~skdim.id.lPCA.fit_predict_pw
+      ~skdim.id.lPCA.fit_pw
+      ~skdim.id.lPCA.get_params
+      ~skdim.id.lPCA.predict
+      ~skdim.id.lPCA.predict_pw
+      ~skdim.id.lPCA.set_params
    
    
 

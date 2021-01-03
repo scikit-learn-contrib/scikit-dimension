@@ -44,27 +44,21 @@ from .._commonfuncs import get_nn, GlobalEstimator
 
 
 class TwoNN(GlobalEstimator):
-    """Intrinsic dimension estimation using the TwoNN algorithm.
+    """Intrinsic dimension estimation using the TwoNN algorithm. [Facco2019]_ [IDFacco]_
 
-    Attributes
+    Parameters
     ----------  
     discard_fraction: float 
         Fraction (between 0 and 1) of largest distances to discard (heuristic from the paper)
     dist: bool
         Whether data is a precomputed distance matrix
 
-    Returns
-    -------
-    dimension_: float
-        Intrinsic dimension of the dataset according to TWO-NN.
+    Attributes
+    ----------
     x_: 1d array 
         np.array with the -log(mu) values.
     y_: 1d array 
         np.array with the -log(F(mu_{sigma(i)})) values.
-    
-    References
-    ----------
-    [Facco2019]_
     """
 
     def __init__(self, discard_fraction: float = 0.1, dist: bool = False):

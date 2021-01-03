@@ -46,26 +46,20 @@ from .._commonfuncs import LocalEstimator
 
 
 class ESS(LocalEstimator):
-    """Intrinsic dimension estimation using the Expected Simplex Skewness algorithm.
+    """Intrinsic dimension estimation using the Expected Simplex Skewness algorithm. [Johnsson2015]_ [IDJohnsson]_
     The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 
     
-    Attributes
+    Parameters
     ----------
     ver: str, 'a' or 'b'
        See Johnsson et al. (2015).
     d: int, default=1
         For ver ='a', any value of d is possible,  for ver ='b', only d = 1 is supported.
 
-    Returns
-    -------
-    dimension_: int
-        Intrinsic dimension of the dataset
+    Attributes
+    ----------
     ess_: float
         The Expected Simplex Skewness value.
-
-    References
-    ----------
-    [Johnsson2015]_, [IDJohnsson]_
     """
 
     def __init__(self, ver="a", d=1, random_state=None):

@@ -3,18 +3,22 @@ skdim.datasets.BenchmarkManifolds
 
 .. currentmodule:: skdim.datasets
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: BenchmarkManifolds
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~BenchmarkManifolds.__init__
-      ~BenchmarkManifolds.generate
+      ~skdim.datasets.BenchmarkManifolds.generate
    
    
 

@@ -35,15 +35,11 @@ from scipy.spatial.distance import pdist, squareform
 
 
 class TLE(LocalEstimator):
-    """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm.
+    """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm. [Amsaleg2019]_ [IDRadovanović]_
 
-    Attributes
+    Parameters
     ----------
     epsilon: float
-
-    References
-    ----------
-    [Amsaleg2019]_, [IDRadovanović]_
     """
 
     _N_NEIGHBORS = 20

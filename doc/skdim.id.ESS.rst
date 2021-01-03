@@ -1,27 +1,31 @@
-﻿skdim.id.ESS
+skdim.id.ESS
 ============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: ESS
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~ESS.__init__
-      ~ESS.fit
-      ~ESS.fit_once
-      ~ESS.fit_predict
-      ~ESS.fit_predict_pw
-      ~ESS.get_params
-      ~ESS.predict
-      ~ESS.predict_pw
-      ~ESS.set_params
+      ~skdim.id.ESS.fit
+      ~skdim.id.ESS.fit_once
+      ~skdim.id.ESS.fit_predict
+      ~skdim.id.ESS.fit_predict_pw
+      ~skdim.id.ESS.get_params
+      ~skdim.id.ESS.predict
+      ~skdim.id.ESS.predict_pw
+      ~skdim.id.ESS.set_params
    
    
 

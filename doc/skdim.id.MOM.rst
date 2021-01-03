@@ -1,26 +1,30 @@
-﻿skdim.id.MOM
+skdim.id.MOM
 ============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: MOM
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~MOM.__init__
-      ~MOM.fit
-      ~MOM.fit_predict
-      ~MOM.fit_predict_pw
-      ~MOM.get_params
-      ~MOM.predict
-      ~MOM.predict_pw
-      ~MOM.set_params
+      ~skdim.id.MOM.fit
+      ~skdim.id.MOM.fit_predict
+      ~skdim.id.MOM.fit_predict_pw
+      ~skdim.id.MOM.get_params
+      ~skdim.id.MOM.predict
+      ~skdim.id.MOM.predict_pw
+      ~skdim.id.MOM.set_params
    
    
 

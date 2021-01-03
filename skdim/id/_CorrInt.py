@@ -37,9 +37,9 @@ from sklearn.utils.validation import check_array
 
 
 class CorrInt(GlobalEstimator):
-    """Intrinsic dimension estimation using the Correlation Dimension.
+    """Intrinsic dimension estimation using the Correlation Dimension. [Grassberger1983]_ [IDHino]_
 
-    Attributes
+    Parameters
     ----------
     k1: int
         First neighborhood size considered
@@ -47,10 +47,6 @@ class CorrInt(GlobalEstimator):
         Last neighborhood size considered
     DM: bool, default=False
         Is the input a precomputed distance matrix (dense)
-
-    References
-    ----------
-    [Grassberger1983]_, [IDHino]_
     """
 
     def __init__(self, k1=10, k2=20, DM=False):

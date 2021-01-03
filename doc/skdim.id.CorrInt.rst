@@ -1,27 +1,31 @@
-﻿skdim.id.CorrInt
+skdim.id.CorrInt
 ================
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: CorrInt
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~CorrInt.__init__
-      ~CorrInt.fit
-      ~CorrInt.fit_predict
-      ~CorrInt.fit_predict_pw
-      ~CorrInt.fit_pw
-      ~CorrInt.get_params
-      ~CorrInt.predict
-      ~CorrInt.predict_pw
-      ~CorrInt.set_params
+      ~skdim.id.CorrInt.fit
+      ~skdim.id.CorrInt.fit_predict
+      ~skdim.id.CorrInt.fit_predict_pw
+      ~skdim.id.CorrInt.fit_pw
+      ~skdim.id.CorrInt.get_params
+      ~skdim.id.CorrInt.predict
+      ~skdim.id.CorrInt.predict_pw
+      ~skdim.id.CorrInt.set_params
    
    
 

@@ -38,22 +38,17 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(LocalEstimator):
-    """Intrinsic dimension estimation using the Maximum Likelihood algorithm. 
+    """Intrinsic dimension estimation using the Maximum Likelihood algorithm. [Haro2008]_ [Hill1975]_ [Levina2005]_ [IDJohnsson]_
 
     The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 
-    The estimator in the paper is obtained using default parameters and dnoise = 'dnoiseGaussH'.
-    With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. 
-    With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion. 
+    The estimator in the paper is obtained using default parameters and dnoise = 'dnoiseGaussH'.\n
+    With integral.approximation = 'Haro' the Taylor expansion approximation of r^(m-1) that Haro et al. (2008) used are employed. \n
+    With integral.approximation = 'guaranteed.convergence', r is factored out and kept and r^(m-2) is approximated with the corresponding Taylor expansion.\n 
     This guarantees convergence of the integrals. Divergence might be an issue when the noise is not sufficiently small in comparison to the smallest distances. 
-    With integral.approximation = 'iteration', five iterations is used to determine m.
+    With integral.approximation = 'iteration', five iterations is used to determine m.\n
 
-    mode='local' and 'pointwise' assume that the data set is local i.e. a piece of a data set cut out by a sphere with a radius such that the data set
-    is well approximated by a hyperplane (meaning that the curvature should be low in the local data set). 
-
-    Attributes
+    Parameters
     ----------
-    mode: str, default='global'
-        Whether to compute 'global', 'local' or 'pointwise' intrinsic dimension
     dnoise: None or 'dnoiseGaussH'
         Vector valued function giving the transition density. 'dnoiseGaussH' is the one used in Haro
     sigma: float, default=0
@@ -62,16 +57,14 @@ class MLE(LocalEstimator):
         Dimension of the noise (at least data.shape[1])
     integral.approximation: str, default='Haro'
         Can take values 'Haro', 'guaranteed.convergence', 'iteration'
-    neighborhood.based: bool, default='True'
+    unbiased: bool, default=False
+        Whether to correct bias or not
+    neighborhood.based: bool, default=True
         Means that estimation is made for each neighborhood, otherwise the estimation is based on distances in the entire data set.
-    comb: str, default='maximum.likelihood'
+    comb: str, default='mle'
         How to aggregate the pointwise estimates. Possible values 'mle', 'mean', 'median'
     K: int, default=5
         Number of neighbors per data point that is considered, only used for neighborhood.based = FALSE
-  
-    References
-    ----------
-    [Haro2008]_, [Hill1975]_, [Levina2005]_, [IDJohnsson]_
     """
 
     _N_NEIGHBORS = 20

@@ -36,18 +36,19 @@ from .._commonfuncs import GlobalEstimator
 
 
 class lPCA(GlobalEstimator):
-    """Intrinsic dimension estimation using the PCA algorithm.
-    Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.
-    Version 'Fan' is the method by Fan et al.
-    Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.
-    Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.
-    Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)
-    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1) plus 1
-    Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution
+    """Intrinsic dimension estimation using the PCA algorithm. [Cangelosi2007]_ [Fan2010]_ [Fukunaga2010]_ [IDJohnsson]_
 
-    Attributes
+    Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.\n
+    Version 'Fan' is the method by Fan et al.\n
+    Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.\n
+    Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.\n
+    Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
+    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1) plus 1\n
+    Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
+
+    Parameters
     ----------
-    ver: str 	
+    ver: str, default='FO'
         Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
     alphaRatio: float in (0,1)
         Only for ver = 'ratio'. ID is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
@@ -62,10 +63,6 @@ class lPCA(GlobalEstimator):
     verbose: bool, default=False
     explained_variance: bool, default=False
         If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
-
-    References
-    ----------
-    [Cangelosi2007]_, [Fan2010]_, [Fukunaga2010]_, [IDJohnsson]_
     """
 
     def __init__(

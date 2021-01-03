@@ -1,27 +1,31 @@
-﻿skdim.id.TwoNN
+skdim.id.TwoNN
 ==============
 
 .. currentmodule:: skdim.id
 
+.. add toctree option to make autodoc generate the pages
+
 .. autoclass:: TwoNN
 
    
-   .. automethod:: __init__
+   
+   
 
+   
    
    .. rubric:: Methods
 
    .. autosummary::
+      :toctree: .
    
-      ~TwoNN.__init__
-      ~TwoNN.fit
-      ~TwoNN.fit_predict
-      ~TwoNN.fit_predict_pw
-      ~TwoNN.fit_pw
-      ~TwoNN.get_params
-      ~TwoNN.predict
-      ~TwoNN.predict_pw
-      ~TwoNN.set_params
+      ~skdim.id.TwoNN.fit
+      ~skdim.id.TwoNN.fit_predict
+      ~skdim.id.TwoNN.fit_predict_pw
+      ~skdim.id.TwoNN.fit_pw
+      ~skdim.id.TwoNN.get_params
+      ~skdim.id.TwoNN.predict
+      ~skdim.id.TwoNN.predict_pw
+      ~skdim.id.TwoNN.set_params
    
    
 
