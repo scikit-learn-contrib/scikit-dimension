@@ -87,6 +87,7 @@ class lPCA(GlobalEstimator):
 
     def fit(self, X, y=None):
         """A reference implementation of a fitting function.
+        
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
