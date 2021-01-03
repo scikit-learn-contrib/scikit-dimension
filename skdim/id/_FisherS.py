@@ -93,6 +93,8 @@ class FisherS(GlobalEstimator):
         -------
         self : object
             Returns self.
+        self.dimension_: float
+            The estimated intrinsic dimension
         self.n_alpha : 1D np.array, float
             Effective dimension profile as a function of alpha
         self.n_single : float
