@@ -127,7 +127,7 @@ def lineDiskBall(n, random_state=None):
     Generates a sample from a uniform distribution on a line, an oblong disk and an oblong ball
     Translated from ldbl function in Hideitsu Hino's package
 
-        Parameters
+    Parameters
     ----------
     n: int 
         Number of data points.
@@ -247,21 +247,12 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
 
 class BenchmarkManifolds:
     """
-    Generates a commonly used benchmark set of synthetic manifolds with known intrinsic dimension described by Hein et al. and Campadelli et al.
+    Generates a commonly used benchmark set of synthetic manifolds with known intrinsic dimension described by Hein et al. and Campadelli et al. [Campadelli2015]_
 
-    Attributes
+    Parameters
     ----------
     noise_type : str, 'uniform' or 'gaussian'
         Type of noise to generate
-
-    References
-    ----------
-
-    Campadelli et al., Intrinsic Dimension Estimation: Relevant Techniques and 
-    a Benchmark Framework, https://doi.org/10.1155/2015/759567
-
-    M. Hein and J.-Y. Audibert, IntrinsicDity estimation of submanifolds in Euclidean space, 
-    Proceedings of the 22nd Internatical Conference on Machine Learning (ICML), 289--296. (Eds.) L. de Raedt and S. Wrobel (2005). 
     """
 
     # class modified and adapted from https://github.com/stat-ml/GeoMLE
