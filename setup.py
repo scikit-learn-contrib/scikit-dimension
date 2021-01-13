@@ -42,7 +42,7 @@ ver_file = os.path.join("skdim", "_version.py")
 with open(ver_file) as f:
     exec(f.read())
 
-DISTNAME = "skdim"
+DISTNAME = "scikit-dimension"
 DESCRIPTION = "scikit-dimension is a Python module for intrinsic dimension estimation built according to the scikit-learn API and distributed under the 3-Clause BSD license.."
 MAINTAINER = "Jonathan Bac"
 MAINTAINER_EMAIL = "jonathan.bac@cri-paris.org"
