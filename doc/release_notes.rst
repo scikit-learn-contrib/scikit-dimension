@@ -4,6 +4,6 @@
 Release Notes
 =============
 
-Version 0.1.1 :small:`December 2020`
+Version 0.2 :small:`December 2020`
 -----------------------------------
-First alpha release of skdim.
+First release of skdim.

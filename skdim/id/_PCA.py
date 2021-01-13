@@ -36,6 +36,7 @@ from .._commonfuncs import GlobalEstimator
 
 
 class lPCA(GlobalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the PCA algorithm. [Cangelosi2007]_ [Fan2010]_ [Fukunaga2010]_ [IDJohnsson]_
 
     Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.\n

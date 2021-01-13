@@ -60,6 +60,7 @@ from .._commonfuncs import get_nn, GlobalEstimator
 
 
 class TwoNN(GlobalEstimator):
+    # SPDX-License-Identifier: MIT, 2019 Francesco Mottes [IDMottes]_
     """Intrinsic dimension estimation using the TwoNN algorithm. [Facco2019]_ [IDFacco]_ [IDMottes]_
 
     Parameters

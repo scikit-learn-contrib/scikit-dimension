@@ -37,6 +37,7 @@ from sklearn.utils.validation import check_array
 
 
 class MiND_ML(GlobalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the MiND_MLk and MiND_MLi algorithms. [Rozza2012]_ [IDJohnsson]_
     
     Parameters

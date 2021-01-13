@@ -46,6 +46,7 @@ from .._commonfuncs import LocalEstimator
 
 
 class ESS(LocalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Expected Simplex Skewness algorithm. [Johnsson2015]_ [IDJohnsson]_
     The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 
     

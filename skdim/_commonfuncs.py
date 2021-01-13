@@ -563,32 +563,32 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             return self.dimension_pw_
 
 
-def mean_local_id(local_id, knnidx):
-    """
-    Compute the mean ID of all neighborhoods in which a point appears
-
-    Parameters
-    ----------
-    local_id : list or np.array
-        list of local ID for each point
-    knnidx : np.array 
-        indices of kNN for each point returned by function get_nn
-
-    Results
-    -------
-    dimension_pw_smooth_ : np.array
-        list of mean local ID for each point
-
-    """
-    dimension_pw_smooth_ = np.zeros(len(local_id))
-    for point_i in range(len(local_id)):
-        # get all points which have this point in their neighbourhoods
-        all_neighborhoods_with_point_i = np.append(
-            np.where(knnidx == point_i)[0], point_i
-        )
-        # get the mean local ID of these points
-        dimension_pw_smooth_[point_i] = local_id[all_neighborhoods_with_point_i].mean()
-    return dimension_pw_smooth_
+# def mean_local_id(local_id, knnidx):
+#    """
+#    Compute the mean ID of all neighborhoods in which a point appears
+#
+#    Parameters
+#    ----------
+#    local_id : list or np.array
+#        list of local ID for each point
+#    knnidx : np.array
+#        indices of kNN for each point returned by function get_nn
+#
+#    Results
+#    -------
+#    dimension_pw_smooth_ : np.array
+#        list of mean local ID for each point
+#
+#    """
+#    dimension_pw_smooth_ = np.zeros(len(local_id))
+#    for point_i in range(len(local_id)):
+#        # get all points which have this point in their neighbourhoods
+#        all_neighborhoods_with_point_i = np.append(
+#            np.where(knnidx == point_i)[0], point_i
+#        )
+#        # get the mean local ID of these points
+#        dimension_pw_smooth_[point_i] = local_id[all_neighborhoods_with_point_i].mean()
+#    return dimension_pw_smooth_
 
 
 def binom_coeff(n, k):

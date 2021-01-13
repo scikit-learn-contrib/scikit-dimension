@@ -169,3 +169,36 @@ def test_datasets():
     skdim.datasets.BenchmarkManifolds(noise_type="normal").generate(
         name="M5b_Helix2d", n=456, dim=3, d=2
     )
+
+
+def test_fisher_separability_graph(monkeypatch):
+    monkeypatch.setattr(plt, "show", lambda: None)
+    import numpy as np
+    from sklearn.decomposition import PCA
+    from scipy.stats.mstats import winsorize
+
+    ball1 = skdim.datasets.hyperBall(n=1000, d=3, radius=0.5, center=[0, 0, 0]).T
+    ball2 = skdim.datasets.hyperBall(
+        n=1000, d=6, radius=0.5, center=[1, 0, 0, 0, 0, 0]
+    ).T
+
+    _2balls = np.zeros((6, 2000))
+    _2balls[:3, :1000] = ball1
+    _2balls[:, 1000:2000] = ball2
+    X = _2balls.T
+
+    u = PCA().fit_transform(X)
+    fishers = skdim.id.FisherS(conditional_number=10000).fit(X)
+    ns = fishers.point_inseparability_to_pointID()[0]
+    edges, weights = fishers.getSeparabilityGraph()
+
+    nsw = winsorize(ns, limits=(0.01, 0.01), inclusive=(True, True))
+    plt.figure(figsize=(10, 5))
+    plt.scatter(u[:, 0], u[:, 1], c=nsw)
+    fishers.plotSeparabilityGraph(u[:, 0], u[:, 1], edges, alpha=0.2)
+    plt.colorbar()
+    plt.axis("equal")
+    plt.title("PCA on original data")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.show()

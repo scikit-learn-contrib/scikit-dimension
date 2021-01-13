@@ -47,21 +47,19 @@ DESCRIPTION = "scikit-dimension is a Python module for intrinsic dimension estim
 MAINTAINER = "Jonathan Bac"
 MAINTAINER_EMAIL = "jonathan.bac@cri-paris.org"
 URL = "https://github.com/j-bac/scikit-dimension"
-LICENSE = "new BSD"
+LICENSE = "BSD-3-clause"
 DOWNLOAD_URL = "https://github.com/j-bac/scikit-dimension"
 VERSION = __version__
 INSTALL_REQUIRES = ["numpy", "scipy", "scikit-learn"]
 CLASSIFIERS = [
     "Intended Audience :: Science/Research",
-    "Intended Audience :: Developers",
     "License :: OSI Approved",
     "Programming Language :: Python",
-    "Topic :: Software Development",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX",
     "Operating System :: Unix",
     "Operating System :: MacOS",
+    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
 ]

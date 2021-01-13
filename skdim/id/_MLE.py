@@ -38,6 +38,7 @@ from sklearn.utils.validation import check_array
 
 
 class MLE(LocalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Maximum Likelihood algorithm. [Haro2008]_ [Hill1975]_ [Levina2005]_ [IDJohnsson]_
 
     The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 

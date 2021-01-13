@@ -50,6 +50,7 @@ from .._commonfuncs import (
 
 
 class DANCo(GlobalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm. [Ceruti2012]_ [IDLombardi]_ [IDJohnsson]_ 
 
     Parameters

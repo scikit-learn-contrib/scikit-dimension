@@ -36,6 +36,7 @@ from .._commonfuncs import GlobalEstimator
 
 
 class KNN(GlobalEstimator):
+    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the kNN algorithm. [Carter2010]_ [IDJohnsson]_
 
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
