@@ -45,7 +45,6 @@ with open(ver_file) as f:
 DISTNAME = "scikit-dimension"
 DESCRIPTION = "scikit-dimension is a Python module for intrinsic dimension estimation built according to the scikit-learn API and distributed under the 3-Clause BSD license.."
 MAINTAINER = "Jonathan Bac"
-MAINTAINER_EMAIL = "jonathan.bac@cri-paris.org"
 URL = "https://github.com/j-bac/scikit-dimension"
 LICENSE = "BSD-3-clause"
 DOWNLOAD_URL = "https://github.com/j-bac/scikit-dimension"
@@ -71,7 +70,6 @@ EXTRAS_REQUIRE = {
 setup(
     name=DISTNAME,
     maintainer=MAINTAINER,
-    maintainer_email=MAINTAINER_EMAIL,
     description=DESCRIPTION,
     license=LICENSE,
     url=URL,
