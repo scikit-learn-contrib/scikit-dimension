@@ -31,5 +31,5 @@
 #
 from . import datasets
 from . import id
-from ._commonfuncs import get_nn, asPointwise, mean_local_id
+from ._commonfuncs import get_nn, asPointwise
 from ._version import __version__
