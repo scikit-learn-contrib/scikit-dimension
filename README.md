@@ -17,7 +17,7 @@ Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for
 
 Using pip:
 ```bash
-pip install git+https://github.com/j-bac/scikit-dimension.git
+pip install scikit-dimension
 ```
 
 From source:
