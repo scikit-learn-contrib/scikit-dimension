@@ -42,10 +42,10 @@ data[:,:5] = skdim.datasets.hyperBall(n = 1000, d = 5, radius = 1, random_state 
 #estimate global intrinsic dimension
 danco = skdim.id.DANCo().fit(data)
 #estimate local intrinsic dimension (dimension in k-nearest-neighborhoods around each point):
-lpca_pw = skdim.id.lPCA().fit_pw(data,
-                                    n_neighbors = 100,
-                                    n_jobs = 1)
+lpca = skdim.id.lPCA().fit_pw(data,
+                              n_neighbors = 100,
+                              n_jobs = 1)
                             
 #get estimated intrinsic dimension
-print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))
+print(danco.dimension_, fishers.dimension_, np.mean(lpca.dimension_pw_))
 ```
