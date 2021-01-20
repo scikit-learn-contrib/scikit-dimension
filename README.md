@@ -5,6 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/scikit-dimension/badge/?version=latest)](https://scikit-dimension.readthedocs.io/en/latest/?badge=latest)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python)
 [![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
+[![PyPI download total](https://img.shields.io/pypi/dm/scikit-dimension?color=green&label=downloads&logo=pypi)](https://pypi.python.org/pypi/scikit-dimension/)
 
 
 # scikit-dimension
