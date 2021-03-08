@@ -5,6 +5,28 @@ FisherS separability graph example
 """
 
 import skdim
+import plotly.graph_objects as go
+
+# generate data
+data, clusters = skdim.datasets.lineDiskBall(n = 2000, random_state = 0)
+
+# compute local ID
+pca=skdim.id.lPCA()
+lid=pca.fit_predict_pw(data,n_neighbors=100)
+
+# plot
+fig = go.Figure(
+    go.Scatter3d( 
+        dict(zip(['x','y','z'],data.T[:3]) ), 
+        mode='markers',
+        marker=dict( size=3, color=lid, colorbar=dict(thickness=20,x=.95))))
+fig.show()
+
+
+
+
+
+import skdim
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
