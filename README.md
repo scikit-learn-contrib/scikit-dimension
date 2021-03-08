@@ -3,9 +3,9 @@
 [![codecov](https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/scikit-dimension)
 [![CircleCI](https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield)](https://circleci.com/gh/j-bac/scikit-dimension/tree/master)
 [![Documentation Status](https://readthedocs.org/projects/scikit-dimension/badge/?version=latest)](https://scikit-dimension.readthedocs.io/en/latest/?badge=latest)
-[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18&label=%20code%20quality)](https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python)
 [![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
-
+[![Downloads](https://pepy.tech/badge/scikit-dimension)](https://pepy.tech/project/scikit-dimension)
 
 # scikit-dimension
 
@@ -17,7 +17,7 @@ Please refer to the [documentation](https://scikit-dimension.readthedocs.io) for
 
 Using pip:
 ```bash
-pip install git+https://github.com/j-bac/scikit-dimension.git
+pip install scikit-dimension
 ```
 
 From source:
@@ -42,10 +42,10 @@ data[:,:5] = skdim.datasets.hyperBall(n = 1000, d = 5, radius = 1, random_state 
 #estimate global intrinsic dimension
 danco = skdim.id.DANCo().fit(data)
 #estimate local intrinsic dimension (dimension in k-nearest-neighborhoods around each point):
-lpca_pw = skdim.id.lPCA().fit_pw(data,
-                                    n_neighbors = 100,
-                                    n_jobs = 1)
+lpca = skdim.id.lPCA().fit_pw(data,
+                              n_neighbors = 100,
+                              n_jobs = 1)
                             
 #get estimated intrinsic dimension
-print(danco.dimension_, fishers.dimension_, np.mean(lpca_pw))
+print(danco.dimension_, fishers.dimension_, np.mean(lpca.dimension_pw_))
 ```
