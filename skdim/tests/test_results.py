@@ -32,20 +32,6 @@
 import pytest
 import numpy as np
 import skdim
-import matplotlib.pyplot as plt
-from inspect import getmembers, isclass
-from sklearn.utils.estimator_checks import parametrize_with_checks
-from sklearn.utils.estimator_checks import check_estimator
-from sklearn.utils.validation import check_random_state
-from sklearn.utils.testing import (
-    assert_equal,
-    assert_array_equal,
-    assert_array_almost_equal,
-    assert_raises,
-    assert_in,
-    assert_not_in,
-    assert_no_warnings,
-)
 
 # import rpy2.robjects.packages as rpackages
 # import rpy2.robjects.numpy2ri
