@@ -50,7 +50,7 @@ estimators = [o[1] for o in getmembers(skdim.id) if isclass(o[1])]
 
 @pytest.mark.parametrize("Estimator", estimators)
 def test_all_estimators(Estimator):
-    return check_estimator(Estimator)
+    return check_estimator(Estimator())
 
 
 # test default and non-default parameters
