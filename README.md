@@ -47,5 +47,5 @@ lpca = skdim.id.lPCA().fit_pw(data,
                               n_jobs = 1)
                             
 #get estimated intrinsic dimension
-print(danco.dimension_, fishers.dimension_, np.mean(lpca.dimension_pw_))
+print(danco.dimension_, np.mean(lpca.dimension_pw_))
 ```
