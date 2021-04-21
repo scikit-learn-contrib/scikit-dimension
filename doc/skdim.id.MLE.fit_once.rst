@@ -1,4 +1,4 @@
-:github_url: https://github.com/theislab/scvelo/tree/master/scikit-dimension/skdim/id/_MLE.py#L249-L256
+:github_url: https://github.com/j-bac/scikit-dimension/tree/master/scikit-dimension/skdim/id/_MLE.py#L243-L250
 
 
 

@@ -19,15 +19,11 @@ skdim.id.MADA
       :toctree: .
    
       ~skdim.id.MADA.fit
-      ~skdim.id.MADA.fit_predict
-      ~skdim.id.MADA.fit_predict_pw
+      ~skdim.id.MADA.fit_transform
+      ~skdim.id.MADA.fit_transform_pw
       ~skdim.id.MADA.get_params
-      ~skdim.id.MADA.predict
-      ~skdim.id.MADA.predict_pw
       ~skdim.id.MADA.set_params
-   
-   
-
-   
+      ~skdim.id.MADA.transform
+      ~skdim.id.MADA.transform_pw
    
    

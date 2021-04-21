@@ -1,4 +1,4 @@
-:github_url: https://github.com/theislab/scvelo/tree/master/scikit-dimension/skdim/id/_MiND_ML.py#L221-L263
+:github_url: https://github.com/j-bac/scikit-dimension/tree/master/scikit-dimension/skdim/id/_MiND_ML.py#L202-L244
 
 
 

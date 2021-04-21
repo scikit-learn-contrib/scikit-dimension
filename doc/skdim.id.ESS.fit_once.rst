@@ -1,4 +1,4 @@
-:github_url: https://github.com/theislab/scvelo/tree/master/scikit-dimension/skdim/id/_ESS.py#L85-L105
+:github_url: https://github.com/j-bac/scikit-dimension/tree/master/scikit-dimension/skdim/id/_ESS.py#L80-L100
 
 
 

@@ -1,4 +1,4 @@
-:github_url: https://github.com/theislab/scvelo/tree/master/scikit-dimension/skdim/id/_FisherS.py#L155-L201
+:github_url: https://github.com/j-bac/scikit-dimension/tree/master/scikit-dimension/skdim/id/_FisherS.py#L207-L253
 
 
 

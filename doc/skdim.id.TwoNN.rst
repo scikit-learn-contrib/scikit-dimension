@@ -19,16 +19,12 @@ skdim.id.TwoNN
       :toctree: .
    
       ~skdim.id.TwoNN.fit
-      ~skdim.id.TwoNN.fit_predict
-      ~skdim.id.TwoNN.fit_predict_pw
       ~skdim.id.TwoNN.fit_pw
+      ~skdim.id.TwoNN.fit_transform
+      ~skdim.id.TwoNN.fit_transform_pw
       ~skdim.id.TwoNN.get_params
-      ~skdim.id.TwoNN.predict
-      ~skdim.id.TwoNN.predict_pw
       ~skdim.id.TwoNN.set_params
-   
-   
-
-   
+      ~skdim.id.TwoNN.transform
+      ~skdim.id.TwoNN.transform_pw
    
    

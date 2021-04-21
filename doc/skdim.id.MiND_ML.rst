@@ -19,16 +19,12 @@ skdim.id.MiND\_ML
       :toctree: .
    
       ~skdim.id.MiND_ML.fit
-      ~skdim.id.MiND_ML.fit_predict
-      ~skdim.id.MiND_ML.fit_predict_pw
       ~skdim.id.MiND_ML.fit_pw
+      ~skdim.id.MiND_ML.fit_transform
+      ~skdim.id.MiND_ML.fit_transform_pw
       ~skdim.id.MiND_ML.get_params
-      ~skdim.id.MiND_ML.predict
-      ~skdim.id.MiND_ML.predict_pw
       ~skdim.id.MiND_ML.set_params
-   
-   
-
-   
+      ~skdim.id.MiND_ML.transform
+      ~skdim.id.MiND_ML.transform_pw
    
    

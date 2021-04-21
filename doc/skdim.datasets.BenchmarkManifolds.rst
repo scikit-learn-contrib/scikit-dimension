@@ -21,7 +21,3 @@ skdim.datasets.BenchmarkManifolds
       ~skdim.datasets.BenchmarkManifolds.generate
    
    
-
-   
-   
-   

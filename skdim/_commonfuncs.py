@@ -157,7 +157,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 
 
 class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: inherit BaseEstimator, define predict, fit_predict, fit_pw, predict_pw, fit_predict_pw 
+    """ Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw 
     
     Attributes
     ----------
@@ -174,7 +174,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             "_skip_test": "check_methods_subset_invariance"
         }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
 
-    def predict(self, X=None):
+    def transform(self, X=None):
         """ Predict dimension after a previous call to self.fit
 
         Parameters
@@ -189,7 +189,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         check_is_fitted(self, "is_fitted_")
         return self.dimension_
 
-    def fit_predict(self, X, y=None):
+    def fit_transform(self, X, y=None):
         """Fit estimator and return ID
 
         Parameters
@@ -252,7 +252,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
                 )
         return self
 
-    def predict_pw(self, X=None):
+    def transform_pw(self, X=None):
         """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
@@ -281,7 +281,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         else:
             return self.dimension_pw_
 
-    def fit_predict_pw(
+    def fit_transform_pw(
         self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1
     ):
         """Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
@@ -336,7 +336,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: generic _fit, fit, predict_pw for local ID estimators 
+    """ Template base class: generic _fit, fit, transform_pw for local ID estimators 
     
     Attributes
     ----------
@@ -433,7 +433,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         self.is_fitted_ = True
         return self
 
-    def predict(self, X=None):
+    def transform(self, X=None):
         """ Predict ID after a previous call to self.fit
 
         Parameters
@@ -448,7 +448,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         check_is_fitted(self, "is_fitted_")
         return self.dimension_
 
-    def fit_predict(
+    def fit_transform(
         self,
         X,
         y=None,
@@ -458,7 +458,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         comb="mean",
         n_jobs=1,
     ):
-        """Fit-predict method for local ID estimators
+        """Fit-transform method for local ID estimators
 
         Parameters
         ----------
@@ -491,7 +491,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             n_jobs=n_jobs,
         ).dimension_
 
-    def predict_pw(self, X=None):
+    def transform_pw(self, X=None):
         """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
@@ -520,7 +520,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         else:
             return self.dimension_pw_
 
-    def fit_predict_pw(
+    def fit_transform_pw(
         self, X, precomputed_knn_arrays=None, smooth=False, n_neighbors=None, n_jobs=1
     ):
         """

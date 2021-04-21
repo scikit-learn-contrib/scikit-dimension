@@ -19,16 +19,12 @@ skdim.id.KNN
       :toctree: .
    
       ~skdim.id.KNN.fit
-      ~skdim.id.KNN.fit_predict
-      ~skdim.id.KNN.fit_predict_pw
       ~skdim.id.KNN.fit_pw
+      ~skdim.id.KNN.fit_transform
+      ~skdim.id.KNN.fit_transform_pw
       ~skdim.id.KNN.get_params
-      ~skdim.id.KNN.predict
-      ~skdim.id.KNN.predict_pw
       ~skdim.id.KNN.set_params
-   
-   
-
-   
+      ~skdim.id.KNN.transform
+      ~skdim.id.KNN.transform_pw
    
    

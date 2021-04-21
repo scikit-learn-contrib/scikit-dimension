@@ -61,11 +61,11 @@ def test_ess_params(data):
     x = skdim.id.ESS().fit_once(data)
 
     ### additionally test all common LocalEstimator base functions
-    x = skdim.id.ESS().fit(data).predict()
-    x = skdim.id.ESS().fit(data).predict_pw()
-    x = skdim.id.ESS().fit_predict(data)
-    x = skdim.id.ESS().fit_predict_pw(data)
-    x = skdim.id.ESS().fit_predict_pw(data, smooth=True)
+    x = skdim.id.ESS().fit(data).transform()
+    x = skdim.id.ESS().fit(data).transform_pw()
+    x = skdim.id.ESS().fit_transform(data)
+    x = skdim.id.ESS().fit_transform_pw(data)
+    x = skdim.id.ESS().fit_transform_pw(data, smooth=True)
 
 
 def test_fisher_params(data, monkeypatch):
@@ -79,10 +79,10 @@ def test_fisher_params(data, monkeypatch):
     x = skdim.id.FisherS().fit(data).point_inseparability_to_pointID()
 
     ### additionally test all common GlobalEstimator base functions
-    x = skdim.id.FisherS().fit(data).predict()
-    x = skdim.id.FisherS().fit_pw(data, n_neighbors=50).predict_pw()
-    x = skdim.id.FisherS().fit_predict(data)
-    x = skdim.id.FisherS().fit_predict_pw(data, n_neighbors=50)
+    x = skdim.id.FisherS().fit(data).transform()
+    x = skdim.id.FisherS().fit_pw(data, n_neighbors=50).transform_pw()
+    x = skdim.id.FisherS().fit_transform(data)
+    x = skdim.id.FisherS().fit_transform_pw(data, n_neighbors=50)
 
 
 def test_mind_ml_params(data):

@@ -20,15 +20,11 @@ skdim.id.ESS
    
       ~skdim.id.ESS.fit
       ~skdim.id.ESS.fit_once
-      ~skdim.id.ESS.fit_predict
-      ~skdim.id.ESS.fit_predict_pw
+      ~skdim.id.ESS.fit_transform
+      ~skdim.id.ESS.fit_transform_pw
       ~skdim.id.ESS.get_params
-      ~skdim.id.ESS.predict
-      ~skdim.id.ESS.predict_pw
       ~skdim.id.ESS.set_params
-   
-   
-
-   
+      ~skdim.id.ESS.transform
+      ~skdim.id.ESS.transform_pw
    
    

@@ -19,16 +19,12 @@ skdim.id.DANCo
       :toctree: .
    
       ~skdim.id.DANCo.fit
-      ~skdim.id.DANCo.fit_predict
-      ~skdim.id.DANCo.fit_predict_pw
       ~skdim.id.DANCo.fit_pw
+      ~skdim.id.DANCo.fit_transform
+      ~skdim.id.DANCo.fit_transform_pw
       ~skdim.id.DANCo.get_params
-      ~skdim.id.DANCo.predict
-      ~skdim.id.DANCo.predict_pw
       ~skdim.id.DANCo.set_params
-   
-   
-
-   
+      ~skdim.id.DANCo.transform
+      ~skdim.id.DANCo.transform_pw
    
    

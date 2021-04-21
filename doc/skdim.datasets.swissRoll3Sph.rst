@@ -1,4 +1,4 @@
-:github_url: https://github.com/theislab/scvelo/tree/master/scikit-dimension/skdim/datasets.py#L190-L245
+:github_url: https://github.com/j-bac/scikit-dimension/tree/master/scikit-dimension/skdim/datasets.py#L190-L245
 
 
 
