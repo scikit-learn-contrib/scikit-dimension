@@ -30,6 +30,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+import numba as nb
 import itertools
 import numbers
 import multiprocessing as mp
@@ -52,16 +53,18 @@ def indComb(NN):
     return pt1, pt2, np.hstack((pt2[:, None], pt1[:, None]))
 
 
+@nb.njit
 def indnComb(NN, n):
     if n == 1:
         return np.arange(NN).reshape((-1, 1))
     prev = indnComb(NN, n - 1)
     lastind = prev[:, -1]
     ind_cf1 = np.repeat(lastind, NN)
-    ind_cf2 = np.tile(np.arange(NN), len(lastind))
-    # ind_cf2 = np.arange(NN)
-    # for i in range(len(lastind)-1):
-    #    ind_cf2 = np.concatenate((ind_cf2,np.arange(NN)))
+    # ind_cf2 = np.tile(np.arange(NN), len(lastind))
+    ind_cf2 = (
+        np.repeat(np.arange(NN), len(lastind)).reshape(-1, len(lastind)).T.flatten()
+    )  # np.tile replacement
+
     new_ind = np.where(ind_cf1 < ind_cf2)[0]
     new_ind1 = (new_ind - 1) // NN
     new_ind2 = new_ind % NN
