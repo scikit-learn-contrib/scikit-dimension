@@ -360,7 +360,7 @@ class DANCo(GlobalEstimator):
                 # load precomputed splines as a function of dimension and dataset cardinality
                 # DANCo_splines = {}
                 # for spl in ['spline_dhat','spline_mu','spline_tau']:
-                #    with open(''+'DANCo_'+spl+'.pkl', 'rb') as f:
+                #    with open('DANCoFit/DANCo_'+spl+'.pkl', 'rb') as f:
                 #        DANCo_splines[spl]=pickle.load(f)
                 ##compute interpolated statistics
                 # while (cal['maxdim'] < self._D):
