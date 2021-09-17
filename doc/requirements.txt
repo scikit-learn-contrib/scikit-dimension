@@ -9,4 +9,4 @@ nbsphinx>=0.7
 numpy<=1.20
 numpydoc
 pandoc
-sphinx==1.6.9
+sphinx==4.0.0
