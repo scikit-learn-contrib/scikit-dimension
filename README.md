@@ -25,7 +25,7 @@ git clone https://github.com/j-bac/scikit-dimension
 cd scikit-dimension
 pip install .
 ```
-
+ 
 ### Quick start
 
 Local and global estimators can be used in this way:
