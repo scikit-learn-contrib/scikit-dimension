@@ -7,5 +7,6 @@ sphinx_autodoc_typehints<=1.6
 ipykernel
 sphinx>=1.7
 nbsphinx>=0.7
+numpy<=1.20
 numpydoc
 pandoc
