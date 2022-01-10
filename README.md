@@ -10,7 +10,7 @@
 
 scikit-dimension is a Python module for intrinsic dimension estimation built according to the [scikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
 
-Please refer to the [documentation](https://scikit-dimension.readthedocs.io) and the [preprint](https://arxiv.org/abs/2109.02596) for detailed API, examples and references
+Please refer to the [documentation](https://scikit-dimension.readthedocs.io) and the [paper](https://www.mdpi.com/1099-4300/23/10/1368) for detailed API, examples and references
 
 ### Installation
 
