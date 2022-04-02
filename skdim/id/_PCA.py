@@ -186,7 +186,7 @@ class lPCA(GlobalEstimator):
 
     def _participation_ratio(self, explained_var):
         PR = sum(explained_var) ** 2 / sum(explained_var ** 2)
-        de = int(PR)
+        de = PR
         gaps = explained_var[:-1] / explained_var[1:]
         if de - 1 < len(gaps):
             return de, gaps[de - 1]
