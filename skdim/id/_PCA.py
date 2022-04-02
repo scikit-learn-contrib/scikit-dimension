@@ -44,7 +44,7 @@ class lPCA(GlobalEstimator):
     Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.\n
     Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.\n
     Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
-    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1) plus 1\n
+    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1)\n
     Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
 
     Parameters
@@ -214,8 +214,7 @@ class lPCA(GlobalEstimator):
             return de, gaps[-1]
 
     def _Kaiser(self, explained_var):
-        # de = sum(explained_var > (self.alphaFO*explained_var[0]))
-        de = sum(explained_var > np.mean(explained_var)) + 1
+        de = sum(explained_var > np.mean(explained_var))
         gaps = explained_var[:-1] / explained_var[1:]
 
         if de - 1 < len(gaps):
