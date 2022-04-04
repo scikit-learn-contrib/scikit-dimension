@@ -112,6 +112,8 @@ class FisherS(GlobalEstimator):
         # test_alphas introduced to pass sklearn checks (sklearn doesn't take arrays as default parameters)
         if self.alphas is None:
             self._alphas = np.arange(0.6, 1, 0.02)[None]
+        else:
+            self._alphas = self.alphas
 
         (
             self.n_alpha_,
