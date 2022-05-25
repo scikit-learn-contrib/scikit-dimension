@@ -34,6 +34,7 @@ import pandas as pd
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
 
+def __dir__(): return ['BenchmarkManifolds','hyperBall', 'hyperSphere', 'hyperTwinPeaks', 'lineDiskBall', 'swissRoll3Sph']
 
 def hyperBall(n, d, radius=1.0, center=[], random_state=None):
     """

@@ -94,12 +94,15 @@ def proxy(tup):
     return function(X, **Dict)
 
 
-def get_nn(X, k, n_jobs=1):
+def get_nn(X, k, n_jobs=1, sparse=False):
     """Compute the k-nearest neighbors of a dataset np.array (n_samples x n_dims)"""
     neigh = NearestNeighbors(n_neighbors=k, n_jobs=n_jobs)
     neigh.fit(X)
-    dists, inds = neigh.kneighbors(return_distance=True)
-    return dists, inds
+    if sparse:
+        return neigh.kneighbors_graph(mode='distance')
+    else:
+        dists, inds = neigh.kneighbors(return_distance=True)
+        return dists, inds
 
 
 def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
@@ -117,49 +120,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
     else:
         return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
 
-
-# class DocInheritorBase(type):
-#    """ A metaclass to append GlobalEstimator or LocalEstimator Attributes section docstring to each estimator"""
-#
-#    def __new__(mcs, class_name, class_bases, class_dict):
-#        # inherit class docstring: the docstring is constructed by traversing
-#        # the mro for the class and merging their docstrings, with each next
-#        # docstring as serving as the 'parent', and the accumulated docstring
-#        # serving as the 'child'
-#        this_doc = class_dict.get("__doc__", None)
-#        for mro_cls in (mro_cls for base in class_bases for mro_cls in base.mro()):
-#            prnt_cls_doc = mro_cls.__doc__
-#            if prnt_cls_doc is not None:
-#                if prnt_cls_doc == "The most base type":
-#                    prnt_cls_doc = None
-#            this_doc = mcs.class_doc_inherit(prnt_cls_doc, this_doc)
-#
-#        class_dict["__doc__"] = this_doc
-#
-#        return type.__new__(mcs, class_name, class_bases, class_dict)
-#
-#    @staticmethod
-#    def class_doc_inherit(prnt_doc, child_doc):
-#        """ Merge the docstrings of a parent class and its child.
-#
-#        Parameters
-#        ----------
-#        prnt_cls_doc: Union[None, str]
-#        child_doc: Union[None, str]
-#        """
-#        if prnt_doc is None or "dimension_" not in prnt_doc:
-#            return child_doc
-#        else:
-#            if "Attributes" in child_doc:
-#                prnt_doc_attr = prnt_doc.index("dimension_")
-#                child_doc = child_doc + prnt_doc[prnt_doc_attr:] + "\n"
-#            else:
-#                prnt_doc_attr = prnt_doc.index("Attributes")
-#                child_doc = child_doc + "\n    " + prnt_doc[prnt_doc_attr:]
-#        return child_doc
-
-
-class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
+class GlobalEstimator(BaseEstimator):
     """ Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw 
     
     Attributes
