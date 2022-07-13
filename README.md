@@ -1,5 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true)](https://ci.appveyor.com/project/j-bac/scikit-dimension/branch/master)
-[![CircleCI](https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield)](https://circleci.com/gh/j-bac/scikit-dimension/tree/master)
+[![CircleCI](https://circleci.com/gh/scikit-learn-contrib/scikit-dimension/tree/master.svg?style=shield)](https://app.circleci.com/pipelines/github/scikit-learn-contrib/scikit-dimension)
 [![Documentation Status](https://readthedocs.org/projects/scikit-dimension/badge/?version=latest)](https://scikit-dimension.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/scikit-dimension)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18&label=%20code%20quality)](https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python)
