@@ -52,9 +52,11 @@ class lPCA(GlobalEstimator):
     ver: str, default='FO'
         Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
     alphaRatio: float in (0,1)
-        Only for ver = 'ratio'. ID is estimated to be the number of principal components needed to retain at least alphaRatio of the variance.
+        Only for ver = 'ratio'. ID is estimated to be 
+        the number of principal components needed to retain at least alphaRatio of the variance.
     alphaFO: float in (0,1)
-        Only for ver = 'FO'. An eigenvalue is considered significant if it is larger than alpha times the largest eigenvalue.
+        Only for ver = 'FO'. An eigenvalue is considered significant 
+        if it is larger than alpha times the largest eigenvalue.
     alphaFan: float
         Only for ver = 'Fan'. The alpha parameter (large gap threshold).
     betaFan: float
@@ -63,7 +65,14 @@ class lPCA(GlobalEstimator):
         Only for ver = 'Fan'. Total covariance in non-noise.
     verbose: bool, default=False
     explained_variance: bool, default=False
-        If True, lPCA.fit(X) expects as input a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
+        If True, lPCA.fit(X) expects as input 
+        a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
+    
+    Attributes
+    ----------
+    gaps:
+        Ratio of each PC's explained variance (except the last) 
+        with the following PC's explained variance
     """
 
     def __init__(
@@ -158,40 +167,30 @@ class lPCA(GlobalEstimator):
     def _FO(self, explained_var):
         de = sum(explained_var > (self.alphaFO * explained_var[0]))
         gaps = explained_var[:-1] / explained_var[1:]
+        return de, gaps
 
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
 
     @staticmethod
     def _maxgap(explained_var):
         gaps = explained_var[:-1] / explained_var[1:]
         de = np.nanargmax(gaps) + 1
+        return de, gaps
 
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
 
     def _ratio(self, explained_var):
         sumexp = np.cumsum(explained_var)
         sumexp_norm = sumexp / np.max(sumexp)
         de = sum(sumexp_norm < self.alphaRatio) + 1
         gaps = explained_var[:-1] / explained_var[1:]
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
+        return de, gaps
+
 
     def _participation_ratio(self, explained_var):
         PR = sum(explained_var) ** 2 / sum(explained_var ** 2)
         de = PR
         gaps = explained_var[:-1] / explained_var[1:]
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
+        return de, gaps
+
 
     def _fan(self, explained_var):
         r = np.where(np.cumsum(explained_var) / sum(explained_var) > self.PFan)[0][0]
@@ -208,19 +207,14 @@ class lPCA(GlobalEstimator):
                 )
             )
         )
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
+        return de, gaps
+
 
     def _Kaiser(self, explained_var):
         de = sum(explained_var > np.mean(explained_var))
         gaps = explained_var[:-1] / explained_var[1:]
+        return de, gaps
 
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
 
     @staticmethod
     def _brokenstick_distribution(dim):
@@ -240,10 +234,7 @@ class lPCA(GlobalEstimator):
             if bs[i] > explained_var_norm[i]:
                 de = i + 1
                 break
-        if de - 1 < len(gaps):
-            return de, gaps[de - 1]
-        else:
-            return de, gaps[-1]
+        return de, gaps
 
 
 ##### dev in progress
