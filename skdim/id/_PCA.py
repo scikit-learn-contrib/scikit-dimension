@@ -70,7 +70,7 @@ class lPCA(GlobalEstimator):
     
     Attributes
     ----------
-    gaps:
+    gap_:
         Ratio of each PC's explained variance (except the last) 
         with the following PC's explained variance
     """
