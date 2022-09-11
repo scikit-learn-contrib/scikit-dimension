@@ -211,7 +211,7 @@ class GlobalEstimator(BaseEstimator):
         if smooth:
             self.dimension_pw_smooth_ = np.zeros(len(knnidx))
             for i, point_nn in enumerate(knnidx):
-                self.dimension_pw_smooth_[i] = np.mean(
+                self.dimension_pw_smooth_[i] = np.nanmean(
                     np.append(self.dimension_pw_[i], self.dimension_pw_[point_nn])
                 )
         return self

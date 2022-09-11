@@ -67,3 +67,12 @@ doc/generated/
 
 # PyBuilder
 target/
+.idea/inspectionProfiles/profiles_settings.xml
+.gitignore
+.idea/other.xml
+.gitignore
+.gitignore
+.gitignore
+.idea/modules.xml
+.idea/scikit-dimension.iml
+.idea/vcs.xml
