@@ -273,30 +273,18 @@ class GlobalEstimator(BaseEstimator):
             Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
         """
 
-        X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
-
-        if precomputed_knn is not None:
-            knnidx = precomputed_knn
-        else:
-            _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
-
-        if n_jobs > 1:
-            pool = mp.Pool(n_jobs)
-            results = pool.map(self.fit, [X[i, :] for i in knnidx])
-            pool.close()
-            dimension_pw_ = np.array([r.dimension_ for r in results])
-        else:
-            dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
+        self.fit_pw(
+            X,
+            precomputed_knn=precomputed_knn,
+            smooth=smooth,
+            n_neighbors=n_neighbors,
+            n_jobs=n_jobs,
+        )
 
         if smooth:
-            dimension_pw_smooth_ = np.zeros(len(knnidx))
-            for i, point_nn in enumerate(knnidx):
-                dimension_pw_smooth_[i] = np.mean(
-                    np.append(dimension_pw_[i], dimension_pw_[point_nn])
-                )
-            return dimension_pw_, dimension_pw_smooth_
+            return self.dimension_pw_, self.dimension_pw_smooth_
         else:
-            return dimension_pw_
+            return self.dimension_pw_
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
