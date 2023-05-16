@@ -110,10 +110,11 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
         _, knn = get_nn(data, k=n_neighbors, n_jobs=n_jobs)
 
     if n_jobs > 1:
-        pool = mp.Pool(n_jobs)
-        results = pool.map(class_instance.fit, [data[i, :] for i in knn])
-        pool.close()
-        return np.array([r.dimension_ for r in results])
+        with mp.Pool(n_jobs) as pool:
+            # Asynchronously apply the `fit` function to each data point and collect the results
+            results = [pool.apply_async(class_instance.fit, (X[i, :],)) for i in knn]
+            # Retrieve the computed dimensions
+        return np.array([r.get().dimension_ for r in results])
     else:
         return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
 
@@ -238,10 +239,11 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            pool = mp.Pool(n_jobs)
-            results = pool.map(self.fit, [X[i, :] for i in knnidx])
-            pool.close()
-            self.dimension_pw_ = np.array([r.dimension_ for r in results])
+            with mp.Pool(n_jobs) as pool:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = [pool.apply_async(self.fit, (X[i, :],)) for i in knnidx]
+                # Retrieve the computed dimensions
+                self.dimension_pw_ = np.array([r.get().dimension_ for r in results])
         else:
             self.dimension_pw_ = np.array(
                 [self.fit(X[i, :]).dimension_ for i in knnidx]
@@ -320,10 +322,11 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            pool = mp.Pool(n_jobs)
-            results = pool.map(self.fit, [X[i, :] for i in knnidx])
-            pool.close()
-            dimension_pw_ = np.array([r.dimension_ for r in results])
+            with mp.Pool(n_jobs) as pool:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = [pool.apply_async(self.fit, (X[i, :],)) for i in knnidx]
+                # Retrieve the computed dimensions
+                dimension_pw_ = np.array([r.get().dimension_ for r in results])
         else:
             dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
 
