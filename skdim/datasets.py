@@ -90,7 +90,7 @@ def hyperSphere(n, d, random_state=None):
         Generated data
     """
     random_state = check_random_state(random_state)
-    vec = random_state.randn(n, d)
+    vec = random_state.randn(n, d+1)
     vec /= np.linalg.norm(vec, axis=1)[:, None]
     return vec
 
