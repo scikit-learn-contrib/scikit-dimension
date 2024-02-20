@@ -86,7 +86,7 @@ def efficient_indnComb(n, k, random_generator_):
 
 
 def lens(vectors):
-    return np.sqrt(np.sum(vectors ** 2, axis=1))
+    return np.sqrt(np.sum(vectors**2, axis=1))
 
 
 def proxy(tup):
@@ -102,12 +102,14 @@ def get_nn(X, k, n_jobs=1):
     return dists, inds
 
 
-def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
-    """Use a global estimator as a pointwise one by creating kNN neighborhoods"""
+def asPointwise(X, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
+    """Use a global estimator
+    as a pointwise one by creating kNN neighborhoods
+    """
     if precomputed_knn is not None:
         knn = precomputed_knn
     else:
-        _, knn = get_nn(data, k=n_neighbors, n_jobs=n_jobs)
+        _, knn = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
     if n_jobs > 1:
         with mp.Pool(n_jobs) as pool:
@@ -116,7 +118,7 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
             # Retrieve the computed dimensions
         return np.array([r.get().dimension_ for r in results])
     else:
-        return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
+        return np.array([class_instance.fit(X[i, :]).dimension_ for i in knn])
 
 
 # class DocInheritorBase(type):
@@ -161,12 +163,12 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 
 
 class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw 
-    
+    """Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw
+
     Attributes
     ----------
     dimension_ : {int, float}
-        The estimated intrinsic dimension 
+        The estimated intrinsic dimension
     dimension_pw_ : np.array with dtype {int, float}
         Pointwise ID estimates
     dimension_pw_smooth_ : np.array with dtype float
@@ -179,7 +181,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
 
     def transform(self, X=None):
-        """ Predict dimension after a previous call to self.fit
+        """Predict dimension after a previous call to self.fit
 
         Parameters
         ----------
@@ -222,9 +224,9 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
@@ -258,7 +260,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return self
 
     def transform_pw(self, X=None):
-        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
+        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
         ----------
@@ -302,9 +304,9 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
@@ -342,12 +344,12 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: generic _fit, fit, transform_pw for local ID estimators 
-    
+    """Template base class: generic _fit, fit, transform_pw for local ID estimators
+
     Attributes
     ----------
     dimension_ : {int, float}
-        The estimated intrinsic dimension 
+        The estimated intrinsic dimension
     dimension_pw_ : np.array with dtype {int, float}
         Pointwise ID estimates
     dimension_pw_smooth_ : np.array with dtype float
@@ -362,7 +364,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
     @abstractmethod
     def _fit(self, X, dists=None, knnidx=None):
-        """ Custom method to each local ID estimator, called in fit """
+        """Custom method to each local ID estimator, called in fit"""
         self._my_ID_estimator_func(X, dists, knnidx)
 
     def fit(
@@ -389,9 +391,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_ 
+            smooth_
 
         Returns
         -------
@@ -440,7 +442,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return self
 
     def transform(self, X=None):
-        """ Predict ID after a previous call to self.fit
+        """Predict ID after a previous call to self.fit
 
         Parameters
         ----------
@@ -478,9 +480,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_ 
+            smooth_
 
         Returns
         -------
@@ -498,7 +500,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         ).dimension_
 
     def transform_pw(self, X=None):
-        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
+        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
         ----------
@@ -506,9 +508,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw : np.array
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
+        dimension_pw_smooth : np.array
             If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
         """
 
@@ -543,15 +545,15 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw : np.array
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
+        dimension_pw_smooth : np.array
             If smooth is True, additionally returns smoothed pointwise ID estimates
         """
 
