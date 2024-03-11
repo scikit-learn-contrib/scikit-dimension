@@ -33,11 +33,11 @@ import numpy as np
 import numba as nb
 import itertools
 import numbers
-import multiprocessing as mp
 import warnings
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
+from joblib import delayed, Parallel
 from abc import abstractmethod
 
 
@@ -86,7 +86,7 @@ def efficient_indnComb(n, k, random_generator_):
 
 
 def lens(vectors):
-    return np.sqrt(np.sum(vectors ** 2, axis=1))
+    return np.sqrt(np.sum(vectors**2, axis=1))
 
 
 def proxy(tup):
@@ -102,20 +102,28 @@ def get_nn(X, k, n_jobs=1):
     return dists, inds
 
 
-def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
-    """Use a global estimator as a pointwise one by creating kNN neighborhoods"""
+def asPointwise(X, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs=1):
+    """Use a global estimator
+    as a pointwise one by creating kNN neighborhoods
+    """
     if precomputed_knn is not None:
         knn = precomputed_knn
     else:
-        _, knn = get_nn(data, k=n_neighbors, n_jobs=n_jobs)
+        _, knn = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
     if n_jobs > 1:
-        pool = mp.Pool(n_jobs)
-        results = pool.map(class_instance.fit, [data[i, :] for i in knn])
-        pool.close()
-        return np.array([r.dimension_ for r in results])
+        with Parallel(n_jobs=n_jobs) as parallel:
+            def fit_estimator(class_instance, data_slice):
+                return class_instance.fit(data_slice).dimension_
+            # Asynchronously apply the `fit` function to each data point and collect the results
+            results = parallel(
+                delayed(fit_estimator)(
+                    class_instance, X[i, :]
+                ) for i in knn
+            )
+            return np.array(results)
     else:
-        return np.array([class_instance.fit(data[i, :]).dimension_ for i in knn])
+        return np.array([class_instance.fit(X[i, :]).dimension_ for i in knn])
 
 
 # class DocInheritorBase(type):
@@ -160,12 +168,12 @@ def asPointwise(data, class_instance, precomputed_knn=None, n_neighbors=100, n_j
 
 
 class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw 
-    
+    """Template base class: inherit BaseEstimator, define transform, fit_transform, fit_pw, transform_pw, fit_transform_pw
+
     Attributes
     ----------
     dimension_ : {int, float}
-        The estimated intrinsic dimension 
+        The estimated intrinsic dimension
     dimension_pw_ : np.array with dtype {int, float}
         Pointwise ID estimates
     dimension_pw_smooth_ : np.array with dtype float
@@ -178,7 +186,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
 
     def transform(self, X=None):
-        """ Predict dimension after a previous call to self.fit
+        """Predict dimension after a previous call to self.fit
 
         Parameters
         ----------
@@ -221,9 +229,9 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
@@ -238,10 +246,16 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            pool = mp.Pool(n_jobs)
-            results = pool.map(self.fit, [X[i, :] for i in knnidx])
-            pool.close()
-            self.dimension_pw_ = np.array([r.dimension_ for r in results])
+            def fit_estimator(data_slice):
+                return self.fit(data_slice).dimension_
+            with Parallel(n_jobs=n_jobs) as parallel:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = parallel(
+                    delayed(fit_estimator)(
+                        X[i, :]
+                    ) for i in knnidx
+                )
+            self.dimension_pw_ = np.array(results)
         else:
             self.dimension_pw_ = np.array(
                 [self.fit(X[i, :]).dimension_ for i in knnidx]
@@ -256,7 +270,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return self
 
     def transform_pw(self, X=None):
-        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
+        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
         ----------
@@ -300,9 +314,9 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
@@ -320,10 +334,16 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            pool = mp.Pool(n_jobs)
-            results = pool.map(self.fit, [X[i, :] for i in knnidx])
-            pool.close()
-            dimension_pw_ = np.array([r.dimension_ for r in results])
+            def fit_estimator(data_slice):
+                return self.fit(data_slice).dimension_
+            with Parallel(n_jobs=n_jobs) as parallel:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = parallel(
+                    delayed(fit_estimator)(
+                        X[i, :]
+                    ) for i in knnidx
+                )
+            self.dimension_pw_ = np.array(results)
         else:
             dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
 
@@ -339,12 +359,12 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
-    """ Template base class: generic _fit, fit, transform_pw for local ID estimators 
-    
+    """Template base class: generic _fit, fit, transform_pw for local ID estimators
+
     Attributes
     ----------
     dimension_ : {int, float}
-        The estimated intrinsic dimension 
+        The estimated intrinsic dimension
     dimension_pw_ : np.array with dtype {int, float}
         Pointwise ID estimates
     dimension_pw_smooth_ : np.array with dtype float
@@ -358,9 +378,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return {"_skip_test": "check_methods_subset_invariance"}
 
     @abstractmethod
-    def _fit(self, X, dists=None, knnidx=None):
-        """ Custom method to each local ID estimator, called in fit """
-        self._my_ID_estimator_func(X, dists, knnidx)
+    def _fit(self, X, dists=None, knnidx=None, n_jobs=1):
+        """Custom method to each local ID estimator, called in fit"""
+        self._my_ID_estimator_func(X, dists, knnidx, n_jobs=n_jobs)
 
     def fit(
         self,
@@ -386,9 +406,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_ 
+            smooth_
 
         Returns
         -------
@@ -414,7 +434,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
 
         # fit
-        self._fit(X=X, dists=dists, knnidx=knnidx)
+        self._fit(X=X, dists=dists, knnidx=knnidx, n_jobs=n_jobs)
 
         # combine local estimates
         if comb == "mean":
@@ -437,7 +457,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return self
 
     def transform(self, X=None):
-        """ Predict ID after a previous call to self.fit
+        """Predict ID after a previous call to self.fit
 
         Parameters
         ----------
@@ -475,9 +495,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_ 
+            smooth_
 
         Returns
         -------
@@ -495,7 +515,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         ).dimension_
 
     def transform_pw(self, X=None):
-        """ Return an array of pointwise ID estimates after a previous call to self.fit_pw
+        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
 
         Parameters
         ----------
@@ -503,9 +523,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw : np.array
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
+        dimension_pw_smooth : np.array
             If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
         """
 
@@ -540,15 +560,15 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         n_jobs: int
             Number of processes
         smooth: bool, default = False
-            Additionally computes a smoothed version of pointwise estimates by 
+            Additionally computes a smoothed version of pointwise estimates by
             taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_ 
+           smooth_
 
         Returns
         -------
-        dimension_pw : np.array 
+        dimension_pw : np.array
             Pointwise ID estimates
-        dimension_pw_smooth : np.array 
+        dimension_pw_smooth : np.array
             If smooth is True, additionally returns smoothed pointwise ID estimates
         """
 

@@ -79,8 +79,6 @@ def hyperSphere(n, d, random_state=None):
         Number of data points.
     d: int
         Dimension of the hypersphere
-    center: list, tuple, np.array
-        Center of the hypersphere
     random_state: int, np.random.RandomState instance
         Random number generator
 
@@ -90,7 +88,7 @@ def hyperSphere(n, d, random_state=None):
         Generated data
     """
     random_state = check_random_state(random_state)
-    vec = random_state.randn(n, d)
+    vec = random_state.randn(n, d+1)
     vec /= np.linalg.norm(vec, axis=1)[:, None]
     return vec
 
@@ -136,8 +134,11 @@ def lineDiskBall(n, random_state=None):
 
     Returns
     -------
+    labels: np.array, (npoints x 1)
+        Labels
     data: np.array, (npoints x ndim)
         Generated data
+
     """
 
     random_state = check_random_state(random_state)

@@ -34,6 +34,7 @@ import numpy as np
 import bisect
 from scipy.special import gamma
 from functools import lru_cache
+from joblib import Parallel, delayed
 from .._commonfuncs import (
     lens,
     indComb,
@@ -68,14 +69,26 @@ class ESS(LocalEstimator):
         self.d = d
         self.random_state = random_state
 
-    def _fit(self, X, dists, knnidx):
+    def _fit(self, X, dists, knnidx, n_jobs=1):
         self.random_state_ = check_random_generator(self.random_state)
 
-        self.dimension_pw_, self.essval_ = np.zeros(len(X)), np.zeros(len(X))
-        for i in range(len(X)):
-            self.dimension_pw_[i], self.essval_[i] = self._essLocalDimEst(
-                X[knnidx[i, :]]
-            )
+        if n_jobs > 1:
+            with Parallel(n_jobs=n_jobs) as parallel:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = parallel(
+                    delayed(self._essLocalDimEst)(
+                        X[knnidx[i, :]]
+                    ) for i in range(len(X))
+                )
+            dimension_pw_, essval_ = zip(*results)
+            self.dimension_pw_ = np.array(dimension_pw_)
+            self.essval_ = np.array(essval_)
+        else:
+            self.dimension_pw_, self.essval_ = np.zeros(len(X)), np.zeros(len(X))
+            for i in range(len(X)):
+                self.dimension_pw_[i], self.essval_[i] = self._essLocalDimEst(
+                    X[knnidx[i, :]]
+                )
 
     def fit_once(self, X, y=None):
         """ Fit ESS on a single neighborhood. /!\ Not meant to be used on a complete dataset - X should be a local patch of a dataset, otherwise call .fit()
