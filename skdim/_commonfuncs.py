@@ -38,6 +38,7 @@ import warnings
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
+from joblib import delayed, Parallel
 from abc import abstractmethod
 
 
@@ -112,11 +113,16 @@ def asPointwise(X, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs
         _, knn = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
     if n_jobs > 1:
-        with mp.Pool(n_jobs) as pool:
+        with Parallel(n_jobs=n_jobs) as parallel:
+            def fit_estimator(class_instance, data_slice):
+                return class_instance.fit(data_slice).dimension_
             # Asynchronously apply the `fit` function to each data point and collect the results
-            results = [pool.apply_async(class_instance.fit, (X[i, :],)) for i in knn]
-            # Retrieve the computed dimensions
-        return np.array([r.get().dimension_ for r in results])
+            results = parallel(
+                delayed(fit_estimator)(
+                    class_instance, X[i, :]
+                ) for i in knn
+            )
+            return np.array(results)
     else:
         return np.array([class_instance.fit(X[i, :]).dimension_ for i in knn])
 
