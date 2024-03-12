@@ -341,6 +341,66 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             return dimension_pw_, dimension_pw_smooth_
         else:
             return dimension_pw_
+        
+
+class FlexNbhdEstimator(BaseEstimator):
+
+    @abstractmethod
+    def _fit(self, X, idx):
+        """Custom method to each local ID estimator, called in fit"""
+        self._my_ID_estimator_func(X, idx)
+
+    def fit(
+        self,
+        X,
+        y=None,
+        nbhd_dict=None,
+        smooth=False,
+        nbhd = 'custom',
+        comb="mean",
+        n_jobs=1,
+        eps = None,
+        n_neighbors = None
+        **kwargs,
+    ):
+        if nbhd_dict is None:
+            if nbhd == 'epsilon':
+                #filter eps neighbourhoods
+                nbhd_dict = eps_neigh(X, eps, n_jobs = n_jobs)
+            else:
+                #create knn neighbourhoods
+                nbhd_dict = knn_neigh(X, knn, n_jobs = n_jobs)
+
+        self._fit(X=X, idx=nbhd_dict)
+        self.is_fitted_pw_ = True
+        
+        self.aggr(comb)
+        self.is_fitted_ = True
+
+        if smooth: 
+            self.smooth()
+        
+        self.is_fitted_pw_smooth_ = smooth
+
+        return self
+    
+    def aggr(self, comb):
+        #computes self.dimension_ from self.dimension_pw_
+        return None 
+    def smooth(self):
+        # compute smoothed local estimates
+        self.is_fitted_pw_smooth_ = True
+
+        return None
+    
+    @staticmethod
+    def eps_neigh(X, eps, n_jobs):
+        return nbhd_dict
+    
+    @staticmethod
+    def knn_neigh(X, knn, n_jobs):
+        return nbhd_dict
+
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
@@ -354,6 +414,21 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         Pointwise ID estimates
     dimension_pw_smooth_ : np.array with dtype float
         Smoothed pointwise ID estimates returned if self.fit(smooth=True)
+
+    in fersiwn 2
+        # expand definition of locality: take subset of landmark points at which to evaulate local dim, and associated neighbourhoods, as dict {landmark: neighbourhood}
+        # options to toggle between:
+            # user defined nbhd
+            # k-nn neighbourhoods, as in current version, but with landmarks
+            # epsilon nbhds for landmarks, and maybe some default min epsilon = max_i min_{j \neq i} d(x_i, x_j)
+        # currently fit does the following:
+            # takes in all the data
+            # chops them up into subsets (not necessarily necessary for all local methods)
+            # pass all data, nbhd dists, nbhd indices to _fit
+            # averages out the dimensions
+        # new fit should  
+
+
     """
 
     _N_NEIGHBORS: int = 100  # default neighborhood parameter
