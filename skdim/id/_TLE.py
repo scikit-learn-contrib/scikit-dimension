@@ -32,6 +32,7 @@
 import numpy as np
 from .._commonfuncs import LocalEstimator
 from scipy.spatial.distance import pdist, squareform
+from joblib import Parallel, delayed
 
 
 class TLE(LocalEstimator):
@@ -49,10 +50,21 @@ class TLE(LocalEstimator):
     ):
         self.epsilon = epsilon
 
-    def _fit(self, X, dists, knnidx):
+    def _fit(self, X, dists, knnidx, n_jobs=1):
         self.dimension_pw_ = np.zeros(len(X))
-        for i in range(len(X)):
-            self.dimension_pw_[i] = self._idtle(X[knnidx[i, :]], dists[[i], :])
+        if n_jobs > 1:
+            with Parallel(n_jobs=n_jobs) as parallel:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = parallel(
+                    delayed(self._idtle)(
+                        X[knnidx[i, :]], dists[[i], :]
+                    ) for i in range(len(X))
+                )
+            self.dimension_pw_ = np.array(results)
+        else:
+            self.dimension_pw_ = np.zeros(len(X))
+            for i in range(len(X)):
+                self.dimension_pw_[i] = self._idtle(X[knnidx[i, :]], dists[[i], :])
 
     def _idtle(self, nn, dists):
         # nn - matrix of nearest neighbors (n_neighbors x d), sorted by distance

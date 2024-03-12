@@ -33,11 +33,11 @@ import numpy as np
 import numba as nb
 import itertools
 import numbers
-import multiprocessing as mp
 import warnings
 from sklearn.neighbors import NearestNeighbors
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
+from joblib import delayed, Parallel
 from abc import abstractmethod
 
 
@@ -112,11 +112,16 @@ def asPointwise(X, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs
         _, knn = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
     if n_jobs > 1:
-        with mp.Pool(n_jobs) as pool:
+        with Parallel(n_jobs=n_jobs) as parallel:
+            def fit_estimator(class_instance, data_slice):
+                return class_instance.fit(data_slice).dimension_
             # Asynchronously apply the `fit` function to each data point and collect the results
-            results = [pool.apply_async(class_instance.fit, (X[i, :],)) for i in knn]
-            # Retrieve the computed dimensions
-        return np.array([r.get().dimension_ for r in results])
+            results = parallel(
+                delayed(fit_estimator)(
+                    class_instance, X[i, :]
+                ) for i in knn
+            )
+            return np.array(results)
     else:
         return np.array([class_instance.fit(X[i, :]).dimension_ for i in knn])
 
@@ -241,11 +246,16 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            with mp.Pool(n_jobs) as pool:
+            def fit_estimator(data_slice):
+                return self.fit(data_slice).dimension_
+            with Parallel(n_jobs=n_jobs) as parallel:
                 # Asynchronously apply the `fit` function to each data point and collect the results
-                results = [pool.apply_async(self.fit, (X[i, :],)) for i in knnidx]
-                # Retrieve the computed dimensions
-                self.dimension_pw_ = np.array([r.get().dimension_ for r in results])
+                results = parallel(
+                    delayed(fit_estimator)(
+                        X[i, :]
+                    ) for i in knnidx
+                )
+            self.dimension_pw_ = np.array(results)
         else:
             self.dimension_pw_ = np.array(
                 [self.fit(X[i, :]).dimension_ for i in knnidx]
@@ -324,11 +334,16 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
-            with mp.Pool(n_jobs) as pool:
+            def fit_estimator(data_slice):
+                return self.fit(data_slice).dimension_
+            with Parallel(n_jobs=n_jobs) as parallel:
                 # Asynchronously apply the `fit` function to each data point and collect the results
-                results = [pool.apply_async(self.fit, (X[i, :],)) for i in knnidx]
-                # Retrieve the computed dimensions
-                dimension_pw_ = np.array([r.get().dimension_ for r in results])
+                results = parallel(
+                    delayed(fit_estimator)(
+                        X[i, :]
+                    ) for i in knnidx
+                )
+            self.dimension_pw_ = np.array(results)
         else:
             dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
 
@@ -438,9 +453,9 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return {"_skip_test": "check_methods_subset_invariance"}
 
     @abstractmethod
-    def _fit(self, X, dists=None, knnidx=None):
+    def _fit(self, X, dists=None, knnidx=None, n_jobs=1):
         """Custom method to each local ID estimator, called in fit"""
-        self._my_ID_estimator_func(X, dists, knnidx)
+        self._my_ID_estimator_func(X, dists, knnidx, n_jobs=n_jobs)
 
     def fit(
         self,
@@ -494,7 +509,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
 
         # fit
-        self._fit(X=X, dists=dists, knnidx=knnidx)
+        self._fit(X=X, dists=dists, knnidx=knnidx, n_jobs=n_jobs)
 
         # combine local estimates
         if comb == "mean":
