@@ -34,12 +34,14 @@ import numba as nb
 import itertools
 import numbers
 import warnings
+from scipy.sparse import coo_array
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
 from joblib import delayed, Parallel
 from abc import abstractmethod
-
+from itertools import chain
 
 def indComb(NN):
     pt1 = np.tile(range(NN), NN)
@@ -391,9 +393,12 @@ class FlexNbhdEstimator(BaseEstimator):
             # averages out the dimensions
     '''
     @abstractmethod
-    def _fit(self, X, idx):
-        """Custom method to each local ID estimator, called in fit"""
-        self._my_ID_estimator_func(X, idx) 
+    def _fit(self, X, nbhd_dict, sparse_dist):
+        """
+        Custom method to each local ID estimator, called in fit
+        dist: coo 
+        """
+        self._my_ID_estimator_func(X, nbhd_dict, sparse_dist) 
 
     def fit(
         self,
@@ -409,15 +414,22 @@ class FlexNbhdEstimator(BaseEstimator):
         n_neighbors = None,
         **kwargs,
     ):
+        if not distance_matrix:
+            D = pairwise_distances(X, metric='sqeuclidean')
+        else:
+            D = X #to do: add array dimension check.
+
         if nbhd_dict is None:
             if nbhd == 'epsilon':
                 #filter eps neighbourhoods
-                nbhd_dict = eps_neigh(X, eps, n_jobs = n_jobs)
+                nbhd_dict = eps_neigh(D, eps) #nbhd dict, sparse restricted distance matrix
             else:
                 #create knn neighbourhoods
-                nbhd_dict = knn_neigh(X, knn, n_jobs = n_jobs)
+                nbhd_dict = knn_neigh(D, eps, n_jobs = n_jobs)
 
-        self._fit(X=X, idx=nbhd_dict)
+        D_sparse = dmat_sparse(D, nbhd_dict) #scipy coo sparse matrix retaining distance between points contained the same neighbourhood 
+
+        self._fit(X=X, nbhd_dict=nbhd_dict, sparse_dist=D_sparse)
         self.is_fitted_pw_ = True
         
         self.aggr(comb)
@@ -440,11 +452,74 @@ class FlexNbhdEstimator(BaseEstimator):
         return None
     
     @staticmethod
-    def eps_neigh(X, eps, n_jobs):
+
+    def eps_neigh(D, eps):
+        '''
+        D: np.array(n_samples, n_samples)
+        eps: epsilon nbhd threshold
+        distance_matrix: if true, then X a (n_samples x n_samples) distance matrix. Only take upper diagonal entries
+        sparse_dist: if true, also return a sparse upper diagonal matrix recording distance pairs if pair in the same neighbourhood
+        '''
+        # to do: add parallelisation?
+
+        ud_idx = np.triu_indices(D.shape[0], k=1)
+        flat_D = D[ud_idx] #flattened one dim array of eps
+        min_eps = np.min(flat_D) #take min nn distance 
+        eps = min(eps, min_eps)
+        pair_idx = np.flatnonzero(flat_D < eps) 
+
+        nbhd_dict = dict()
+        for idx in pair_idx:
+
+            u,v = ud_idx[0][idx], ud_idx[1][idx] #get 
+
+            if u not in nbhd_dict:
+                nbhd_dict[u] = [v]
+            else:
+                nbhd_dict[u].append(v)
+
+            if v not in nbhd_dict:
+                nbhd_dict[v] = [u]
+            else:
+                nbhd_dict[v].append(u)
+
         return nbhd_dict
     
     @staticmethod
     def knn_neigh(X, knn, n_jobs):
+        return nbhd_dict
+    
+
+    @staticmethod
+    def dmat_sparse(D, nbhd_dict):
+        relevant_entries = dmat_relevant_entries(nbhd_dict)
+        D_sparse = coo_array((np.array(D[pair] for pair in relevant_entries), # distance entries
+                                ([p[0] for p in relevant_entries], # row entries
+                                [p[1] for p in relevant_entries])), # column entries
+                                shape = (D.shape[0], D.shape[0]))
+        return D_sparse
+        
+
+    @staticmethod
+    def dmat_relevant_entries(nbhd_dict):
+        '''
+        nbhd_dict: {landmark: neighbours}
+        return: list pairs [(i,j)] of distinct points, where (i,j) either landmark neighbour, or pairs of neighbours of the same landmark
+        '''
+        relevant_entries = []
+        for u in nbhd_dict:
+            one_neigh = [(u,n) for n in nbhd_dict[u] if n > u]
+            second_neigh = chain([[v for v in nbhd_dict[n] if v > u and v not in nbhd_dict[u]] for n in nbhd_dict[u]]) #search other points its in the same neighbourhood with, upper diag only
+            second_neigh = list(set(second_neigh)) #avoid double counting
+            second_neigh = [(u,v) for v in second_neigh]
+            neigh = one_neigh + second_neigh
+            relevant_entries.extend(neigh)
+        return relevant_entries
+
+                
+
+
+
         return nbhd_dict
     
     def transform(self, X=None):
