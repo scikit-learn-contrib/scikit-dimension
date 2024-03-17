@@ -360,6 +360,22 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
 class FlexNbhdEstimator(BaseEstimator):
     '''
+        Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
+
+        Parameters
+        ----------
+        X: np.array (n_samples x n_neighbors)
+            Dataset to fit
+        nbhd_dict: dict(landmark: list of nbhd indices)
+        
+
+        Returns
+        -------
+        dimension_pw : np.array
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array
+            If smooth is True, additionally returns smoothed pointwise ID estimates
+        
     Also: add a distance matrix option
     in fersiwn 2
         # expand definition of locality: take subset of landmark points at which to evaulate local dim, and associated neighbourhoods, as dict {landmark: neighbourhood}
@@ -377,7 +393,7 @@ class FlexNbhdEstimator(BaseEstimator):
     @abstractmethod
     def _fit(self, X, idx):
         """Custom method to each local ID estimator, called in fit"""
-        self._my_ID_estimator_func(X, idx)
+        self._my_ID_estimator_func(X, idx) 
 
     def fit(
         self,
@@ -430,6 +446,113 @@ class FlexNbhdEstimator(BaseEstimator):
     @staticmethod
     def knn_neigh(X, knn, n_jobs):
         return nbhd_dict
+    
+    def transform(self, X=None):
+        """Predict ID after a previous call to self.fit
+
+        Parameters
+        ----------
+        X : Dummy parameter
+
+        Returns
+        -------
+        dimension_ : {int, float}
+            The estimated ID
+        """
+        check_is_fitted(self, "is_fitted_")
+        return self.dimension_
+
+    def fit_transform(
+        self,
+        X,
+        y=None,
+        nbhd_dict=None,
+        smooth=False,
+        nbhd = 'custom',
+        distance_matrix = False,
+        comb="mean",
+        n_jobs=1,
+        eps = None,
+        n_neighbors = None,
+        **kwargs,
+    ):
+
+        return self.fit(
+            X,
+            y=None,
+            nbhd_dict=nbhd_dict,
+            smooth=smooth,
+            nbhd =nbhd,
+            distance_matrix = distance_matrix,
+            comb= comb,
+            n_jobs= n_jobs,
+            eps = eps,
+            n_neighbors = n_neighbors,
+            **kwargs,
+        ).dimension_
+
+    def transform_pw(self, X=None):
+        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
+
+        Parameters
+        ----------
+        X : Dummy parameter
+
+        Returns
+        -------
+        dimension_pw : np.array
+            Pointwise ID estimates
+        dimension_pw_smooth : np.array
+            If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
+        """
+
+        check_is_fitted(
+            self,
+            "dimension_pw_",
+            msg=(
+                "This class instance is not fitted yet. Call 'fit_pw' with "
+                "appropriate arguments before using this method."
+            ),
+        )
+
+        if hasattr(self, "dimension_pw_smooth_"):
+            return self.dimension_pw_, self.dimension_pw_smooth_
+        else:
+            return self.dimension_pw_
+
+    def fit_transform_pw(
+        self,
+        X,
+        y=None,
+        nbhd_dict=None,
+        smooth=False,
+        nbhd = 'custom',
+        distance_matrix = False,
+        comb="mean",
+        n_jobs=1,
+        eps = None,
+        n_neighbors = None,
+        **kwargs):
+
+        self.fit(
+            X,
+            y=None,
+            nbhd_dict=nbhd_dict,
+            smooth=smooth,
+            nbhd =nbhd,
+            distance_matrix = distance_matrix,
+            comb= comb,
+            n_jobs= n_jobs,
+            eps = eps,
+            n_neighbors = n_neighbors,
+            **kwargs,
+        )
+
+        if smooth:
+            return self.dimension_pw_, self.dimension_pw_smooth_
+        else:
+            return self.dimension_pw_
+
 
 
 
