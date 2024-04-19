@@ -443,7 +443,8 @@ class FlexNbhdEstimator(BaseEstimator):
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
         metric: defaults to standard euclidean metric (minkowski with p = 2); if X a distance matrix, then set to 'precomputed'
-
+        kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
+        
         Returns:
 
         nbhd_dict: dictionary {point_index: list of neighbour point indices}
