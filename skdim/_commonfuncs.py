@@ -444,7 +444,7 @@ class FlexNbhdEstimator(BaseEstimator):
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
         metric: defaults to standard euclidean metric (minkowski with p = 2); if X a distance matrix, then set to 'precomputed'
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
-        
+
         Returns:
 
         nbhd_dict: dictionary {point_index: list of neighbour point indices}
@@ -497,32 +497,31 @@ class FlexNbhdEstimator(BaseEstimator):
         
         return None
     
-
-    @staticmethod
-    def dmat_sparse(self, D, nbhd_dict):
-        relevant_entries = self.dmat_relevant_entries(nbhd_dict)
-        D_sparse = coo_array((np.array(D[pair] for pair in relevant_entries), # distance entries
-                                ([p[0] for p in relevant_entries], # row entries
-                                [p[1] for p in relevant_entries])), # column entries
-                                shape = (D.shape[0], D.shape[0]))
-        return D_sparse
+    # @staticmethod
+    # def dmat_sparse(self, D, nbhd_dict):
+    #     relevant_entries = self.dmat_relevant_entries(nbhd_dict)
+    #     D_sparse = coo_array((np.array(D[pair] for pair in relevant_entries), # distance entries
+    #                             ([p[0] for p in relevant_entries], # row entries
+    #                             [p[1] for p in relevant_entries])), # column entries
+    #                             shape = (D.shape[0], D.shape[0]))
+    #     return D_sparse
         
 
-    @staticmethod
-    def dmat_relevant_entries(nbhd_dict):
-        '''
-        nbhd_dict: {landmark: neighbours}
-        return: list pairs [(i,j)] of distinct points, where (i,j) either landmark neighbour, or pairs of neighbours of the same landmark
-        '''
-        relevant_entries = []
-        for u in nbhd_dict:
-            one_neigh = [(u,n) for n in nbhd_dict[u] if n > u]
-            second_neigh = chain([[v for v in nbhd_dict[n] if v > u and v not in nbhd_dict[u]] for n in nbhd_dict[u]]) #search other points its in the same neighbourhood with, upper diag only
-            second_neigh = list(set(second_neigh)) #avoid double counting
-            second_neigh = [(u,v) for v in second_neigh]
-            neigh = one_neigh + second_neigh
-            relevant_entries.extend(neigh)
-        return relevant_entries
+    # @staticmethod
+    # def dmat_relevant_entries(nbhd_dict):
+    #     '''
+    #     nbhd_dict: {landmark: neighbours}
+    #     return: list pairs [(i,j)] of distinct points, where (i,j) either landmark neighbour, or pairs of neighbours of the same landmark
+    #     '''
+    #     relevant_entries = []
+    #     for u in nbhd_dict:
+    #         one_neigh = [(u,n) for n in nbhd_dict[u] if n > u]
+    #         second_neigh = chain([[v for v in nbhd_dict[n] if v > u and v not in nbhd_dict[u]] for n in nbhd_dict[u]]) #search other points its in the same neighbourhood with, upper diag only
+    #         second_neigh = list(set(second_neigh)) #avoid double counting
+    #         second_neigh = [(u,v) for v in second_neigh]
+    #         neigh = one_neigh + second_neigh
+    #         relevant_entries.extend(neigh)
+    #     return relevant_entries
 
     
     def transform(self, X=None):
@@ -545,27 +544,23 @@ class FlexNbhdEstimator(BaseEstimator):
         X,
         y=None,
         nbhd_dict=None,
-        smooth=False,
-        nbhd = 'custom',
-        distance_matrix = False,
+        nbhd_type = 'knn',
+        metric = 'minkowski',
         comb="mean",
+        smooth=False,
         n_jobs=1,
-        eps = None,
-        n_neighbors = None,
-        **kwargs,
+        **kwargs
     ):
 
         return self.fit(
             X,
             y=None,
             nbhd_dict=nbhd_dict,
+            nbhd_type = nbhd_type,
+            metric = metric,
+            comb=comb,
             smooth=smooth,
-            nbhd =nbhd,
-            distance_matrix = distance_matrix,
-            comb= comb,
-            n_jobs= n_jobs,
-            eps = eps,
-            n_neighbors = n_neighbors,
+            n_jobs=n_jobs,
             **kwargs,
         ).dimension_
 
@@ -603,31 +598,27 @@ class FlexNbhdEstimator(BaseEstimator):
         X,
         y=None,
         nbhd_dict=None,
-        smooth=False,
-        nbhd = 'custom',
-        distance_matrix = False,
+        nbhd_type = 'knn',
+        metric = 'minkowski',
         comb="mean",
+        smooth=False,
         n_jobs=1,
-        eps = None,
-        n_neighbors = None,
         **kwargs):
 
         self.fit(
             X,
             y=None,
             nbhd_dict=nbhd_dict,
+            nbhd_type = nbhd_type,
+            metric = metric,
+            comb=comb,
             smooth=smooth,
-            nbhd =nbhd,
-            distance_matrix = distance_matrix,
-            comb= comb,
-            n_jobs= n_jobs,
-            eps = eps,
-            n_neighbors = n_neighbors,
+            n_jobs=n_jobs,
             **kwargs,
         )
 
         if smooth:
-            return self.dimension_pw_, self.dimension_pw_smooth_
+            return self.dimension_pw_ , self.dimension_pw_smooth_
         else:
             return self.dimension_pw_
 
