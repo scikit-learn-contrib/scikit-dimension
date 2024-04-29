@@ -393,7 +393,7 @@ class FlexNbhdEstimator(BaseEstimator):
             # averages out the dimensions
     '''
     @abstractmethod
-    def _fit(self, X, nbhd_dict):
+    def _fit(self, X, nbhd_dict, metric):
         """
         Custom method to each local ID estimator, called in fit
         
@@ -428,7 +428,7 @@ class FlexNbhdEstimator(BaseEstimator):
         if nbhd_dict is None:
             nbhd_dict = self.get_neigh(X, nbhd_type = nbhd_type, metric = metric, n_jobs=n_jobs, **kwargs)
         
-        self._fit(X=X, nbhd_dict=nbhd_dict)
+        self._fit(X=X, nbhd_dict=nbhd_dict, metric)
         
         self.aggr(comb)
         if smooth: self.smooth(nbhd_dict, comb)
@@ -448,7 +448,6 @@ class FlexNbhdEstimator(BaseEstimator):
         Returns:
 
         nbhd_dict: dictionary {point_index: list of neighbour point indices}
-        dist: ndarray of shape (n_samples,) of arrays recording distance from point to neighbours          
         """
         neigh = NearestNeighbors(metric = metric, n_jobs = n_jobs, return_distance = False, **kwargs)
         neigh.fit(X)
