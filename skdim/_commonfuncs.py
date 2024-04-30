@@ -378,22 +378,10 @@ class FlexNbhdEstimator(BaseEstimator):
         dimension_pw_smooth : np.array
             If smooth is True, additionally returns smoothed pointwise ID estimates
         
-    Also: add a distance matrix option
-    in fersiwn 2
-        # expand definition of locality: take subset of landmark points at which to evaulate local dim, and associated neighbourhoods, as dict {landmark: neighbourhood}
-        # options to toggle between:
-            # user defined nbhd
-            # k-nn neighbourhoods, as in current version, but with landmarks
-            # epsilon nbhds for landmarks, and maybe some default min epsilon = max_i min_{j \neq i} d(x_i, x_j)
-        # fit should do the following:
-            # takes in all the data
-            # chops them up into subsets (not necessarily necessary for all local methods)
-            # pass all data, nbhd dists, nbhd indices to _fit
-            # local smoothing
-            # averages out the dimensions
-    '''
+   '''
+    
     @abstractmethod
-    def _fit(self, X, nbhd_dict):
+    def _fit(self, X, nbhd_dict, **kwargs):
         """
         Custom method to each local ID estimator, called in fit
         
@@ -408,7 +396,7 @@ class FlexNbhdEstimator(BaseEstimator):
         y=None,
         nbhd_dict=None,
         nbhd_type = 'knn',
-        metric = 'minkowski',
+        metric = 'euclidean',
         comb="mean",
         smooth=False,
         n_jobs=1,
@@ -427,8 +415,9 @@ class FlexNbhdEstimator(BaseEstimator):
         '''
         if nbhd_dict is None:
             nbhd_dict = self.get_neigh(X, nbhd_type = nbhd_type, metric = metric, n_jobs=n_jobs, **kwargs)
-        
-        self._fit(X=X, nbhd_dict=nbhd_dict)
+            #if nbhd_type is None:
+            #    nbhd_type = 'knn'
+        self._fit(X=X, nbhd_dict=nbhd_dict, nbhd_type=nbhd_type, **kwargs )
         
         self.aggr(comb)
         if smooth: self.smooth(nbhd_dict, comb)
@@ -468,9 +457,9 @@ class FlexNbhdEstimator(BaseEstimator):
                 raise ValueError("Invalid comb parameter. It has to be 'mean' or 'median'")
             else:
                 if comb == "mean":
-                    self.dimension_ = np.mean(self.dimension_pw_)
+                    self.dimension_ = np.mean(self.dimension_pw_.values())
                 elif comb == "median":
-                    self.dimension_ = np.median(self.dimension_pw_)  
+                    self.dimension_ = np.median(self.dimension_pw_.values())  
                       
                 self.is_fitted_ = True
         else:
