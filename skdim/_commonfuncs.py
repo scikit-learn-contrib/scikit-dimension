@@ -386,7 +386,7 @@ class FlexNbhdEstimator(BaseEstimator):
         Custom method to each local ID estimator, called in fit
         
         """
-        self._my_ID_estimator_func(X, nbhd_dict) 
+        self._my_ID_estimator_func(X, nbhd_dict, **kwargs) 
         self.is_fitted_pw_ = True
 
 
