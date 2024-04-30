@@ -36,6 +36,7 @@ import numbers
 import warnings
 from scipy.sparse import coo_array
 from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics import DistanceMetric
 from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
@@ -420,7 +421,8 @@ class FlexNbhdEstimator(BaseEstimator):
             # or in the eps case, a list of numpy arrays
         else:
             radial_dists = None
-        self._fit(X=X, nbhd_indices=nbhd_indices, nbhd_type=nbhd_type, metric = metric, radial_dists = radial_dists, **kwargs )
+        
+        self._fit(X=X, nbhd_indices=nbhd_indices, nbhd_type=nbhd_type, metric = metric, radial_dists = radial_dists,  **kwargs )
         
         self.aggr(comb)
         if smooth: self.smooth(nbhd_indices, comb)
@@ -428,7 +430,7 @@ class FlexNbhdEstimator(BaseEstimator):
         return self
     
     @staticmethod
-    def get_neigh(X, nbhd_type = 'knn', metric = 'euclidean', n_jobs=1, **kwargs):
+    def get_neigh(X, nbhd_type = 'knn', metric = 'euclidean', n_jobs=1, **kwargs): 
         """
         Parameters:
 
