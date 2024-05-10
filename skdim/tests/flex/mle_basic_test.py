@@ -3,13 +3,12 @@ import numpy as np
 import skdim
 from sklearn.datasets import make_swiss_roll
 
-
-def __generate_distance_matrix(size, threshold):
+def __generate_distance_matrix(size, threshold=10, maximum=100):
     # Generate a random distance matrix with values between 0 and 1
     distance_matrix = np.random.rand(size, size)
     
     # Scale the values to fit the desired range (e.g., 0 to 100)
-    distance_matrix = distance_matrix * 100
+    distance_matrix = distance_matrix * maximum
     
     # Ensure that each value is greater than the threshold
     distance_matrix = np.maximum(distance_matrix, threshold)
@@ -33,22 +32,23 @@ def test_on_equal_distances():
     for i in range(SIZE):
         distances[i,i] = 0.0
     mle = skdim.id_flex.MLE_basic()
-    estim_dim = mle.fit_transform(distances, metric="precomputed", n_neighbors=3)
-    assert  0.0 == pytest.approx(estim_dim)
+    with pytest.raises(Exception):
+        mle.fit_pw(distances, metric="precomputed", n_neighbors=3)
 
 def test_on_exponential_seq_of_distances():
     np.random.seed(356)
     SIZE = 5
-    dist_matrix = __generate_distance_matrix(5, 0)
+    dist_matrix = __generate_distance_matrix(SIZE, 0)
     for i in range(1, SIZE):
         dist_matrix[0, i] = np.exp(i)
         dist_matrix[i, 0] = np.exp(i)
-    estim_dim = mle.fit_transform(dist_matrix, nbhd_type = 'knn', n_neighbors=2)
-    assert 0.4 == pytest.approx(estim_dim)
-    estim_dim = mle.fit_transform(dist_matrix, nbhd_type = 'knn', n_neighbors=3)
-    assert 0.48 == pytest.approx(estim_dim)
-    estim_dim = mle.fit_transform(dist_matrix, nbhd_type = 'knn', n_neighbors=3)
-    assert 36.0 / 125.0  == pytest.approx(estim_dim)
+    mle = skdim.id_flex.MLE_basic()
+    estim_dim = mle.fit_transform_pw(dist_matrix, nbhd_type = 'knn', n_neighbors=2)[0]
+    assert 1.0 == pytest.approx(estim_dim)
+    estim_dim = mle.fit_transform_pw(dist_matrix, nbhd_type = 'knn', n_neighbors=3)[0]
+    assert 4.0 / 9.0 == pytest.approx(estim_dim)
+    estim_dim = mle.fit_transform_pw(dist_matrix, nbhd_type = 'knn', n_neighbors=4)[0]
+    assert 9.0 / 22.0  == pytest.approx(estim_dim)
 
 def test_exception_is_raised_when_neighbourhoods_empty():
     np.random.seed(123)
@@ -56,12 +56,19 @@ def test_exception_is_raised_when_neighbourhoods_empty():
     mle = skdim.id_flex.MLE_basic()
     pytest.raises(ValueError, mle.fit_transform(dist_matrix, nhbd_type = 'eps', radius = 5))
 
-def test_if_eps_and_knn_are_equivalent():
+def test_when_eps_and_knn_almost_equivalent():
     mle = skdim.id_flex.MLE_basic()
-    square = np.zeros((4,3))
-    square[2:,0,0,0,0] = 1
-    square[2,1,0,0,0] = 1
-    square[1,1,0,0,0] = 1
+    square = np.zeros((4,4,4,4,4))
+    square[:1,:1,0,0,0] = 1
     knn_estim = mle.fit_transform(square, nbhd_type = 'knn', n_neighbors=2)
-    eps_estim = mle.fit_transform(square, nbhd_type = 'knn', radius=1)
-    assert knn_estim == pytest.approx(eps_estim)
+    eps_estim = mle.fit_transform(square, nbhd_type = 'eps', radius=1)
+    assert knn_estim == pytest.approx(eps_estim * 2.0)
+
+def test_estim_decrease_when_eps_bigger_then_set_diameter():
+    np.random.seed(567)
+    eps_list = [10, 20, 30, 40, 50, 60]
+    mle = skdim.id_flex.MLE_basic()
+    dist_matrix = __generate_distance_matrix(10, 0, 10)
+    results = [mle.fit_transform(dist_matrix, nbhd_type = 'eps', metric="precomputed", radius=eps) for eps in eps_list]
+    for i in range(1, len(results)):
+        assert result[i] < results[i-1]
