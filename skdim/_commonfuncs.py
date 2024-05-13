@@ -428,7 +428,7 @@ class FlexNbhdEstimator(BaseEstimator):
         if nbhd_dict is None:
             nbhd_dict = self.get_neigh(X, nbhd_type = nbhd_type, metric = metric, n_jobs=n_jobs, **kwargs)
         
-        self._fit(X=X, nbhd_dict=nbhd_dict, metric)
+        self._fit(X=X, nbhd_dict=nbhd_dict, metric=metric)
         
         self.aggr(comb)
         if smooth: self.smooth(nbhd_dict, comb)
