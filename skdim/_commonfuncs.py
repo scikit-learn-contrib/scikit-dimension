@@ -388,7 +388,6 @@ class FlexNbhdEstimator(BaseEstimator):
         
         """
         self._my_ID_estimator_func(X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs) 
-        self.is_fitted_pw_ = True
 
 
     def fit(
@@ -414,6 +413,33 @@ class FlexNbhdEstimator(BaseEstimator):
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
         '''
+        self.fit_pw(X,y = None, nbhd_indices=nbhd_indices, nbhd_type = nbhd_type, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, **kwargs)
+        self.aggr(comb)
+
+        return self
+    
+    def fit_pw(self,
+        X,
+        y = None,
+        nbhd_indices=None,
+        nbhd_type = 'knn',
+        metric = 'euclidean',
+        comb="mean",
+        smooth=False,
+        n_jobs=1,
+        **kwargs
+    ):
+        '''
+        Parameters
+        X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
+        nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
+        metric: defaults to standard euclidean metric; if X a distance matrix, then set to 'precomputed'
+        comb: method of averaging either 'mean' or 'median'
+        smooth: if true, average over dimension estimates of local neighbourhoods using comb
+        n_jobs: number of parallel processes in inferring local neighbourhood
+        kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
+
+        '''
         if nbhd_indices is None:
             nbhd_indices, radial_dists = self.get_neigh(X, nbhd_type = nbhd_type, metric = metric, n_jobs=n_jobs, **kwargs)
             #N.B. if use native sklearn NearestNeighbors, nbhd_indices is either 
@@ -422,12 +448,12 @@ class FlexNbhdEstimator(BaseEstimator):
         else:
             radial_dists = None
         
-        self._fit(X=X, nbhd_indices=nbhd_indices, nbhd_type=nbhd_type, metric = metric, radial_dists = radial_dists,  **kwargs )
+        self._fit(X=X, nbhd_indices=nbhd_indices, nbhd_type=nbhd_type, metric = metric, radial_dists = radial_dists,  **kwargs)
+        self.is_fitted_pw_ = True
         
-        self.aggr(comb)
         if smooth: self.smooth(nbhd_indices, comb)
-
         return self
+
     
     @staticmethod
     def get_neigh(X, nbhd_type = 'knn', metric = 'euclidean', n_jobs=1, **kwargs): 
