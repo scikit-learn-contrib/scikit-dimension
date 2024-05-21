@@ -28,7 +28,6 @@ class MLE_basic(FlexNbhdEstimator):
             eps = None
         
         self.dimension_pw_ = np.array([self._mle_formula(dlist, nbhd_type, eps) for dlist in radial_dists])
-        self.is_fitted_pw_ = True
         
     @staticmethod
     def _mle_formula(dlist, nbhd_type, eps):
