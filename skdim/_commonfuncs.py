@@ -382,6 +382,7 @@ class FlexNbhdEstimator(BaseEstimator):
    '''
     
     @abstractmethod
+
     def _fit(self, X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs):
         """
         Custom method to each local ID estimator, called in fit
@@ -413,6 +414,7 @@ class FlexNbhdEstimator(BaseEstimator):
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
         '''
+
         self.fit_pw(X,y = None, nbhd_indices=nbhd_indices, nbhd_type = nbhd_type, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, **kwargs)
         self.aggr(comb)
 
@@ -469,6 +471,7 @@ class FlexNbhdEstimator(BaseEstimator):
 
         nbhd_indices: dictionary {point_index: list of neighbour point indices}
         dist: ndarray of shape (n_samples,) of arrays recording distance from point to neighbours          
+        
         """
         neigh = NearestNeighbors(metric = metric, n_jobs = n_jobs, **kwargs)
         neigh.fit(X)

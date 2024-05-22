@@ -145,6 +145,11 @@ def test_mle_params(data):
     x = skdim.id.MLE(K=10, neighborhood_based=False).fit(data)
 
 
+def test_flex_mle_params(data):
+    x = skdim.id_flex.MLE_basic().fit(data)
+    x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
+
+
 def test_twonn_params(data):
     # to trigger the "n_features>25 condition"
     test_high_dim = np.zeros((len(data), 30))
