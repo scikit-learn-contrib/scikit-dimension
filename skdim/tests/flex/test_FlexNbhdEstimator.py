@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-import skdim
+import skdim.id_flex
 from inspect import getmembers, isclass
 
 estimators = [o[1] for o in getmembers(skdim.id_flex) if isclass(o[1])]
@@ -67,7 +67,7 @@ def test_fit_single_job_equal_to_fit(estim_class, data):
     estimator_single.fit(data)
     estimator_multi = estim_class()
     estimator_multi.fit(data, n_jobs=4)
-    assert pytest.approx(estimator.dimension_, estimator_single.dimension_)
+    assert pytest.approx(estimator_single.dimension_) == pytest.approx(estimator_multi.dimension_)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_pw_single_job_equal_to_fit_pw(estim_class, data):
@@ -82,4 +82,4 @@ def test_fit_transform_pw_is_fit_pw_plus_transform_pw(estim_class, data):
     estimator = estim_class()
     estimator.fit_pw(data)
     second_estimator = estim_class()
-    assert np.allclose(second_estimator.fit_transform_pw(X), estimator.transform_pw())
+    assert np.allclose(second_estimator.fit_transform_pw(data), estimator.transform_pw(data))

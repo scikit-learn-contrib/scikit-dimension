@@ -24,9 +24,11 @@ class MLE_basic(FlexNbhdEstimator):
                 eps = kwargs['eps']
             else:
                 eps = 1.0 #default sklearn
-        else: #knn
+        elif nbhd_type == 'knn':
             eps = None
-        
+        else:
+            raise ValueError('Neighbourhood type should either be knn or eps.')
+
         self.dimension_pw_ = np.array([self._mle_formula(dlist, nbhd_type, eps) for dlist in radial_dists])
         
     @staticmethod
@@ -34,18 +36,22 @@ class MLE_basic(FlexNbhdEstimator):
 
         N = len(dlist)
         
-        if nbhd_type == 'knn':
-            eps = np.max(dlist)
-        
-        minv = N*np.log(eps) - np.sum(np.log(dlist))
+        if N > 0:
+            if nbhd_type != 'eps': # defaults to knn
+                eps = np.max(dlist)
+            
+            minv = N*np.log(eps)-np.sum(np.log(dlist))
 
-        if minv < 1e-9:
-            return np.nan
+            if minv < 1e-9:
+                return np.nan
+            else:
+                if nbhd_type == 'eps':
+                    return np.divide(N, minv)
+                else: #knn
+                    return np.divide(N-1,minv)
         else:
-            if nbhd_type == 'knn': 
-                return np.divide(N-1,minv)
-            else: #eps
-                return np.divide(N, minv)
+            return np.nan
+                
 
 
         

@@ -414,7 +414,7 @@ class FlexNbhdEstimator(BaseEstimator):
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
         '''
-
+        
         self.fit_pw(X,y = None, nbhd_indices=nbhd_indices, nbhd_type = nbhd_type, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, **kwargs)
         self.aggr(comb)
 
@@ -463,7 +463,7 @@ class FlexNbhdEstimator(BaseEstimator):
         Parameters:
 
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
-        nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
+        nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour); defaults to 'knn' if other options inputted
         metric: defaults to standard euclidean metric; if X a distance matrix, then set to 'precomputed'
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
@@ -476,18 +476,23 @@ class FlexNbhdEstimator(BaseEstimator):
         neigh = NearestNeighbors(metric = metric, n_jobs = n_jobs, **kwargs)
         neigh.fit(X)
 
-        if nbhd_type == 'knn':
-            indices, radial_dist = neigh.kneighbors(return_distance = True) # Find k-nearest neighbors of each data sample
-        elif nbhd_type == 'eps':
+        if nbhd_type == 'eps':
             indices, radial_dist = neigh.radius_neighbors(return_distance=True) # Find eps-nearest neighbors of each data sample
+        elif nbhd_type == 'knn':
+            indices, radial_dist = neigh.kneighbors(return_distance = True) # Find k-nearest neighbors of each data sample
+        else:
+            raise ValueError('Neighbourhood type should either be knn or eps')
         
         #nbhd_indices = {i: list(indices[i]) for i in range(X.shape[0])} # Convert indices (either array of lists or n x k array) to dict
+
+        if nbhd_type == 'eps' and (sum(len(a) for a in indices)  == 0):
+            raise ValueError('Epsilon too large, neighbourhood empty')
 
         return indices, radial_dist
     
     def aggr(self, comb = 'mean'):
         #computes self.dimension_ from self.dimension_pw_
-        if self.is_fitted_pw:
+        if self.is_fitted_pw_:
             if comb not in ['mean', 'median']:
                 raise ValueError("Invalid comb parameter. It has to be 'mean' or 'median'")
             else:
@@ -527,32 +532,6 @@ class FlexNbhdEstimator(BaseEstimator):
             raise ValueError("No pointwise dimension fitted.")
         
         return None
-    
-    # @staticmethod
-    # def dmat_sparse(self, D, nbhd_indices):
-    #     relevant_entries = self.dmat_relevant_entries(nbhd_indices)
-    #     D_sparse = coo_array((np.array(D[pair] for pair in relevant_entries), # distance entries
-    #                             ([p[0] for p in relevant_entries], # row entries
-    #                             [p[1] for p in relevant_entries])), # column entries
-    #                             shape = (D.shape[0], D.shape[0]))
-    #     return D_sparse
-        
-
-    # @staticmethod
-    # def dmat_relevant_entries(nbhd_indices):
-    #     '''
-    #     nbhd_indices: {landmark: neighbours}
-    #     return: list pairs [(i,j)] of distinct points, where (i,j) either landmark neighbour, or pairs of neighbours of the same landmark
-    #     '''
-    #     relevant_entries = []
-    #     for u in nbhd_indices:
-    #         one_neigh = [(u,n) for n in nbhd_indices[u] if n > u]
-    #         second_neigh = chain([[v for v in nbhd_indices[n] if v > u and v not in nbhd_indices[u]] for n in nbhd_indices[u]]) #search other points its in the same neighbourhood with, upper diag only
-    #         second_neigh = list(set(second_neigh)) #avoid double counting
-    #         second_neigh = [(u,v) for v in second_neigh]
-    #         neigh = one_neigh + second_neigh
-    #         relevant_entries.extend(neigh)
-    #     return relevant_entries
 
     
     def transform(self, X=None):
@@ -576,24 +555,24 @@ class FlexNbhdEstimator(BaseEstimator):
         y=None,
         nbhd_indices=None,
         nbhd_type = 'knn',
-        metric = 'minkowski',
+        metric = 'euclidean',
         comb="mean",
         smooth=False,
         n_jobs=1,
-        **kwargs
+        **kwargs,
     ):
 
         return self.fit(
-            X,
-            y=None,
-            nbhd_indices=nbhd_indices,
-            nbhd_type = nbhd_type,
-            metric = metric,
-            comb=comb,
-            smooth=smooth,
-            n_jobs=n_jobs,
-            **kwargs,
-        ).dimension_
+                X,
+                y=None,
+                nbhd_indices=nbhd_indices,
+                nbhd_type = nbhd_type,
+                metric =  metric,
+                comb= comb,
+                smooth= smooth,
+                n_jobs= n_jobs,
+                **kwargs,
+                ).dimension_
 
     def transform_pw(self, X=None):
         """Return an array of pointwise ID estimates after a previous call to self.fit_pw
@@ -630,7 +609,7 @@ class FlexNbhdEstimator(BaseEstimator):
         y=None,
         nbhd_indices=None,
         nbhd_type = 'knn',
-        metric = 'minkowski',
+        metric = 'euclidean',
         comb="mean",
         smooth=False,
         n_jobs=1,
