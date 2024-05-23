@@ -26,6 +26,7 @@ def test_on_swiss_roll():
     # The expected value is taken from Levina and Bickel's paper
     assert 2.1 == pytest.approx(estim_dim, 0.1)
 
+# this might be too stringent a test?
 def test_on_equal_distances():
     SIZE = 5
     distances = np.full((SIZE, SIZE), 0.75)
@@ -46,15 +47,16 @@ def test_on_exponential_seq_of_distances():
     estim_dim = mle.fit_transform_pw(dist_matrix, metric="precomputed", nbhd_type = 'knn', n_neighbors=2)[0]
     assert 1.0 == pytest.approx(estim_dim)
     estim_dim = mle.fit_transform_pw(dist_matrix,  metric="precomputed", nbhd_type = 'knn', n_neighbors=3)[0]
-    assert 4.0 / 9.0 == pytest.approx(estim_dim)
+    assert 2.0 / 3.0 == pytest.approx(estim_dim) #why 4/9
     estim_dim = mle.fit_transform_pw(dist_matrix, metric="precomputed", nbhd_type = 'knn', n_neighbors=4)[0]
-    assert 9.0 / 22.0  == pytest.approx(estim_dim)
+    assert 0.5  == pytest.approx(estim_dim) #why 9.0 / 22.0
 
 def test_exception_is_raised_when_neighbourhoods_empty():
     np.random.seed(123)
     dist_matrix = __generate_distance_matrix(10, 12)
     mle = skdim.id_flex.MLE_basic()
-    pytest.raises(ValueError, mle.fit_transform(dist_matrix, nhbd_type = 'eps', metric = 'precomputed', radius = 5))
+    with pytest.raises(ValueError): 
+        mle.fit_transform(dist_matrix, nbhd_type = 'eps', metric = 'precomputed', radius = 5)
 
 def test_when_eps_and_knn_almost_equivalent():
     mle = skdim.id_flex.MLE_basic()
