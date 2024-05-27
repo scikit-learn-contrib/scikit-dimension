@@ -47,9 +47,9 @@ def test_on_exponential_seq_of_distances():
     estim_dim = mle.fit_transform_pw(dist_matrix, metric="precomputed", nbhd_type = 'knn', n_neighbors=2)[0]
     assert 1.0 == pytest.approx(estim_dim)
     estim_dim = mle.fit_transform_pw(dist_matrix,  metric="precomputed", nbhd_type = 'knn', n_neighbors=3)[0]
-    assert 2.0 / 3.0 == pytest.approx(estim_dim) #why 4/9
+    assert 2.0 / 3.0 == pytest.approx(estim_dim)
     estim_dim = mle.fit_transform_pw(dist_matrix, metric="precomputed", nbhd_type = 'knn', n_neighbors=4)[0]
-    assert 0.5  == pytest.approx(estim_dim) #why 9.0 / 22.0
+    assert 0.5  == pytest.approx(estim_dim)
 
 def test_exception_is_raised_when_neighbourhoods_empty():
     np.random.seed(123)
@@ -60,11 +60,12 @@ def test_exception_is_raised_when_neighbourhoods_empty():
 
 def test_when_eps_and_knn_almost_equivalent():
     mle = skdim.id_flex.MLE_basic()
-    square = np.zeros((4,4,4,4,4)) # why is output 5 dim?
-    square[:1,:1,0,0,0] = 1
+    rectangle = np.zeros((4,4))
+    rectangle[1:3, 1] = 2
+    rectangle[:2, 0] = 1
     knn_estim = mle.fit_transform(square, nbhd_type = 'knn', n_neighbors=2)
-    eps_estim = mle.fit_transform(square, nbhd_type = 'eps', radius=1)
-    assert knn_estim == pytest.approx(eps_estim * 2.0)
+    eps_estim = mle.fit_transform(square, nbhd_type = 'eps', radius=2)
+    assert knn_estim * 2.0 == pytest.approx(eps_estim)
 
 def test_estim_decrease_when_eps_bigger_then_set_diameter():
     np.random.seed(567)
