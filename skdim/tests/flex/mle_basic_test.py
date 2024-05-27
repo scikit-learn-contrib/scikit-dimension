@@ -63,8 +63,8 @@ def test_when_eps_and_knn_almost_equivalent():
     rectangle = np.zeros((4,4))
     rectangle[1:3, 1] = 2
     rectangle[:2, 0] = 1
-    knn_estim = mle.fit_transform(square, nbhd_type = 'knn', n_neighbors=2)
-    eps_estim = mle.fit_transform(square, nbhd_type = 'eps', radius=2)
+    knn_estim = mle.fit_transform(rectangle, nbhd_type = 'knn', n_neighbors=2)
+    eps_estim = mle.fit_transform(rectangle, nbhd_type = 'eps', radius=2)
     assert knn_estim * 2.0 == pytest.approx(eps_estim)
 
 def test_estim_decrease_when_eps_bigger_then_set_diameter():
