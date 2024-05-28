@@ -22,7 +22,7 @@ class MLE_basic(FlexNbhdEstimator):
         if nbhd_type not in ['eps', 'knn']: raise ValueError('Neighbourhood type should either be knn or eps.')
 
         self.dimension_pw_ = np.array([self._mle_formula(dlist, nbhd_type, radius) for dlist in radial_dists])
-        print(self.dimension_pw_)
+    
     @staticmethod
     def _mle_formula(dlist, nbhd_type, radius):
 
