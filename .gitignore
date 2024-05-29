@@ -69,3 +69,6 @@ doc/generated/
 
 # PyBuilder
 target/
+/bin
+pyvenv.cfg
+/share
