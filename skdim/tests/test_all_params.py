@@ -207,3 +207,11 @@ def test_fisher_separability_graph(monkeypatch):
     plt.xlabel("PC1")
     plt.ylabel("PC2")
     #plt.show()
+
+def test_gride_params(data):
+    x = skdim.id.Gride().fit(data)
+    x = skdim.id.Gride(n1=3, n2=8).fit(data)
+    x = skdim.id.Gride(d0=1, d1=20, eps=0.001).fit(data)
+    x = skdim.id.Gride(metric="minkowski").fit(data)
+    x = skdim.id.Gride.fit_transform(data)
+    x = skdim.id.Gride(max_range=32).fit(data).transform_multiscale()
