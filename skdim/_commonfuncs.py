@@ -44,6 +44,7 @@ from joblib import delayed, Parallel
 from abc import abstractmethod
 from itertools import chain
 
+
 def indComb(NN):
     pt1 = np.tile(range(NN), NN)
     pt2 = np.repeat(range(NN), NN)
@@ -116,13 +117,13 @@ def asPointwise(X, class_instance, precomputed_knn=None, n_neighbors=100, n_jobs
 
     if n_jobs > 1:
         with Parallel(n_jobs=n_jobs) as parallel:
+
             def fit_estimator(class_instance, data_slice):
                 return class_instance.fit(data_slice).dimension_
+
             # Asynchronously apply the `fit` function to each data point and collect the results
             results = parallel(
-                delayed(fit_estimator)(
-                    class_instance, X[i, :]
-                ) for i in knn
+                delayed(fit_estimator)(class_instance, X[i, :]) for i in knn
             )
             return np.array(results)
     else:
@@ -249,15 +250,13 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
+
             def fit_estimator(data_slice):
                 return self.fit(data_slice).dimension_
+
             with Parallel(n_jobs=n_jobs) as parallel:
                 # Asynchronously apply the `fit` function to each data point and collect the results
-                results = parallel(
-                    delayed(fit_estimator)(
-                        X[i, :]
-                    ) for i in knnidx
-                )
+                results = parallel(delayed(fit_estimator)(X[i, :]) for i in knnidx)
             self.dimension_pw_ = np.array(results)
         else:
             self.dimension_pw_ = np.array(
@@ -337,15 +336,13 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             _, knnidx = get_nn(X, k=n_neighbors, n_jobs=n_jobs)
 
         if n_jobs > 1:
+
             def fit_estimator(data_slice):
                 return self.fit(data_slice).dimension_
+
             with Parallel(n_jobs=n_jobs) as parallel:
                 # Asynchronously apply the `fit` function to each data point and collect the results
-                results = parallel(
-                    delayed(fit_estimator)(
-                        X[i, :]
-                    ) for i in knnidx
-                )
+                results = parallel(delayed(fit_estimator)(X[i, :]) for i in knnidx)
             self.dimension_pw_ = np.array(results)
         else:
             dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
@@ -359,53 +356,53 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             return dimension_pw_, dimension_pw_smooth_
         else:
             return dimension_pw_
-        
+
 
 class FlexNbhdEstimator(BaseEstimator):
-    '''
-        Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
+    """
+    Returns an array of pointwise ID estimates by fitting the estimator in kNN of each point.
 
-        Parameters
-        ----------
-        X: np.array (n_samples x n_neighbors)
-            Dataset to fit
-        nbhd_indices: dict(landmark: list of nbhd indices)
-        
+    Parameters
+    ----------
+    X: np.array (n_samples x n_neighbors)
+        Dataset to fit
+    nbhd_indices: dict(landmark: list of nbhd indices)
 
-        Returns
-        -------
-        dimension_pw : np.array
-            Pointwise ID estimates
-        dimension_pw_smooth : np.array
-            If smooth is True, additionally returns smoothed pointwise ID estimates
-        
-   '''
-    
+
+    Returns
+    -------
+    dimension_pw : np.array
+        Pointwise ID estimates
+    dimension_pw_smooth : np.array
+        If smooth is True, additionally returns smoothed pointwise ID estimates
+
+    """
+
     @abstractmethod
-
     def _fit(self, X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs):
         """
         Custom method to each local ID estimator, called in fit
-        
-        """
-        self._my_ID_estimator_func(X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs) 
 
+        """
+        self._my_ID_estimator_func(
+            X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs
+        )
 
     def fit(
         self,
         X,
         y=None,
         nbhd_indices=None,
-        nbhd_type = 'knn',
-        metric = 'euclidean',
+        nbhd_type="knn",
+        metric="euclidean",
         comb="mean",
         smooth=False,
         n_jobs=1,
-        radius = 1.0,
-        n_neighbors = 5,
+        radius=1.0,
+        n_neighbors=5,
         **kwargs,
-    ): 
-        '''
+    ):
+        """
         Parameters
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
@@ -415,39 +412,52 @@ class FlexNbhdEstimator(BaseEstimator):
         n_jobs: number of parallel processes in inferring local neighbourhood
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
-        '''
-        if nbhd_type =='knn':
+        """
+        if nbhd_type == "knn":
             if isinstance(n_neighbors, int):
                 if n_neighbors < 2:
-                    raise ValueError('knn neighbors must be an integer > 1')
+                    raise ValueError("knn neighbors must be an integer > 1")
             else:
-                raise ValueError('knn neighbors must be an integer > 1')
-        elif nbhd_type == 'eps':
+                raise ValueError("knn neighbors must be an integer > 1")
+        elif nbhd_type == "eps":
             if radius <= 0:
-                raise ValueError('eps radius must be a positive number')
+                raise ValueError("eps radius must be a positive number")
         else:
-            raise ValueError('Neighbourhood type should either be knn or eps')
-        
-        self.fit_pw(X,y = None, nbhd_indices=nbhd_indices, nbhd_type = nbhd_type, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, radius = radius, n_neighbors=n_neighbors, **kwargs)
-        
+            raise ValueError("Neighbourhood type should either be knn or eps")
+
+        self.fit_pw(
+            X,
+            y=None,
+            nbhd_indices=nbhd_indices,
+            nbhd_type=nbhd_type,
+            metric=metric,
+            comb=comb,
+            smooth=smooth,
+            n_jobs=n_jobs,
+            radius=radius,
+            n_neighbors=n_neighbors,
+            **kwargs,
+        )
+
         self.aggr(comb)
 
         return self
-    
-    def fit_pw(self,
+
+    def fit_pw(
+        self,
         X,
-        y = None,
+        y=None,
         nbhd_indices=None,
-        nbhd_type = 'knn',
-        metric = 'euclidean',
+        nbhd_type="knn",
+        metric="euclidean",
         comb="mean",
         smooth=False,
         n_jobs=1,
-        radius = 1.0,
-        n_neighbors = 5,
+        radius=1.0,
+        n_neighbors=5,
         **kwargs,
     ):
-        '''
+        """
         Parameters
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
@@ -457,24 +467,42 @@ class FlexNbhdEstimator(BaseEstimator):
         n_jobs: number of parallel processes in inferring local neighbourhood
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
 
-        '''
+        """
         if nbhd_indices is None:
-            nbhd_indices, radial_dists = self.get_neigh(X, nbhd_type = nbhd_type, metric = metric, n_jobs=n_jobs, radius = radius, n_neighbors = n_neighbors)
-            #N.B. if use native sklearn NearestNeighbors, nbhd_indices is either 
-            #in the knn case (N_pts x extrinsic_dim) np array,
+            nbhd_indices, radial_dists = self.get_neigh(
+                X,
+                nbhd_type=nbhd_type,
+                metric=metric,
+                n_jobs=n_jobs,
+                radius=radius,
+                n_neighbors=n_neighbors,
+            )
+            # N.B. if use native sklearn NearestNeighbors, nbhd_indices is either
+            # in the knn case (N_pts x extrinsic_dim) np array,
             # or in the eps case, a list of numpy arrays
         else:
             radial_dists = None
-        
-        self._fit(X=X, nbhd_indices=nbhd_indices, nbhd_type=nbhd_type, metric = metric, radial_dists = radial_dists, radius = radius, n_neighbors = n_neighbors, **kwargs)
+
+        self._fit(
+            X=X,
+            nbhd_indices=nbhd_indices,
+            nbhd_type=nbhd_type,
+            metric=metric,
+            radial_dists=radial_dists,
+            radius=radius,
+            n_neighbors=n_neighbors,
+            **kwargs,
+        )
         self.is_fitted_pw_ = True
-        
-        if smooth: self.smooth(nbhd_indices, comb)
+
+        if smooth:
+            self.smooth(nbhd_indices, comb)
         return self
 
-    
     @staticmethod
-    def get_neigh(X, nbhd_type = 'knn', metric = 'euclidean', n_jobs=1, radius= 1.0, n_neighbors = 5): 
+    def get_neigh(
+        X, nbhd_type="knn", metric="euclidean", n_jobs=1, radius=1.0, n_neighbors=5
+    ):
         """
         Parameters:
 
@@ -486,70 +514,88 @@ class FlexNbhdEstimator(BaseEstimator):
         Returns:
 
         nbhd_indices: dictionary {point_index: list of neighbour point indices}
-        dist: ndarray of shape (n_samples,) of arrays recording distance from point to neighbours          
-        
+        dist: ndarray of shape (n_samples,) of arrays recording distance from point to neighbours
+
         """
-        neigh = NearestNeighbors(metric = metric, n_jobs = n_jobs, n_neighbors = n_neighbors, radius = radius)
+        neigh = NearestNeighbors(
+            metric=metric, n_jobs=n_jobs, n_neighbors=n_neighbors, radius=radius
+        )
         neigh.fit(X)
 
-        if nbhd_type == 'eps':
-            radial_dist, indices = neigh.radius_neighbors(return_distance=True) # Find eps-nearest neighbors of each data sample
-        elif nbhd_type == 'knn':
-            radial_dist, indices = neigh.kneighbors(return_distance = True) # Find k-nearest neighbors of each data sample
+        if nbhd_type == "eps":
+            radial_dist, indices = neigh.radius_neighbors(
+                return_distance=True
+            )  # Find eps-nearest neighbors of each data sample
+        elif nbhd_type == "knn":
+            radial_dist, indices = neigh.kneighbors(
+                return_distance=True
+            )  # Find k-nearest neighbors of each data sample
         else:
-            raise ValueError('Neighbourhood type should either be knn or eps')
-        
-        #nbhd_indices = {i: list(indices[i]) for i in range(X.shape[0])} # Convert indices (either array of lists or n x k array) to dict
+            raise ValueError("Neighbourhood type should either be knn or eps")
 
-        if nbhd_type == 'eps' and (sum(len(a) for a in indices)  == 0):
-            raise ValueError('Epsilon too large, all neighbourhoods empty')
+        # nbhd_indices = {i: list(indices[i]) for i in range(X.shape[0])} # Convert indices (either array of lists or n x k array) to dict
+
+        if nbhd_type == "eps" and (sum(len(a) for a in indices) == 0):
+            raise ValueError("Epsilon too small, all neighbourhoods empty")
 
         return indices, radial_dist
-    
-    def aggr(self, comb = 'mean'):
-        #computes self.dimension_ from self.dimension_pw_
+
+    def aggr(self, comb="mean"):
+        # computes self.dimension_ from self.dimension_pw_
         if self.is_fitted_pw_:
-            if comb not in ['mean', 'median']:
-                raise ValueError("Invalid comb parameter. It has to be 'mean' or 'median'")
+            if comb not in ["mean", "median"]:
+                raise ValueError(
+                    "Invalid comb parameter. It has to be 'mean' or 'median'"
+                )
             else:
                 if comb == "mean":
-                    self.dimension_ = np.nanmean(self.dimension_pw_) #skip nans in mean 
+                    self.dimension_ = np.nanmean(
+                        self.dimension_pw_
+                    )  # skip nans in mean
                 elif comb == "median":
-                    self.dimension_ = np.nanmedian(self.dimension_pw_) #skip nans in median  
-                      
+                    self.dimension_ = np.nanmedian(
+                        self.dimension_pw_
+                    )  # skip nans in median
+
                 self.is_fitted_ = True
         else:
             raise ValueError("No pointwise dimension fitted.")
-        
-        return None 
-    
-    def smooth(self, nbhd_indices, comb = 'mean'):
+
+        return None
+
+    def smooth(self, nbhd_indices, comb="mean"):
         # compute smoothed local estimates (aggregate over local neighbourhoods)
         # To do: fix inconsistency if not all members of neighbourhood have local estimates! currently skipped them
         # Note that even if no dimension estimate is given for point, if nbhd has non-nan dimension estimates, we still return an aggregation
         if self.is_fitted:
-            if comb not in ['mean', 'median']:
-                raise ValueError("Invalid comb parameter. It has to be 'mean' or 'median'.")
+            if comb not in ["mean", "median"]:
+                raise ValueError(
+                    "Invalid comb parameter. It has to be 'mean' or 'median'."
+                )
             else:
                 self.dimension_pw_smooth_ = []
                 for i in range(self.dimension_pw_):
-                    nbhd_dims = np.array([self.dimension_pw_[i]] + [self.dimension_pw_[j] for j in nbhd_indices[i]])
-                    if np.all(np.isnan(nbhd_dims)): #smoothed estimate is nan if no local estimates in nbhd
+                    nbhd_dims = np.array(
+                        [self.dimension_pw_[i]]
+                        + [self.dimension_pw_[j] for j in nbhd_indices[i]]
+                    )
+                    if np.all(
+                        np.isnan(nbhd_dims)
+                    ):  # smoothed estimate is nan if no local estimates in nbhd
                         self.dimension_pw_smooth_.append(np.nan)
                     else:
-                        if comb == 'mean':
+                        if comb == "mean":
                             self.dimension_pw_smooth_.append(np.nanmean(nbhd_dims))
-                        elif comb == 'median':
+                        elif comb == "median":
                             self.dimension_pw_smooth_.append(np.nanmedian(nbhd_dims))
-                
+
                 self.dimension_pw_smooth_ = np.array(self.dimension_pw_smooth_)
                 self.is_fitted_pw_smooth_ = True
         else:
             raise ValueError("No pointwise dimension fitted.")
-        
+
         return None
 
-    
     def transform(self, X=None):
         """Predict ID after a previous call to self.fit
 
@@ -570,29 +616,29 @@ class FlexNbhdEstimator(BaseEstimator):
         X,
         y=None,
         nbhd_indices=None,
-        nbhd_type = 'knn',
-        metric = 'euclidean',
+        nbhd_type="knn",
+        metric="euclidean",
         comb="mean",
         smooth=False,
         n_jobs=1,
-        radius = 1.0,
-        n_neighbors = 5,
-        **kwargs
+        radius=1.0,
+        n_neighbors=5,
+        **kwargs,
     ):
 
         return self.fit(
-                X,
-                y=None,
-                nbhd_indices=nbhd_indices,
-                nbhd_type = nbhd_type,
-                metric =  metric,
-                comb= comb,
-                smooth= smooth,
-                n_jobs= n_jobs,
-                radius=radius,
-                n_neighbors=n_neighbors,
-                **kwargs
-                ).dimension_
+            X,
+            y=None,
+            nbhd_indices=nbhd_indices,
+            nbhd_type=nbhd_type,
+            metric=metric,
+            comb=comb,
+            smooth=smooth,
+            n_jobs=n_jobs,
+            radius=radius,
+            n_neighbors=n_neighbors,
+            **kwargs,
+        ).dimension_
 
     def transform_pw(self, X=None):
         """Return an array of pointwise ID estimates after a previous call to self.fit_pw
@@ -628,36 +674,34 @@ class FlexNbhdEstimator(BaseEstimator):
         X,
         y=None,
         nbhd_indices=None,
-        nbhd_type = 'knn',
-        metric = 'euclidean',
+        nbhd_type="knn",
+        metric="euclidean",
         comb="mean",
         smooth=False,
         n_jobs=1,
-        radius = 1.0,
-        n_neighbors = 5,
-        **kwargs
+        radius=1.0,
+        n_neighbors=5,
+        **kwargs,
     ):
 
         self.fit(
             X,
             y=None,
             nbhd_indices=nbhd_indices,
-            nbhd_type = nbhd_type,
-            metric = metric,
+            nbhd_type=nbhd_type,
+            metric=metric,
             comb=comb,
             smooth=smooth,
             n_jobs=n_jobs,
             radius=radius,
             n_neighbors=n_neighbors,
-            **kwargs
+            **kwargs,
         )
 
         if smooth:
-            return self.dimension_pw_ , self.dimension_pw_smooth_
+            return self.dimension_pw_, self.dimension_pw_smooth_
         else:
             return self.dimension_pw_
-
-
 
 
 class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
