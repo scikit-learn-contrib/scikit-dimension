@@ -3,6 +3,7 @@ import numpy as np
 import scipy
 from .._commonfuncs import FlexNbhdEstimator
 from sklearn.metrics import DistanceMetric
+from ..errors import EstimatorFailure
 
 class MLE_basic(FlexNbhdEstimator):
     '''
@@ -35,7 +36,7 @@ class MLE_basic(FlexNbhdEstimator):
             minv = N*np.log(radius)-np.sum(np.log(dlist))
 
             if minv < 1e-9:
-                raise Exception("MLE estimation diverges.")
+                raise EstimatorFailure("MLE estimation diverges.")
             else:
                 if nbhd_type == 'eps':
                     return np.divide(N, minv)

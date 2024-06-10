@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 import skdim.id_flex
 from sklearn.datasets import make_swiss_roll
+from ...errors import EstimatorFailure
 
 def __generate_distance_matrix(size, threshold=10, maximum=100):
     # Generate a random distance matrix with values between 0 and 1sklea
@@ -33,7 +34,7 @@ def test_on_equal_distances():
     for i in range(SIZE):
         distances[i,i] = 0.0
     mle = skdim.id_flex.MLE_basic()
-    with pytest.raises(Exception):
+    with pytest.raises(EstimatorFailure):
         mle.fit_pw(distances, metric="precomputed", n_neighbors=3)
 
 def test_on_exponential_seq_of_distances():
