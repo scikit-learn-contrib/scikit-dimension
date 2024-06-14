@@ -556,7 +556,7 @@ class FlexNbhdEstimator(BaseEstimator):
                         self.dimension_pw_
                     )  # skip nans in median
                 elif comb == "hmean":
-                    self.dimension_ = scipy.stats.hmean(self.dimension_pw_, nan_policy="omit")[0]
+                    self.dimension_ = scipy.stats.hmean(self.dimension_pw_, nan_policy="omit")
 
                 self.is_fitted_ = True
         else:

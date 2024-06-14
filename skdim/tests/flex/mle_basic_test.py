@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 import skdim.id_flex
 from sklearn.datasets import make_swiss_roll
-from ...errors import EstimatorFailure
+import skdim.errors
 
 def __generate_distance_matrix(size, threshold=10, maximum=100):
     # Generate a random distance matrix with values between 0 and 1sklea
@@ -27,6 +27,14 @@ def test_on_swiss_roll():
     # The expected value is taken from Levina and Bickel's paper
     assert 2.1 == pytest.approx(estim_dim, 0.1)
 
+def test_on_swiss_roll_hmean():
+    np.random.seed(782)
+    swiss_roll_dat = make_swiss_roll(1000)
+    mle = skdim.id_flex.MLE_basic(11)
+    estim_dim = mle.fit_transform(swiss_roll_dat[0], nbhd_type = 'knn', n_neighbors=20, comb='hmean')
+    # No standard expected result
+    assert 2.0 == pytest.approx(estim_dim, 0.1)
+
 # this might be too stringent a test?
 def test_on_equal_distances():
     SIZE = 5
@@ -34,7 +42,7 @@ def test_on_equal_distances():
     for i in range(SIZE):
         distances[i,i] = 0.0
     mle = skdim.id_flex.MLE_basic()
-    with pytest.raises(EstimatorFailure):
+    with pytest.raises(skdim.errors.EstimatorFailure):
         mle.fit_pw(distances, metric="precomputed", n_neighbors=3)
 
 def test_on_exponential_seq_of_distances():
