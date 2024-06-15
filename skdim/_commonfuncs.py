@@ -43,6 +43,7 @@ from sklearn.base import BaseEstimator
 from joblib import delayed, Parallel
 from abc import abstractmethod
 from itertools import chain
+import scipy.stats
 
 
 def indComb(NN):
@@ -384,9 +385,7 @@ class FlexNbhdEstimator(BaseEstimator):
         Custom method to each local ID estimator, called in fit
 
         """
-        self._my_ID_estimator_func(
-            X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs
-        )
+        raise NotImplementedError
 
     def fit(
         self,
@@ -543,9 +542,9 @@ class FlexNbhdEstimator(BaseEstimator):
     def aggr(self, comb="mean"):
         # computes self.dimension_ from self.dimension_pw_
         if self.is_fitted_pw_:
-            if comb not in ["mean", "median"]:
+            if comb not in ["mean", "median", "hmean"]:
                 raise ValueError(
-                    "Invalid comb parameter. It has to be 'mean' or 'median'"
+                    "Invalid comb parameter. It has to be 'mean' or 'median' or 'hmean'"
                 )
             else:
                 if comb == "mean":
@@ -556,6 +555,8 @@ class FlexNbhdEstimator(BaseEstimator):
                     self.dimension_ = np.nanmedian(
                         self.dimension_pw_
                     )  # skip nans in median
+                elif comb == "hmean":
+                    self.dimension_ = scipy.stats.hmean(self.dimension_pw_, nan_policy="omit")
 
                 self.is_fitted_ = True
         else:
