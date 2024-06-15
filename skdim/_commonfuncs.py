@@ -380,7 +380,7 @@ class FlexNbhdEstimator(BaseEstimator):
     """
 
     @abstractmethod
-    def _fit(self, X, nbhd_indices, nbhd_type, metric, radial_dists, **kwargs):
+    def _fit(self, X, nbhd_indices,pt_nn_incl_pt, nbhd_type, metric, radial_dists, **kwargs):
         """
         Custom method to each local ID estimator, called in fit
 
@@ -393,6 +393,7 @@ class FlexNbhdEstimator(BaseEstimator):
         y=None,
         nbhd_indices=None,
         nbhd_type="knn",
+        pt_nn_incl_pt=True,
         metric="euclidean",
         comb="mean",
         smooth=False,
@@ -405,6 +406,7 @@ class FlexNbhdEstimator(BaseEstimator):
         Parameters
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour)
+        pt_nn_incl_pt: if true, neighbourhood of point includes the point itself. defaults to true.
         metric: defaults to standard euclidean metric; if X a distance matrix, then set to 'precomputed'
         comb: method of averaging either 'mean' or 'median'
         smooth: if true, average over dimension estimates of local neighbourhoods using comb
@@ -429,6 +431,7 @@ class FlexNbhdEstimator(BaseEstimator):
             y=None,
             nbhd_indices=nbhd_indices,
             nbhd_type=nbhd_type,
+            pt_nn_incl_pt=pt_nn_incl_pt,
             metric=metric,
             comb=comb,
             smooth=smooth,
@@ -448,6 +451,7 @@ class FlexNbhdEstimator(BaseEstimator):
         y=None,
         nbhd_indices=None,
         nbhd_type="knn",
+        pt_nn_incl_pt=True,
         metric="euclidean",
         comb="mean",
         smooth=False,
@@ -471,6 +475,7 @@ class FlexNbhdEstimator(BaseEstimator):
             nbhd_indices, radial_dists = self.get_neigh(
                 X,
                 nbhd_type=nbhd_type,
+                pt_nn_incl_pt=pt_nn_incl_pt,
                 metric=metric,
                 n_jobs=n_jobs,
                 radius=radius,
@@ -486,6 +491,7 @@ class FlexNbhdEstimator(BaseEstimator):
             X=X,
             nbhd_indices=nbhd_indices,
             nbhd_type=nbhd_type,
+            pt_nn_incl_pt=pt_nn_incl_pt,
             metric=metric,
             radial_dists=radial_dists,
             radius=radius,
@@ -500,7 +506,7 @@ class FlexNbhdEstimator(BaseEstimator):
 
     @staticmethod
     def get_neigh(
-        X, nbhd_type="knn", metric="euclidean", n_jobs=1, radius=1.0, n_neighbors=5
+        X, nbhd_type="knn", pt_nn_incl_pt=True, metric="euclidean", n_jobs=1, radius=1.0, n_neighbors=5
     ):
         """
         Parameters:
@@ -525,10 +531,16 @@ class FlexNbhdEstimator(BaseEstimator):
             radial_dist, indices = neigh.radius_neighbors(
                 return_distance=True
             )  # Find eps-nearest neighbors of each data sample
+            if pt_nn_incl_pt:
+                radial_dist = [np.array([0.0] + list(a)) for a in radial_dist]
+                indices = [np.array([idx] + list(a)) for idx, a in enumerate(indices)]
         elif nbhd_type == "knn":
             radial_dist, indices = neigh.kneighbors(
                 return_distance=True
             )  # Find k-nearest neighbors of each data sample
+            if pt_nn_incl_pt:
+                radial_dist = np.hstack((np.zeros([radial_dist.shape[0],1]), radial_dist))
+                indices =  np.hstack((np.arange(indices.shape[0]).reshape([-1,1]), indices))
         else:
             raise ValueError("Neighbourhood type should either be knn or eps")
 
