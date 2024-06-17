@@ -463,7 +463,7 @@ class FlexNbhdEstimator(BaseEstimator):
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
         
         """
-        if self.nbhd_type is not 'custom':
+        if self.nbhd_type != 'custom':
             nbhd_indices, radial_dists = self.get_neigh(X)
             # N.B. if use native sklearn NearestNeighbors, nbhd_indices is either
             # in the knn case (N_pts x extrinsic_dim) np array,
