@@ -37,7 +37,7 @@ import warnings
 from scipy.sparse import coo_array
 from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import DistanceMetric
-from sklearn.metrics.pairwise import pairwise_distances
+from sklearn.metrics.pairwise import pairwise_distances, distance_metrics
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
 from joblib import delayed, Parallel
@@ -379,7 +379,7 @@ class FlexNbhdEstimator(BaseEstimator):
 
     """
 
-    def __init__(self, nbhd_type = 'knn', pt_nbhd_incl_pt = True, metric = 'euclidean', comb = 'mean', smooth = False, n_jobs = 1, radius = 1.0, n_neighbors = 5, **kwargs):
+    def __init__(self, nbhd_type = 'knn', pt_nbhd_incl_pt = True, metric = 'euclidean', comb = 'mean', smooth = False, n_jobs = 1, radius = 1.0, n_neighbors = 5):
         """
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour) or 'custom'
         pt_nbhd_incl_pt: if true, neighbourhood of point includes the point itself. defaults to true.
@@ -397,7 +397,17 @@ class FlexNbhdEstimator(BaseEstimator):
         self.n_jobs = n_jobs
         self.radius = radius
         self.n_neighbors = n_neighbors
-        self.other_params = kwargs
+
+        self.attr_checks()
+
+        
+        
+    def attr_checks(self):
+
+        if self.metric not in distance_metrics():
+            raise ValueError(
+                    "Metric not in scikit-learn list of metrics. See sklearn.metrics.pairwise.distance_metrics()"
+                )
 
         if self.nbhd_type not in ["knn", "eps", "custom"]:
                 raise ValueError(
@@ -405,21 +415,40 @@ class FlexNbhdEstimator(BaseEstimator):
                 )
         else:
             if self.nbhd_type == "knn":
-                if isinstance(n_neighbors, int):
-                    if n_neighbors < 2:
+                if isinstance(self.n_neighbors, int):
+                    if self.n_neighbors < 2:
                         raise ValueError("knn neighbors must be an integer > 1")
                 else:
-                    raise ValueError("knn neighbors must be an integer > 1")
-            elif nbhd_type == "eps":
-                if radius <= 0:
+                    raise TypeError("knn neighbors must be an integer > 1")
+            elif self.nbhd_type == "eps":
+                if self.radius <= 0:
                     raise ValueError("eps radius must be a positive number")
 
         if self.comb not in ["mean", "median", "hmean"]:
                 raise ValueError(
                     "Invalid comb parameter. It has to be 'mean' or 'median' or 'hmean'"
                 )
-        # a few more type checks
-
+        
+        if not isinstance(self.pt_nbhd_incl_pt, bool):
+                raise TypeError(
+                    "Invalid pt_nbhd_incl_pt parameter. It has to be bool"
+                )
+        
+        if not isinstance(self.smooth_flag, bool):
+                raise TypeError(
+                    "Invalid smooth parameter. It has to be bool"
+                )
+        
+        if not isinstance(self.n_jobs, int):
+                raise TypeError(
+                    "Invalid n_jobs parameter. It has to be integer > 0"
+                )
+        
+        elif self.n_jobs < 1:
+            raise ValueError(
+                    "Invalid n_jobs parameter. It has to be integer > 0"
+                )
+        
 
     @abstractmethod
     def _fit(self, X, nbhd_indices, radial_dists, **kwargs):
@@ -461,8 +490,10 @@ class FlexNbhdEstimator(BaseEstimator):
         """
         Parameters
         X: (n_samples, n_features) or (n_samples, n_samples) if metric=’precomputed’
-        
+        nbhd_indices: {landmark index: list or array of neighbour indices}
         """
+        self.attr_checks()
+
         if self.nbhd_type != 'custom':
             nbhd_indices, radial_dists = self.get_neigh(X)
             # N.B. if use native sklearn NearestNeighbors, nbhd_indices is either

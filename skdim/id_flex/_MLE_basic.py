@@ -1,10 +1,7 @@
-import inspect
 import numpy as np
-import scipy
 from .._commonfuncs import FlexNbhdEstimator
-from sklearn.metrics import DistanceMetric
 from ..errors import EstimatorFailure
-import warnings 
+
 
 class MLE_basic(FlexNbhdEstimator):
     '''
@@ -23,10 +20,6 @@ class MLE_basic(FlexNbhdEstimator):
             raise ValueError(
                     "Invalid nbhd_type parameter. It has to be 'knn' or 'eps' for Levina-Bickel."
                 )
-        
-        if self.pt_nbhd_incl_pt:
-            warnings.warn('The method by Levina Bickel by does not include a point itself in the neighbourhood. The parameter pt_nbhd_incl_pt is forced to be False.') 
-            self.pt_nbhd_incl_pt = False
         
         #self.average_steps = average_steps #to do: integrate averaging over k neighbourhoods
 
