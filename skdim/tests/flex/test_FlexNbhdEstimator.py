@@ -16,32 +16,32 @@ def data():
 def test_fit_unknown_neighborhood(estim_class, data):
     with pytest.raises(ValueError):
         estimator = estim_class(nbhd_type="wrong_unknown_type")
-        #estimator.fit_transform(data)
+        estimator.fit_transform(data)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_unknown_metric(estim_class, data):
     with pytest.raises(ValueError):
         estimator = estim_class(metric="wrong_unknown_metric")
-        #estimator.fit_transform(data)
+        estimator.fit_transform(data)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_aggregation_unknown_comb(estim_class, data):
     with pytest.raises(ValueError):
         estimator = estim_class(comb="wrong_unknown_comb")
-        #estimator.fit_transform(data)
+        estimator.fit_transform(data)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_get_neigh_unknown_neighborhood(estim_class, data):
     
     with pytest.raises(ValueError):
         estimator = estim_class(nbhd_type="wrong_unknown_type")
-        #estimator.get_neigh(data)
+        estimator.get_neigh(data)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_get_neigh_unknown_metric(estim_class, data):
     with pytest.raises(ValueError):
         estimator = estim_class(metric="wrong_unknown_metric")
-        #estimator.get_neigh(data)
+        estimator.get_neigh(data)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_aggregation_computes_global_dim(estim_class, data):

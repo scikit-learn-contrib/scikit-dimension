@@ -398,7 +398,6 @@ class FlexNbhdEstimator(BaseEstimator):
         self.radius = radius
         self.n_neighbors = n_neighbors
 
-        self.attr_checks()
 
         
         
@@ -530,6 +529,8 @@ class FlexNbhdEstimator(BaseEstimator):
         radial_dist: ndarray of shape (n_samples,) of arrays recording distance from point to neighbours
 
         """
+        self.attr_checks()
+        
         neigh = NearestNeighbors(
             metric=self.metric, n_jobs= self.n_jobs, n_neighbors=self.n_neighbors, radius=self.radius
         )
