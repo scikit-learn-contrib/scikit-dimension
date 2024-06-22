@@ -64,22 +64,28 @@ def test_fit_pw_computes_pw_dim(estim_class, data):
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_single_job_equal_to_fit(estim_class, data):
     estimator_single = estim_class()
+    np.random.seed(0)
     estimator_single.fit(data)
     estimator_multi = estim_class()
+    np.random.seed(0)
     estimator_multi.fit(data, n_jobs=4)
     assert pytest.approx(estimator_single.dimension_) == pytest.approx(estimator_multi.dimension_)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_pw_single_job_equal_to_fit_pw(estim_class, data):
     estimator_single = estim_class()
+    np.random.seed(0)
     estimator_single.fit_pw(data)
     estimator_multi = estim_class()
+    np.random.seed(0)
     estimator_multi.fit_pw(data, n_jobs=4)
     assert np.allclose(estimator_multi.dimension_pw_, estimator_single.dimension_pw_)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_transform_pw_is_fit_pw_plus_transform_pw(estim_class, data):
     estimator = estim_class()
+    np.random.seed(0)
     estimator.fit_pw(data)
     second_estimator = estim_class()
+    np.random.seed(0)
     assert np.allclose(second_estimator.fit_transform_pw(data), estimator.transform_pw(data))
