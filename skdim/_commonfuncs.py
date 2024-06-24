@@ -379,8 +379,9 @@ class FlexNbhdEstimator(BaseEstimator):
 
     """
 
-    def __init__(self, nbhd_type = 'knn', pt_nbhd_incl_pt = True, metric = 'euclidean', comb = 'mean', smooth = False, n_jobs = 1, radius = 1.0, n_neighbors = 5):
+    def __init__(self, pw_dim = True, nbhd_type = 'knn', pt_nbhd_incl_pt = True, metric = 'euclidean', comb = 'mean', smooth = False, n_jobs = 1, radius = 1.0, n_neighbors = 5, sort_radial = True):
         """
+        pw_dim: if True, then a local estimator computing a dimension for every point in the dataset; else the estimator is global and does not compute a ptwise dim estimation
         nbhd_type: either 'knn' (k nearest neighbour) or 'eps' (eps nearest neighbour) or 'custom'
         pt_nbhd_incl_pt: if true, neighbourhood of point includes the point itself. defaults to true.
         metric: defaults to standard euclidean metric; if X a distance matrix, then set to 'precomputed'
@@ -389,27 +390,47 @@ class FlexNbhdEstimator(BaseEstimator):
         n_jobs: number of parallel processes in inferring local neighbourhood
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
         """
+
+        self._pw_dim = pw_dim #a protected method 
         self.nbhd_type = nbhd_type
-        self.pt_nbhd_incl_pt = pt_nbhd_incl_pt
+        self.pt_nbhd_incl_pt = pt_nbhd_incl_pt 
         self.metric = metric
         self.comb = comb
         self.smooth_flag = smooth
         self.n_jobs = n_jobs
         self.radius = radius
         self.n_neighbors = n_neighbors
-
+        self.sort_radial = sort_radial
 
         
         
     def attr_checks(self):
 
-        if self.metric not in distance_metrics():
-            raise ValueError(
-                    "Metric not in scikit-learn list of metrics. See sklearn.metrics.pairwise.distance_metrics()"
+        if not isinstance(self._pw_dim, bool):
+            raise TypeError(
+                    "Invalid pw_dim parameter. It has to be bool"
+                )
+        elif self._pw_dim: #global estimator
+            if self.comb is not None:
+                raise ValueError(
+                    "Estimator does not produce pointwise dimension estimate, no aggregation over pointwise dimension estimates is implemented."
+                )
+            if self.smooth_flag is not None:
+                raise ValueError(
+                    "Estimator does not produce pointwise dimension estimate, no smoothing over pointwise dimension estimates is implemented."
+                )
+        else: #local estimator
+            if self.comb not in ["mean", "median", "hmean"]:
+                raise ValueError(
+                    "Invalid comb parameter. It has to be 'mean' or 'median' or 'hmean'"
+                )
+            if not isinstance(self.smooth_flag, bool):
+                raise TypeError(
+                    "Invalid smooth parameter. It has to be bool"
                 )
 
         if self.nbhd_type not in ["knn", "eps", "custom"]:
-                raise ValueError(
+            raise ValueError(
                     "Invalid nbhd_type parameter. It has to be 'knn' or 'eps' or 'custom'"
                 )
         else:
@@ -423,20 +444,17 @@ class FlexNbhdEstimator(BaseEstimator):
                 if self.radius <= 0:
                     raise ValueError("eps radius must be a positive number")
 
-        if self.comb not in ["mean", "median", "hmean"]:
-                raise ValueError(
-                    "Invalid comb parameter. It has to be 'mean' or 'median' or 'hmean'"
+        if self.metric not in distance_metrics():
+            raise ValueError(
+                    "Metric not in scikit-learn list of metrics. See sklearn.metrics.pairwise.distance_metrics()"
                 )
+
         
         if not isinstance(self.pt_nbhd_incl_pt, bool):
                 raise TypeError(
                     "Invalid pt_nbhd_incl_pt parameter. It has to be bool"
                 )
         
-        if not isinstance(self.smooth_flag, bool):
-                raise TypeError(
-                    "Invalid smooth parameter. It has to be bool"
-                )
         
         if not isinstance(self.n_jobs, int):
                 raise TypeError(
@@ -461,7 +479,7 @@ class FlexNbhdEstimator(BaseEstimator):
         self,
         X,
         y=None,
-        nbhd_indices=None
+        nbhd_indices=None,
     ):
         """
         Parameters
@@ -469,6 +487,9 @@ class FlexNbhdEstimator(BaseEstimator):
         nbhd_indices: if nbhd_type == 'custom', dict(landmark: list of nbhd indices)
 
         """
+        #check arrays here
+
+
         
         self.fit_pw(
             X,
@@ -476,7 +497,7 @@ class FlexNbhdEstimator(BaseEstimator):
             nbhd_indices=nbhd_indices,
         )
 
-        self.aggr()
+        if self._pw_dim: self.aggr()
 
         return self
 
@@ -510,10 +531,15 @@ class FlexNbhdEstimator(BaseEstimator):
             nbhd_indices=nbhd_indices,
             radial_dists=radial_dists
         )
-        self.is_fitted_pw_ = True
 
-        if self.smooth_flag:
-            self.smooth(nbhd_indices)
+        if self._pw_dim:
+            self.is_fitted_pw_ = True
+
+            if self.smooth_flag:
+                self.smooth(nbhd_indices)
+        else:
+            self.is_fitted_ = True
+        
         return self
 
 
@@ -538,7 +564,7 @@ class FlexNbhdEstimator(BaseEstimator):
 
         if self.nbhd_type == "eps":
             radial_dist, indices = neigh.radius_neighbors(
-                return_distance=True
+                return_distance=True, sort_results=self.sort_radial
             )  # Find eps-nearest neighbors of each data sample
             if self.pt_nbhd_incl_pt:
                 radial_dist = [np.array([0.0] + list(a)) for a in radial_dist]
