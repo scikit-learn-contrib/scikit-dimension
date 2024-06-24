@@ -14,7 +14,7 @@ class MLE_basic(FlexNbhdEstimator):
         
 
     def __init__(self, nbhd_type = 'knn', metric = 'euclidean', comb = 'mean', smooth = False, n_jobs = 1, radius = 1.0, n_neighbors = 5):
-        super().__init__(nbhd_type = nbhd_type, pt_nbhd_incl_pt = False, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, radius = radius, n_neighbors = n_neighbors)
+        super().__init__(pw_dim = True, nbhd_type = nbhd_type, pt_nbhd_incl_pt = False, metric = metric, comb = comb, smooth = smooth, n_jobs = n_jobs, radius = radius, n_neighbors = n_neighbors, sort_radial = False)
         
         if self.nbhd_type not in ['knn', 'eps']:
             raise ValueError(

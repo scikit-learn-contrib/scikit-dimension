@@ -391,7 +391,7 @@ class FlexNbhdEstimator(BaseEstimator):
         kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
         """
 
-        self._pw_dim = pw_dim #a protected method 
+        self.pw_dim = pw_dim 
         self.nbhd_type = nbhd_type
         self.pt_nbhd_incl_pt = pt_nbhd_incl_pt 
         self.metric = metric
@@ -406,11 +406,11 @@ class FlexNbhdEstimator(BaseEstimator):
         
     def attr_checks(self):
 
-        if not isinstance(self._pw_dim, bool):
+        if not isinstance(self.pw_dim, bool):
             raise TypeError(
                     "Invalid pw_dim parameter. It has to be bool"
                 )
-        elif self._pw_dim: #global estimator
+        elif self.pw_dim: #global estimator
             if self.comb is not None:
                 raise ValueError(
                     "Estimator does not produce pointwise dimension estimate, no aggregation over pointwise dimension estimates is implemented."
@@ -497,7 +497,7 @@ class FlexNbhdEstimator(BaseEstimator):
             nbhd_indices=nbhd_indices,
         )
 
-        if self._pw_dim: self.aggr()
+        if self.pw_dim: self.aggr()
 
         return self
 
@@ -532,7 +532,7 @@ class FlexNbhdEstimator(BaseEstimator):
             radial_dists=radial_dists
         )
 
-        if self._pw_dim:
+        if self.pw_dim:
             self.is_fitted_pw_ = True
 
             if self.smooth_flag:
