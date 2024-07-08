@@ -167,7 +167,7 @@ class TwoNN(GlobalEstimator):
                 mu = _mu[np.argsort(_mu)[: int(N * (1 - self.discard_fraction))]]
 
         # Empirical cumulate
-        Femp = np.arange(int(N * (1 - self.discard_fraction))) / N
+        Femp = np.arange(1, 1 + int(N * (1 - self.discard_fraction))) / N
 
         # Fit line
         lr = LinearRegression(fit_intercept=False)
