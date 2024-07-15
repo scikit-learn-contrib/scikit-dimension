@@ -206,4 +206,4 @@ def test_fisher_separability_graph(monkeypatch):
     plt.title("PCA on original data")
     plt.xlabel("PC1")
     plt.ylabel("PC2")
-    plt.show()
+    #plt.show()

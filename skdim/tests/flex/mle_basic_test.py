@@ -43,7 +43,7 @@ def test_on_equal_distances():
         distances[i,i] = 0.0
     mle = skdim.id_flex.MLE_basic( metric="precomputed", n_neighbors=3)
     with pytest.raises(skdim.errors.EstimatorFailure):
-        mle.fit_pw(distances)
+        mle._fit_pw(distances)
 
 def test_on_exponential_seq_of_distances():
     np.random.seed(356)

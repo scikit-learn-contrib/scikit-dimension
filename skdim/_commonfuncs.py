@@ -410,7 +410,7 @@ class FlexNbhdEstimator(BaseEstimator):
             raise TypeError(
                     "Invalid pw_dim parameter. It has to be bool"
                 )
-        elif self.pw_dim: #global estimator
+        elif not self.pw_dim: #global estimator
             if self.comb is not None:
                 raise ValueError(
                     "Estimator does not produce pointwise dimension estimate, no aggregation over pointwise dimension estimates is implemented."
@@ -491,17 +491,17 @@ class FlexNbhdEstimator(BaseEstimator):
 
 
         
-        self.fit_pw(
+        self._fit_pw(
             X,
             y=None,
             nbhd_indices=nbhd_indices,
         )
 
-        if self.pw_dim: self.aggr()
+        if self.pw_dim: self._aggr()
 
         return self
 
-    def fit_pw(
+    def _fit_pw(
         self,
         X,
         y=None,
@@ -536,7 +536,7 @@ class FlexNbhdEstimator(BaseEstimator):
             self.is_fitted_pw_ = True
 
             if self.smooth_flag:
-                self.smooth(nbhd_indices)
+                self._smooth(nbhd_indices)
         else:
             self.is_fitted_ = True
         
@@ -586,9 +586,9 @@ class FlexNbhdEstimator(BaseEstimator):
 
         return indices, radial_dist
 
-    def aggr(self):
+    def _aggr(self):
         # computes self.dimension_ from self.dimension_pw_
-        if self.is_fitted_pw_:
+        if self.pw_dim and self.is_fitted_pw_:
             if self.comb == "mean":
                 self.dimension_ = np.nanmean(
                     self.dimension_pw_
@@ -606,11 +606,12 @@ class FlexNbhdEstimator(BaseEstimator):
 
         return None
 
-    def smooth(self, nbhd_indices = None):
+    def _smooth(self, nbhd_indices = None):
         # compute smoothed local estimates (aggregate over local neighbourhoods)
         # To do: fix inconsistency if not all members of neighbourhood have local estimates! currently skipped them
         # Note that even if no dimension estimate is given for point, if nbhd has non-nan dimension estimates, we still return an aggregation
-        if self.is_fitted:
+
+        if self.pw_dim and self.is_fitted:
 
             self.dimension_pw_smooth_ = []
 
@@ -636,7 +637,6 @@ class FlexNbhdEstimator(BaseEstimator):
             self.is_fitted_pw_smooth_ = True
         else:
             raise ValueError("No pointwise dimension fitted.")
-
         return None
 
     def transform(self, X=None):
@@ -668,7 +668,7 @@ class FlexNbhdEstimator(BaseEstimator):
         ).dimension_
 
     def transform_pw(self, X=None):
-        """Return an array of pointwise ID estimates after a previous call to self.fit_pw
+        """Return an array of pointwise ID estimates after a previous call to self._fit_pw
 
         Parameters
         ----------
@@ -679,7 +679,7 @@ class FlexNbhdEstimator(BaseEstimator):
         dimension_pw : np.array
             Pointwise ID estimates
         dimension_pw_smooth : np.array
-            If self.fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
+            If self._fit_pw(smooth=True), additionally returns smoothed pointwise ID estimates
         """
 
         check_is_fitted(
