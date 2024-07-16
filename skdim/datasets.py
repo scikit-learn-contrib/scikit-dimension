@@ -32,6 +32,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.utils.validation import check_random_state
+from sklearn.datasets import fetch_openml
 from scipy.special import gammainc
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
@@ -58,6 +59,7 @@ def product(n, sample_1, sample_1_kwargs, sample_2, sample_2_kwargs):
     sample_2_points = sample_2(**sample_2_kwargs)
 
     return np.hstack((sample_1_points, sample_2_points))
+
 
 
 def hyperBall(n, d, radius=1.0, center=[], random_state=None):
@@ -576,6 +578,26 @@ class HilbertCurve:
         data = np.apply_along_axis(self._point_from_parameter, 1, parameters)
         return data
 
+def mnist(imshape=False, digit_class=True):
+    """Fetch MNIST dataset of 60000 28x28 greyscale handwritten digits from OpenML.
+    Parameters
+    ----------
+        imshape: bool
+            If true, return image data as 60000 28x28 numpy array. Defaults to flat 60000x748 array.
+        digit_class: bool
+            If true, return class of digits as well
+
+    Returns
+    -------
+    X: np.array, (60000 x 748)
+    y: np.array, (60000,)
+    """
+    X, y = fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
+    if imshape: X = X.reshape([-1, 28, 28])
+    if digit_class:
+        return X,y
+    else:
+        return X
 
 class BenchmarkManifolds:
     """
