@@ -43,6 +43,27 @@ def monomial_embedding(data, degree=5):
         ]
     )
 
+def delay_embedding(x, delay = range(-1,2)):
+    """
+    Lift (time_steps, n_dim) time series data to (time_steps x (n_dim x n_delay)) data
+    """
+    shifts = np.sort(delay).astype(int)
+    lead,lag= max(shifts[-1],0), min(shifts[0],0)
+    trunc = lead - lag
+    shifts -= lag #shift must start at a non-negative number 
+
+    x = x.T #n_dim x time_steps
+    T = x.shape[-1]
+    if T - trunc > 0:
+        X = np.array([
+            x[:,d:T-(trunc - d)]
+            for d in shifts
+        ])# n_feats x L x T'
+        print()
+        return X.reshape([-1, T-trunc]).T
+    else:
+        raise ValueError("Delay embedding truncation exceeds length of time series.")
+
 
 def nonlinear():
     raise NotImplementedError
@@ -72,3 +93,5 @@ def dictionary_learning():
 
 def tangent_function():
     raise NotImplementedError
+
+
