@@ -32,6 +32,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.utils.validation import check_random_state
+from sklearn.datasets import fetch_openml
 from scipy.special import gammainc
 
 
@@ -244,6 +245,12 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
         w = np.concatenate((w, sph[:, 3]))
 
     return np.hstack((x[:, None], y[:, None], z[:, None], w[:, None]))
+
+
+def mnist():
+    X, y = fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
+    return X,y
+    
 
 
 class BenchmarkManifolds:
