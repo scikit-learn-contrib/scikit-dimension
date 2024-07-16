@@ -1,5 +1,4 @@
 skdimvenv/
-skdvenv/
 *.vscode
 *.idea
 *.ini
