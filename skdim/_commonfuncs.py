@@ -388,7 +388,8 @@ class FlexNbhdEstimator(BaseEstimator):
         comb: method of averaging either 'mean', 'median', or 'hmean'
         smooth: if true, average over dimension estimates of local neighbourhoods using comb
         n_jobs: number of parallel processes in inferring local neighbourhood
-        kwargs: keyword arguments, such as 'n_neighbors', or 'radius' for sklearn NearestNeighbor to infer local neighbourhoods
+        radius: radius parameter for nearest neighbour construction
+        n_neighbors: number of neighbors for k nearest neighbourhood construction
         """
 
         self.pw_dim = pw_dim 
@@ -458,12 +459,12 @@ class FlexNbhdEstimator(BaseEstimator):
         
         if not isinstance(self.n_jobs, int):
                 raise TypeError(
-                    "Invalid n_jobs parameter. It has to be integer > 0"
+                    "Invalid n_jobs parameter (passed to sklearn NearestNeighbors). It has to be integer >= -1. "
                 )
         
-        elif self.n_jobs < 1:
+        elif self.n_jobs < -1:
             raise ValueError(
-                    "Invalid n_jobs parameter. It has to be integer > 0"
+                    "Invalid n_jobs parameter (passed to sklearn NearestNeighbors). It has to be integer >= -1. "
                 )
         
 
@@ -487,9 +488,7 @@ class FlexNbhdEstimator(BaseEstimator):
         nbhd_indices: if nbhd_type == 'custom', dict(landmark: list of nbhd indices)
 
         """
-        #check arrays here
-
-
+    
         
         self._fit_pw(
             X,
