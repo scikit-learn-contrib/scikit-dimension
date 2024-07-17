@@ -1,3 +1,5 @@
+skdimvenv/
+skdvenv/
 *.vscode
 *.idea
 *.ini
@@ -73,3 +75,4 @@ target/
 /bin
 pyvenv.cfg
 /share
+
