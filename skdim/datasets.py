@@ -61,7 +61,6 @@ def product(n, sample_1, sample_1_kwargs, sample_2, sample_2_kwargs):
     return np.hstack((sample_1_points, sample_2_points))
 
 
-
 def hyperBall(n, d, radius=1.0, center=[], random_state=None):
     """
     Generates a sample from a uniform distribution on the hyperball
@@ -579,18 +578,18 @@ class HilbertCurve:
         return data
 
 def mnist(imshape=False, digit_class=True):
-    """Fetch MNIST dataset of 60000 28x28 greyscale handwritten digits from OpenML.
+    """Fetch MNIST dataset of 70000 28x28 greyscale handwritten digits from OpenML.
     Parameters
     ----------
         imshape: bool
-            If true, return image data as 60000 28x28 numpy array. Defaults to flat 60000x748 array.
+            If true, return image data as 70000 28x28 numpy array. Defaults to flat 60000x748 array.
         digit_class: bool
             If true, return class of digits as well
 
     Returns
     -------
-    X: np.array, (60000 x 748)
-    y: np.array, (60000,)
+    X: np.array, (70000 x 748)
+    y: np.array, (70000,)
     """
     X, y = fetch_openml("mnist_784", version=1, return_X_y=True, as_frame=False)
     if imshape: X = X.reshape([-1, 28, 28])
