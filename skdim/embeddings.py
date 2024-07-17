@@ -46,6 +46,18 @@ def monomial_embedding(data, degree=5):
 def delay_embedding(x, delay = range(-1,2)):
     """
     Lift (time_steps, n_dim) time series data to (time_steps x (n_dim x n_delay)) data
+
+    Parameters
+    ----------
+    x: np.array, (time_steps, n_dim) 
+        n_dim dimensional time series
+    delay: iterator of integers, such as list or one-dim numpy array
+        delay embedding parameter such that x[i] is embedded as [x[i+j] for j in delay] 
+
+    Returns
+    -------
+    data: np.array, (truncated time series length, n_dim x len(delay))
+        Delay embedded time series
     """
     shifts = np.sort(delay).astype(int)
     lead,lag= max(shifts[-1],0), min(shifts[0],0)
