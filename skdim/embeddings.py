@@ -70,8 +70,7 @@ def delay_embedding(x, delay = range(-1,2)):
         X = np.array([
             x[:,d:T-(trunc - d)]
             for d in shifts
-        ])# n_feats x L x T'
-        print()
+        ])# n_feats x L x (T - trunc)
         return X.reshape([-1, T-trunc]).T
     else:
         raise ValueError("Delay embedding truncation exceeds length of time series.")
@@ -105,5 +104,3 @@ def dictionary_learning():
 
 def tangent_function():
     raise NotImplementedError
-
-
