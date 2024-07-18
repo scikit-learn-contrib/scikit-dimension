@@ -19,11 +19,11 @@ def test_wrong_k1_k2_values_are_not_accepted(data):
         est = skdim.id_flex.GeoMle(average_steps=-1)
         est.fit(data)
     with pytest.raises(ValueError):
-        est = skdim.id_flex.GeoMle(np.random.rand(100, 2))
-        est.fit(data, n_neighbors=-1)
+        est = skdim.id_flex.GeoMle(np.random.rand(100, 2), n_neighbors=-1)
+        est.fit(data)
     with pytest.raises(ValueError):
-        est = skdim.id_flex.GeoMle(np.random.rand(100, 2))
-        est.fit(data, n_neighbors=0)
+        est = skdim.id_flex.GeoMle(np.random.rand(100, 2), n_neighbors=0)
+        est.fit(data)
 
 def test_non_positive_polynomial_degrees_are_not_accepted(data):
     with pytest.raises(ValueError):
@@ -40,12 +40,12 @@ def test_negative_bootstrap_num_is_not_accepted(data):
 
 def test_throw_exception_when_dataset_is_too_small_for_k1_k2():
     X = np.random.rand(10, 2)
-    GeoMle = skdim.id_flex.GeoMle()
+    GeoMle = skdim.id_flex.GeoMle(n_neighbors=11)
     with pytest.raises(ValueError):
-        GeoMle.fit(X, n_neighbors=11)
-    GeoMle = skdim.id_flex.GeoMle(average_steps=3)
+        GeoMle.fit(X)
+    GeoMle = skdim.id_flex.GeoMle(average_steps=3, n_neighbors=9)
     with pytest.raises(ValueError):
-        GeoMle.fit(X, n_neighbors=9)
+        GeoMle.fit(X)
 
 def test_on_swiss_sphere():
     # Expected result comes from origginal paper, Table 3
@@ -54,8 +54,8 @@ def test_on_swiss_sphere():
     DG = DataGenerator()
     for i in range(10):
         data = DG.gen_data('Sphere', 1000, 15, 10)
-        GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS)
-        GeoMle.fit(data, n_neighbors=__K1)
+        GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS, n_neighbors=__K1)
+        GeoMle.fit(data)
         acc += GeoMle.transform()
     assert pytest.approx(acc/10, 0.1) == 10.2
 
@@ -66,8 +66,8 @@ def test_on_swiss_roll():
     DG = DataGenerator()
     for i in range(10):
         data = DG.gen_data('Roll', 1000, 3, 2)
-        GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS, bootstrap_num=3)
-        GeoMle.fit(data, n_neighbors=__K1)
+        GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS, bootstrap_num=3, n_neighbors=__K1)
+        GeoMle.fit(data)
         acc += GeoMle.transform()
     assert pytest.approx(acc / 10, 0.1) == 2.0
 
@@ -75,22 +75,22 @@ def test_is_like_original_GeoMle_on_sphere():
     np.random.seed(782)
     DG = DataGenerator()
     data = DG.gen_data('Sphere', 1000, 2, 1)
-    GeoMle = skdim.id_flex.GeoMle(average_steps = __AVG_STEPS)
-    GeoMle.fit(data, n_neighbors=__K1)
+    GeoMle = skdim.id_flex.GeoMle(average_steps = __AVG_STEPS, n_neighbors=__K1)
+    GeoMle.fit(data)
     assert pytest.approx(GeoMle.transform(), 0.05) == gm.geomle(data, __K1, __K2, nb_iter1=1, nb_iter2=20).mean()
 
 def test_is_like_original_GeoMle_on_affine():
     np.random.seed(122)
     DG = DataGenerator()
     data = DG.gen_data('Affine', 1000, 7, 3)
-    GeoMle = skdim.id_flex.GeoMle(average_steps = __AVG_STEPS, bootstrap_num=10)
-    GeoMle.fit(data, n_neighbors=__K1)
+    GeoMle = skdim.id_flex.GeoMle(average_steps = __AVG_STEPS, bootstrap_num=10, n_neighbors=__K1)
+    GeoMle.fit(data)
     assert pytest.approx(GeoMle.transform(), 0.2) == gm.geomle(data, __K1, __K2, nb_iter1=1, nb_iter2=10).mean()
 
 def test_is_like_original_GeoMle_on_spiral():
     np.random.seed(782)
     DG = DataGenerator()
     data = DG.gen_data('Spiral', 1000, 15, 1)
-    GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS, bootstrap_num=20)
-    GeoMle.fit(data, n_neighbors=__K1)
+    GeoMle = skdim.id_flex.GeoMle(average_steps=__AVG_STEPS, bootstrap_num=20, n_neighbors=__K1)
+    GeoMle.fit(data)
     assert pytest.approx(GeoMle.transform(), 0.2) == gm.geomle(data, __K1, __K2, nb_iter1=1, nb_iter2=20).mean()

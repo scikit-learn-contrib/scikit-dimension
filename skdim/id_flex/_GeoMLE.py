@@ -1,11 +1,26 @@
 from .._commonfuncs import FlexNbhdEstimator
 from sklearn.linear_model import LinearRegression, Ridge
-from sklearn.neighbors import DistanceMetric
+from sklearn.metrics import DistanceMetric
 from sklearn.metrics.pairwise import pairwise_distances
 import numpy as np
 
 class GeoMle(FlexNbhdEstimator):
-    def __init__(self, average_steps = 2, bootstrap_num = 20, alpha = 5e-3, interpolation_degree = 2):
+    def __init__(self, average_steps = 2, bootstrap_num = 20, alpha = 5e-3, interpolation_degree = 2,
+        metric="euclidean",
+        comb="mean",
+        smooth=False,
+        n_jobs=1,
+        n_neighbors=5):
+        super().__init__(
+            pw_dim=True,
+            nbhd_type="knn",
+            metric=metric,
+            comb=comb,
+            smooth=smooth,
+            n_jobs=n_jobs,
+            n_neighbors=n_neighbors,
+            sort_radial=False
+        )
         """
         Parameters
         ----------
@@ -17,13 +32,16 @@ class GeoMle(FlexNbhdEstimator):
             Regularization parameter for Ridge regression. The default is 5e-3.
         interpolation_degree : int, optional
             Degree of interpolation polynomial. The default is 2.
+        n_neighbors : int, optional
+            Number of neighbors. The default is 5.
         """
+        self.pw_dim = True
         self.average_steps = average_steps
         self.alpha = alpha
         self.max_degree = interpolation_degree
         self.bootstrap_num = bootstrap_num
 
-    def _fit(self, X, nbhd_indices, nbhd_type, metric, radial_dists, radius = 1.0, n_neighbors = 5):
+    def _fit(self, X, nbhd_indices, radial_dists):
         # Check if the parameters are valid
         if self.average_steps < 0:
             raise ValueError("Number of average steps can not be negative")
@@ -31,13 +49,13 @@ class GeoMle(FlexNbhdEstimator):
             raise ValueError("Number of bootstrap sets has to  be positive")
         if self.max_degree <= 0:
             raise ValueError("Degree of interpolation polynomial has to be positive")
-        if nbhd_type not in ['knn']:
+        if self.nbhd_type not in ['knn']:
             raise ValueError('Neighbourhood type should be knn')
         
-        k2 = n_neighbors + self.average_steps - 1
-        self.dimension_pw_ = self.geomle(X, n_neighbors, k2, metric=metric)
+        k2 = self.n_neighbors + self.average_steps - 1
+        self.dimension_pw_ = self.geomle(X, self.n_neighbors, k2)
     
-    def geomle(self, X, k1, k2, metric='euclidean'):
+    def geomle(self, X, k1, k2):
         """
         Returns range of Levina-Bickel dimensionality estimation for k = k1..k2 (k1 < k2) averaged over bootstrap samples
     
@@ -51,12 +69,12 @@ class GeoMle(FlexNbhdEstimator):
         Returns: 
         array of shape (nb_iter1,) of regression dimensionality estimation for k = k1..k2 averaged over bootstrap samples
         """
-        if metric == 'precomputed':
+        if self.metric == 'precomputed':
             dist = X
             DIM_SPACE = None
         else:
             DIM_SPACE = X.shape[1]
-            dist = pairwise_distances(X, X, metric=metric)
+            dist = pairwise_distances(X, X, metric=self.metric)
         NUM_OF_POINTS = X.shape[0]
 
         result = []
