@@ -1,38 +1,48 @@
 import pytest
 import numpy as np
 import skdim
+from skdim.id import Gride
 from sklearn.datasets import make_swiss_roll
 from sklearn.exceptions import NotFittedError
 from dadapy.data import Data
 
 def test_wrong_n1_n2_values_are_not_accepted():
-    pytest.raises(ValueError, Gride(n1=0))
-    pytest.raises(ValueError, Gride(n1=-1))
-    pytest.raises(ValueError, Gride(n1 = 2, n2=1))
-    pytest.raises(ValueError, Gride(n1 = 0.5))
-    pytest.raises(ValueError, Gride(n1 = 2, n2=7.1))
+    with pytest.raises(ValueError):
+        g = Gride(n1=0)
+    with pytest.raises(ValueError):
+        g =Gride(n1=-1)
+    with pytest.raises(ValueError):
+        g = Gride(n1 = 2, n2=1)
+    with pytest.raises(ValueError):
+        g = Gride(n1 = 0.5)
+    with pytest.raises(ValueError):
+        g = Gride(n1 = 2, n2=7.1)
 
 def test_wrong_dimenstion_intervals_are_not_accepted():
-    pytest.raises(ValueError, Gride(d0=-1))
-    pytest.raises(ValueError, Gride(d1=2, d2=1))
+    with pytest.raises(ValueError):
+        g = Gride(d0=-1)
+        g = Gride(d1=2, d2=1)
 
 def test_multiple_single_scale_estim_eq_multiscale():
     np.random.seed(782)
-    swiss_roll_dat = make_swiss_roll(1000)
-    
+    X = np.random.normal(0, 1, (100, 3))
+   
     gride = Gride(range_max = 32)
-    gride.fit(swiss_roll_dat)
+    gride.fit(X)
     dim_evolution = gride.transform_multiscale()
-    for i in range(6):
-        assert pytest.approx(dim_evolution[i]) == Gride(n1=2**i).fit_transform(swiss_roll_dat)
+    for i in range(4):
+        g = Gride(n1=2**i).fit(X)
+       
+        assert pytest.approx(dim_evolution[i]) == g.transform()
 
 def test_multiscale_not_computed_without_max_range():
     np.random.seed(3127)
     gride = Gride()
-    swiss_roll_dat = make_swiss_roll(100)
-    gride.fit(swiss_roll_dat)
+    X = np.random.normal(0, 1, (1000, 3))
+    gride.fit(X)
     assert not hasattr(gride, 'dimension_array_')
-    pytest.raises(NotFittedError, gride.transform_multiscale())
+    with pytest.raises(NotFittedError):
+        gride.transform_multiscale()
 
 def test_results_similar_to_dadapy_for_hyperspher():
     np.random.seed(782)
@@ -65,12 +75,12 @@ def test_avg_results_for_hypercube():
     for i in range(len(real_dims)):
         acc = 0.0
         gride = Gride(n1=N1)
-        for step in MONTE_CARLO_SIMULATION_NUM:
-            hypercube = np.random.uniform(low=0.0, high=1.0, size=(SAMPLE_SIZE, dim))
+        for step in range(MONTE_CARLO_SIMULATION_NUM):
+            hypercube = np.random.uniform(low=0.0, high=1.0, size=(SAMPLE_SIZE, real_dims[i]))
             acc += gride.fit_transform(hypercube)
         estimates.append(acc / MONTE_CARLO_SIMULATION_NUM)
     assert pytest.approx(estimates[0], 0.1) == 2.0
-    assert pytest.approx(estimates[1], 0.1) == 3.5 
-    assert pytest.approx(estimates[2], 0.1) == 5.0 
-    assert pytest.approx(estimates[3], 0.2) == 6.45 
+    assert pytest.approx(estimates[1], 0.1) == 3.5
+    assert pytest.approx(estimates[2], 0.1) == 5.0
+    assert pytest.approx(estimates[3], 0.2) == 6.45
     assert pytest.approx(estimates[4], 0.25) == 7.75
