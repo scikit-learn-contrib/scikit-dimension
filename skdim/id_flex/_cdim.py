@@ -74,13 +74,13 @@ class CDim(FlexNbhdEstimator):
         vectors = np.take(vectors, np.argsort(norms), axis=0)
         vectors = vectors * np.sign(np.tensordot(vectors, vectors[0], axes=1))[:, None]
         T = np.matmul(vectors, vectors.T)
-        label_set = [[i] for i, _ in enumerate(nbhd)]
+        label_set = [[i] for i in range(len(nbhd))]
         de = 0
         while len(label_set) > 0:
             de += 1
             new_label_set = []
             for label in label_set:
-                for i, _ in enumerate(nbhd):
+                for i in range(len(nbhd)):
                     if i in label:
                         continue
                     for vec_idx in label:
