@@ -35,7 +35,6 @@ class GeoMle(FlexNbhdEstimator):
         n_neighbors : int, optional
             Number of neighbors. The default is 5.
         """
-        self.pw_dim = True
         self.average_steps = average_steps
         self.alpha = alpha
         self.max_degree = interpolation_degree
@@ -53,11 +52,11 @@ class GeoMle(FlexNbhdEstimator):
             raise ValueError('Neighbourhood type should be knn')
         
         k2 = self.n_neighbors + self.average_steps - 1
-        self.dimension_pw_ = self.geomle(X, self.n_neighbors, k2)
+        self.dimension_pw_ = self.__geomle(X, self.n_neighbors, k2)
     
-    def geomle(self, X, k1, k2):
+    def __geomle(self, X, k1, k2):
         """
-        Returns range of Levina-Bickel dimensionality estimation for k = k1..k2 (k1 < k2) averaged over bootstrap samples
+        Returns range of Levina-Bickel dimensionality estimation for points in X averaged over bootstrap samples
     
         Input parameters:
         X            - data
@@ -67,7 +66,7 @@ class GeoMle(FlexNbhdEstimator):
         metric       - metric for the distance calculation (Default = 'euclidean')
     
         Returns: 
-        array of shape (nb_iter1,) of regression dimensionality estimation for k = k1..k2 averaged over bootstrap samples
+        array of shape (len(X),) of regression dimensionality estimation for points in X averaged over bootstrap samples
         """
         if self.metric == 'precomputed':
             dist = X
@@ -77,8 +76,6 @@ class GeoMle(FlexNbhdEstimator):
             dist = pairwise_distances(X, X, metric=self.metric)
         NUM_OF_POINTS = X.shape[0]
 
-        result = []
-        data_reg = []
         avg_distances = np.zeros((NUM_OF_POINTS , self.average_steps))
         mles = np.zeros((NUM_OF_POINTS, self.bootstrap_num, self.average_steps))
         final_mles = np.zeros(NUM_OF_POINTS)
@@ -92,7 +89,6 @@ class GeoMle(FlexNbhdEstimator):
                 for k_iter in range(self.average_steps):
                     # Calculate MLE for bootstrap sample
                     mles[x_id, j, k_iter] = GeoMle._calc_mle(bootstrap_distances_nn[:k_iter + k1])
-                    #print("Estims", mles[x_id, j, k_iter])
 
         for x_id in range(X.shape[0]):
             avg_distances[x_id, :] /= self.bootstrap_num # average distances over bootstrap samples
