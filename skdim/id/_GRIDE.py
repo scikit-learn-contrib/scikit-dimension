@@ -63,7 +63,7 @@ class Gride(GlobalEstimator):
             estimators, arXiv preprint arXiv:2104.13832 (2021).
     """
     
-    def __init__(self, n1=1, n2=None, d0=0.001, d1=1000, eps=1e-7, range_max=None, metric="euclidean"):
+    def __init__(self, n1=1, n2=None, d0=0.001, d1=1000, eps=1e-7, range_max=None, metric="euclidean", n_jobs=1):
         """Initialize the GRIDE object.
         Parameters
         ----------
@@ -82,6 +82,7 @@ class Gride(GlobalEstimator):
         metric : str, default="euclidean"
             The metric to use when calculating distances between points.
         """
+        self.n_jobs = n_jobs
         self.n1 = n1
         if n2 == None:
             self.n2 = 2 * n1
@@ -104,7 +105,7 @@ class Gride(GlobalEstimator):
         if d0 < 0 or d1 < 0:
             raise ValueError("Dimenstions d0 and d1 must be greater than 0")
     
-    def fit(self, X, y=None, n_jobs=1):
+    def fit(self, X, y=None):
         """Implementation of single and multi scale intrinsic dimension estimation using the GRIDE algorithm.
         Mutli-scale estimation is performed when self.range_max is not None.
         Single scale estimation is performed always
@@ -118,7 +119,6 @@ class Gride(GlobalEstimator):
         self : object
             Returns self.
         """
-        self.n_jobs = n_jobs
         X = check_array(X, ensure_min_samples=2)
         if not self.range_max is None:
             self.dimension_array_ = self.__return_id_scaling_gride(X)
@@ -146,7 +146,6 @@ class Gride(GlobalEstimator):
         """
 
         max_step = int(math.log(self.range_max, 2))
-        nn_ranks = np.array([2**i for i in range(max_step + 1)])
         mus = self.__return_mus_scaling(
             X,
             range_scaling=self.range_max
