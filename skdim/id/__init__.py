@@ -42,3 +42,4 @@ from ._PCA import lPCA
 from ._TLE import TLE
 from ._MADA import MADA
 from ._MOM import MOM
+from ._GRIDE import Gride
