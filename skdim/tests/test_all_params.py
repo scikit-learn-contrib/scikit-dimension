@@ -32,6 +32,7 @@
 import pytest
 import numpy as np
 import skdim
+import skdim.id_flex
 import matplotlib.pyplot as plt
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import check_estimator
@@ -156,6 +157,13 @@ def test_twonn_params(data):
     test_high_dim[:, : data.shape[1]] = data
     x = skdim.id.TwoNN().fit(test_high_dim)
     x = skdim.id.TwoNN(discard_fraction=0.05).fit(data)
+
+def test_geomle_params(data):
+    x = skdim.id_flex.GeoMle().fit(data)
+    x = skdim.id_flex.GeoMle(average_steps=3).fit(data)
+    x = skdim.id_flex.GeoMle(bootstrap_num=3).fit(data)
+    x = skdim.id_flex.GeoMle(interpolation_degree=3).fit(data)
+    x = skdim.id_flex.GeoMle(n_neighbors=3).fit(data)
 
 
 def test_aspointwise(data):
