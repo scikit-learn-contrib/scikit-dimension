@@ -343,7 +343,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
                         X[i, :]
                     ) for i in knnidx
                 )
-            self.dimension_pw_ = np.array(results)
+            dimension_pw_ = np.array(results)
         else:
             dimension_pw_ = np.array([self.fit(X[i, :]).dimension_ for i in knnidx])
 
