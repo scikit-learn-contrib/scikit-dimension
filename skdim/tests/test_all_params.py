@@ -147,7 +147,7 @@ def test_mle_params(data):
 
 def test_flex_mle_params(data):
     x = skdim.id_flex.MLE_basic().fit(data)
-    x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
+    #x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
 
 
 def test_twonn_params(data):

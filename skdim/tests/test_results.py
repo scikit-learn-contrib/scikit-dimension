@@ -263,3 +263,8 @@ def test_twonn_results(data):
             == 4.11323,
         )
     )
+
+
+def test_ph_results(data):
+    n = data.shape[0]
+    assert np.allclose(np.round(skdim.id.PH(nmin = n // 2).fit(data).dimension_, 3), 6.352 )

@@ -449,7 +449,7 @@ def lorenz_attractor(n_points=10000, tmax=100.0):
     return np.transpose(soln.y)
 
 
-def dumbbell(n, connecting_radius=0.1, ramdom_state=None):
+def dumbbell(n, connecting_radius=0.1, random_state=None):
     """Create a sample from a PL model of a 2-dimensional dumbell in R^3e.
 
     Parameters
@@ -487,7 +487,7 @@ def dumbbell(n, connecting_radius=0.1, ramdom_state=None):
         else:
             raise ValueError(out_of_bounds_message)
 
-    dumbbell_surface = SurfaceOfRevolution(profile_function, random_state=ramdom_state)
+    dumbbell_surface = SurfaceOfRevolution(profile_function, random_state=random_state)
     return dumbbell_surface.sample_points(n_points=n)
 
 
