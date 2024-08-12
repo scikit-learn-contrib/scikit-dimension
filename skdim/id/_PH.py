@@ -12,7 +12,7 @@ from sklearn.linear_model import LinearRegression
 from .._commonfuncs import GlobalEstimator
 
 
-class MST(GlobalEstimator):
+class PH(GlobalEstimator):
 
     def __init__(self, nmin = 2, step = 1, alpha = 1.0, k = 10, metric = 'euclidean', seed =12345):
         self.alpha = alpha
@@ -41,12 +41,12 @@ class MST(GlobalEstimator):
         """
         X = check_array(X, ensure_min_samples=self.nmin + self.nstep + 1, ensure_min_features=2)
 
-        self.dimension_, self.score_ = self._MSTEst(X)
+        self.dimension_, self.score_ = self._phEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
         return self
 
-    def _MSTEst(self, X):
+    def _phEst(self, X):
 
         NUMPOINTS = X.shape[0]
         random.seed(self.seed)
@@ -56,7 +56,7 @@ class MST(GlobalEstimator):
 
         nrange = range(self.nmin, NUMPOINTS, self.nstep)
 
-        E = [self._mst(D, n) for n in nrange]
+        E = [self._ph(D, n) for n in nrange]
         E = np.array(reduce(lambda xs, ys: xs + ys, E)) #flatten
 
         x = np.repeat(nrange, self.k).reshape([-1,1])
@@ -69,7 +69,7 @@ class MST(GlobalEstimator):
         dim = np.divide(self.alpha,(1-reg.coef_))
         return dim, score
     
-    def _mst(self, D, n):
+    def _ph(self, D, n):
 
         NUMPOINTS = D.shape[0]
         y = []
