@@ -69,7 +69,7 @@ def test_ess_params(data):
 
 
 def test_fisher_params(data, monkeypatch):
-    monkeypatch.setattr(plt, "show", lambda: None)
+    #monkeypatch.setattr(plt, "show", lambda: None)
     x = skdim.id.FisherS().fit(data)
     x = skdim.id.FisherS(conditional_number=2).fit(data)
     x = skdim.id.FisherS(produce_plots=True).fit(data)
@@ -157,7 +157,11 @@ def test_twonn_params(data):
     x = skdim.id.TwoNN().fit(test_high_dim)
     x = skdim.id.TwoNN(discard_fraction=0.05).fit(data)
 
-
+def test_mst_params(data):
+    x = skdim.id.MST().fit(data)
+    x = skdim.id.MST(k = 1).fit(data)
+    x = skdim.id.MST(alpha = 2.0).fit(data)
+    
 def test_aspointwise(data):
     x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50)
     x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50, n_jobs=2)
