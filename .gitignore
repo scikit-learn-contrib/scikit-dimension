@@ -76,3 +76,4 @@ target/
 pyvenv.cfg
 /share
 
+notebooks/
