@@ -161,6 +161,17 @@ def test_ph_params(data):
     x = skdim.id.PH().fit(data)
     x = skdim.id.PH(k = 1).fit(data)
     x = skdim.id.PH(alpha = 2.0).fit(data)
+
+    with pytest.raises(ValueError):
+        skdim.id.PH(alpha = 0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(alpha = -1.0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nmin = 1).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nstep = 0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nstep = 1000, nmin = 1000).fit(data)
     
 def test_aspointwise(data):
     x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50)

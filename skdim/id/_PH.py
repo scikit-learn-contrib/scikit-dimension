@@ -64,6 +64,8 @@ class PH(GlobalEstimator):
         self.score_: float
             Regression score
         """
+        self._check_params(X)
+
         X = check_array(X, ensure_min_samples=self.nmin + self.nstep + 1, ensure_min_features=2)
 
         self.dimension_, self.reg_ = self._phEst(X)
@@ -106,3 +108,12 @@ class PH(GlobalEstimator):
         return y
 
 
+    def _check_params(self, X):
+        if self.alpha <= 0:
+            raise ValueError("Alpha power parameter must be strictly positive.")
+        if self.nmin <= 1:
+            raise ValueError("Must have at least two points in dataset.")
+        if self.nstep < 1:
+            raise ValueError("Nstep must be at least one.")
+        if self.nmin + self.nstep >= X.shape[0]:
+            raise ValueError("N range has fewer than two points, reduce nmin or nstep to ensure there is a line to be fitted!")
