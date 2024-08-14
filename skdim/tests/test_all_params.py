@@ -150,6 +150,13 @@ def test_flex_mle_params(data):
     x = skdim.id_flex.MLE_basic().fit(data)
     x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
 
+def test_mag_params(data):
+    x = skdim.id.Mag().fit(data)
+    with pytest.raises(ValueError): 
+        skdim.id.Mag(ts = np.linspace(0,1,11)).fit(data)
+    with pytest.raises(ValueError): 
+        est = skdim.id.Mag(ts = np.linspace(-1,1,11))
+        est.fit(data)
 
 def test_twonn_params(data):
     # to trigger the "n_features>25 condition"
