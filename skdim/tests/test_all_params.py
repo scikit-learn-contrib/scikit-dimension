@@ -32,6 +32,7 @@
 import pytest
 import numpy as np
 import skdim
+import skdim.id_flex
 import matplotlib.pyplot as plt
 from inspect import getmembers, isclass
 from sklearn.utils.estimator_checks import check_estimator
@@ -164,6 +165,13 @@ def test_twonn_params(data):
     x = skdim.id.TwoNN().fit(test_high_dim)
     x = skdim.id.TwoNN(discard_fraction=0.05).fit(data)
 
+def test_geomle_params(data):
+    x = skdim.id_flex.GeoMle().fit(data)
+    x = skdim.id_flex.GeoMle(average_steps=3).fit(data)
+    x = skdim.id_flex.GeoMle(bootstrap_num=3).fit(data)
+    x = skdim.id_flex.GeoMle(interpolation_degree=3).fit(data)
+    x = skdim.id_flex.GeoMle(n_neighbors=3).fit(data)
+
 
 def test_aspointwise(data):
     x = skdim.asPointwise(data, skdim.id.TwoNN(), n_neighbors=50)
@@ -214,3 +222,11 @@ def test_fisher_separability_graph(monkeypatch):
     plt.xlabel("PC1")
     plt.ylabel("PC2")
     #plt.show()
+
+def test_gride_params(data):
+    x = skdim.id.Gride().fit(data)
+    x = skdim.id.Gride(n1=3, n2=8).fit(data)
+    x = skdim.id.Gride(d0=1, d1=20, eps=0.001).fit(data)
+    x = skdim.id.Gride(metric="minkowski").fit(data)
+    x = skdim.id.Gride().fit_transform(data)
+    x = skdim.id.Gride(range_max=32).fit(data).transform_multiscale()
