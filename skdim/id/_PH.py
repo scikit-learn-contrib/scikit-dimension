@@ -14,7 +14,9 @@ from .._commonfuncs import GlobalEstimator
 
 class PH(GlobalEstimator):
     """Intrinsic dimension estimation using the PHdim algorithm. 
-
+        The final step of the algorithm involves fitting a straight line to data. 
+        User should plot self.x_ against self.y_ to verify goodness of fit, and if needs be fit the straight line to a subset of x_ vs y_ to improve the inferrence. 
+        
     Parameters
     ----------  
     nmin: int
@@ -33,9 +35,9 @@ class PH(GlobalEstimator):
     Attributes
     ----------
     x_: 1d array 
-        np.array with the log(n) values.
+        np.array with the log(n) values. 
     y_: 1d array 
-        np.array with the log(E) values.
+        np.array with the log(E) values. 
     reg_: sklearn.linear_model.LinearRegression
         regression object used to fit line to log E vs log n
     """
@@ -48,7 +50,7 @@ class PH(GlobalEstimator):
         self.seed = seed
 
     def fit(self, X, y=None):
-        """A reference implementation of a fitting function.
+        """
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
