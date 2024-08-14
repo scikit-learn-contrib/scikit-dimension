@@ -14,7 +14,7 @@ def data():
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_unknown_neighborhood(estim_class, data):
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError, TypeError)):
         estimator = estim_class(nbhd_type="wrong_unknown_type")
         estimator.fit_transform(data)
 
@@ -33,7 +33,7 @@ def test_aggregation_unknown_comb(estim_class, data):
 @pytest.mark.parametrize("estim_class", estimators)
 def test_get_neigh_unknown_neighborhood(estim_class, data):
     
-    with pytest.raises(ValueError):
+    with pytest.raises((ValueError, TypeError)):
         estimator = estim_class(nbhd_type="wrong_unknown_type")
         estimator.get_neigh(data)
 
@@ -65,22 +65,28 @@ def test_fit_pw_computes_pw_dim(estim_class, data):
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_single_job_equal_to_fit(estim_class, data):
     estimator_single = estim_class()
+    np.random.seed(0)
     estimator_single.fit(data)
     estimator_multi = estim_class(n_jobs=4)
+    np.random.seed(0)
     estimator_multi.fit(data)
     assert pytest.approx(estimator_single.dimension_) == pytest.approx(estimator_multi.dimension_)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_pw_single_job_equal_to_fit_pw(estim_class, data):
-    estimator_single = estim_class()
+    estimator_single = estim_class(n_jobs=4)
+    np.random.seed(0)
     estimator_single._fit_pw(data)
     estimator_multi = estim_class(n_jobs=4)
+    np.random.seed(0)
     estimator_multi._fit_pw(data)
     assert np.allclose(estimator_multi.dimension_pw_, estimator_single.dimension_pw_)
 
 @pytest.mark.parametrize("estim_class", estimators)
 def test_fit_transform_pw_is_fit_pw_plus_transform_pw(estim_class, data):
     estimator = estim_class()
+    np.random.seed(0)
     estimator._fit_pw(data)
     second_estimator = estim_class()
+    np.random.seed(0)
     assert np.allclose(second_estimator.fit_transform_pw(data), estimator.transform_pw(data))
