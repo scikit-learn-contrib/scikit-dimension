@@ -93,17 +93,6 @@ class Gride(GlobalEstimator):
         self.eps = eps
         self.range_max = range_max
         self.metric = metric
-        # Object validation
-        if n1 >= self.n2:
-            raise ValueError("n1 must be smaller than n2")
-        if type(n1) != int or type(self.n2) != int:
-            raise ValueError("n1 and n2 must be integers")
-        if n1 < 1 or self.n2 < 1:
-            raise ValueError("n1 and n2 must be greater than 0")
-        if d0 > d1:
-            raise ValueError("Interval is not proper. d0 must be smaller than d1")
-        if d0 < 0 or d1 < 0:
-            raise ValueError("Dimenstions d0 and d1 must be greater than 0")
     
     def fit(self, X, y=None):
         """Implementation of single and multi scale intrinsic dimension estimation using the GRIDE algorithm.
@@ -120,12 +109,27 @@ class Gride(GlobalEstimator):
             Returns self.
         """
         X = check_array(X, ensure_min_samples=2)
+        self._validate_hyperparameters()
         if not self.range_max is None:
             self.dimension_array_ = self.__return_id_scaling_gride(X)
 
         self.dimension_ = self.__compute_id_gride_single_scale(None, self.n1, self.n2, self.eps, X)
         self.is_fitted_ = True
         return self
+    
+
+    def _validate_hyperparameters(self):
+        # Object validation
+        if self.n1 >= self.n2:
+            raise ValueError("n1 must be smaller than n2")
+        if type(self.n1) != int or type(self.n2) != int:
+            raise ValueError("n1 and n2 must be integers")
+        if self.n1 < 1 or self.n2 < 1:
+            raise ValueError("n1 and n2 must be greater than 0")
+        if self.d0 > self.d1:
+            raise ValueError("Interval is not proper. d0 must be smaller than d1")
+        if self.d0 < 0 or self.d1 < 0:
+            raise ValueError("Dimenstions d0 and d1 must be greater than 0")
 
     def transform_multiscale(self, X=None):
         """Return the intrinsic dimension at different scales using the Gride algorithm.
