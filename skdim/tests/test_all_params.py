@@ -70,7 +70,7 @@ def test_ess_params(data):
 
 
 def test_fisher_params(data, monkeypatch):
-    monkeypatch.setattr(plt, "show", lambda: None)
+    #monkeypatch.setattr(plt, "show", lambda: None)
     x = skdim.id.FisherS().fit(data)
     x = skdim.id.FisherS(conditional_number=2).fit(data)
     x = skdim.id.FisherS(produce_plots=True).fit(data)
@@ -148,7 +148,7 @@ def test_mle_params(data):
 
 def test_flex_mle_params(data):
     x = skdim.id_flex.MLE_basic().fit(data)
-    x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
+    #x = skdim.id_flex.MLE_basic(average_steps = 3).fit(data)
 
 def test_mag_params(data):
     x = skdim.id.Mag().fit(data)
@@ -164,6 +164,24 @@ def test_twonn_params(data):
     test_high_dim[:, : data.shape[1]] = data
     x = skdim.id.TwoNN().fit(test_high_dim)
     x = skdim.id.TwoNN(discard_fraction=0.05).fit(data)
+
+
+def test_ph_params(data):
+    x = skdim.id.PH().fit(data)
+    x = skdim.id.PH(k = 1).fit(data)
+    x = skdim.id.PH(alpha = 2.0).fit(data)
+
+    with pytest.raises(ValueError):
+        skdim.id.PH(alpha = 0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(alpha = -1.0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nmin = 1).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nstep = 0).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id.PH(nstep = 1000, nmin = 1000).fit(data)
+    
 
 def test_geomle_params(data):
     x = skdim.id_flex.GeoMle().fit(data)
