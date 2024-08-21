@@ -32,11 +32,14 @@
 import numpy as np
 from numpy.linalg import solve
 from skdim.id_flex import lPCA
+from sklearn.utils.validation import check_array
+from sklearn.utils.parallel import Parallel, delayed
+from joblib import effective_n_jobs
 
 from numpy.linalg import solve
 from sklearn.decomposition import PCA
 from skdim.errors import ConvergenceFailure
-
+from scipy.stats import special_ortho_group
 
 class lBPCA(lPCA):
     """Intrinsic dimension estimation using the Bayesian PCA algorithm. [Bishop98]
@@ -77,6 +80,7 @@ class lBPCA(lPCA):
         self,
         max_iter = 2000,
         conv_tol = 1e-5,
+        rotate = False,
         ver="FO",
         alphaRatio=0.05,
         alphaFO=0.05,
@@ -91,7 +95,7 @@ class lBPCA(lPCA):
         smooth=False,
         n_jobs=1,
         radius=1.0,
-        n_neighbors=5,
+        n_neighbors=20,
     ):
         super().__init__(
             ver=ver,
@@ -114,13 +118,32 @@ class lBPCA(lPCA):
 
         self.max_iter = max_iter
         self.conv_tol = conv_tol
+        self.rotate = rotate
 
+    def _fit(self, X, nbhd_indices, radial_dists):
+        # override parent class
+        self.child_attr_checks(X.shape[1])
+        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
-
+        if effective_n_jobs(self.n_jobs) > 1:
+            with Parallel(n_jobs=self.n_jobs) as parallel:
+                # Asynchronously apply the `fit` function to each data point and collect the results
+                results = parallel(
+                    delayed(self._pcaLocalDimEst)(np.take(X, nbhd, 0))
+                    for nbhd in nbhd_indices
+                )
+            self.dimension_pw_ = np.array([result[0] for result in results])
+        else:
+            self.dimension_pw_ = np.array(
+                [self._pcaLocalDimEst(np.take(X, nbhd, 0))[0] for nbhd in nbhd_indices]
+            )
     def _pcaLocalDimEst(self, X):
         #override lPCA parent class
         N = X.shape[0]
-        if N > 0:
+        d = X.shape[1]
+        if N >= d: #need number of points to be greater than dimensions for initial mle to work
+            if self.rotate:
+                X = X @ special_ortho_group.rvs(d).T #randomly rotate data to make matrix non-sparse, otherwise there may be convergence issues.
             try: 
                 component_norm_sq, noise_variance,  = self._EM(X)
                 #use the number of column vectors of weight matrix with large norm as the estimated dimension; borrow eigenvalue separation heuristics from PCA
@@ -167,6 +190,9 @@ class lBPCA(lPCA):
         """
         X -= np.mean(X, axis =0)
         d = X.shape[1]
+        n = X.shape[0]
+        if n < d:
+            raise ValueError(str(n) + ' < ' + str(d))
         pca = PCA(n_components = 'mle').fit(X)
 
         W0 = pca.components_.T @ np.diag(np.sqrt(pca.singular_values_**2 - pca.noise_variance_)) # d x q
@@ -212,3 +238,17 @@ class lBPCA(lPCA):
         return W, nv, alpha, component_norm_sq
 
 
+    def child_attr_checks(self, d):
+        if not isinstance(self.max_iter, int):
+            raise ValueError("Max_iter needs to be a positive integer.")
+        elif self.max_iter < 1:
+            raise ValueError("Max_iter needs to be a positive integer.")
+        
+        if not isinstance(self.conv_tol, float):
+            raise ValueError('Convolution tolerance needs to be a small positive float.') 
+        elif self.conv_tol <= 0.0:
+            raise ValueError('Convolution tolerance needs to be a small positive float.') 
+        if not isinstance(self.rotate, bool):
+            raise ValueError('Rotate parameter is either True of False.') 
+        if self.n_neighbors < d:
+            raise ValueError('Size of knn neighbourhoods needs to be greater than the extrinsic dimension.') 
