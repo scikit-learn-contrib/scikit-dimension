@@ -94,7 +94,6 @@ class lBPCA(lPCA):
         n_neighbors=5,
     ):
         super().__init__(
-            self,
             ver=ver,
             alphaRatio=alphaRatio,
             alphaFO=alphaFO,
@@ -149,14 +148,16 @@ class lBPCA(lPCA):
     
     def _EM(self, X):
         Xm, W, nv, alpha, static_var = self._initialise(X)
+        converge = False
         for _ in range(self.max_iter):
             Lmean, Lcov = self._expectation(Xm, W, nv)
             W1, nv1, alpha1, component_norm_sq = self._maximisation(Lmean, Lcov, Xm, alpha,nv, static_var)
             if np.max(np.abs(W -W1)) < self.conv_tol:
+                converge = True
                 return component_norm_sq, nv1
             else:
                 W, nv, alpha = W1, nv1, alpha1
-        if not self.converge_:
+        if not converge:
             raise ConvergenceFailure("W matrix does not converge within " + str(self.max_iter) + " iterations, within a tolerance of |delta W| < " + f"{self.conv_tol:.3}")
 
     @staticmethod

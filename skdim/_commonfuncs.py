@@ -397,7 +397,7 @@ class FlexNbhdEstimator(BaseEstimator):
         self.pt_nbhd_incl_pt = pt_nbhd_incl_pt 
         self.metric = metric
         self.comb = comb
-        self.smooth_flag = smooth
+        self.smooth = smooth
         self.n_jobs = n_jobs
         self.radius = radius
         self.n_neighbors = n_neighbors
@@ -416,7 +416,7 @@ class FlexNbhdEstimator(BaseEstimator):
                 raise ValueError(
                     "Estimator does not produce pointwise dimension estimate, no aggregation over pointwise dimension estimates is implemented."
                 )
-            if self.smooth_flag is not None:
+            if self.smooth is not None:
                 raise ValueError(
                     "Estimator does not produce pointwise dimension estimate, no smoothing over pointwise dimension estimates is implemented."
                 )
@@ -425,7 +425,7 @@ class FlexNbhdEstimator(BaseEstimator):
                 raise ValueError(
                     "Invalid comb parameter. It has to be 'mean' or 'median' or 'hmean'"
                 )
-            if not isinstance(self.smooth_flag, bool):
+            if not isinstance(self.smooth, bool):
                 raise TypeError(
                     "Invalid smooth parameter. It has to be bool"
                 )
@@ -534,7 +534,7 @@ class FlexNbhdEstimator(BaseEstimator):
         if self.pw_dim:
             self.is_fitted_pw_ = True
 
-            if self.smooth_flag:
+            if self.smooth:
                 self._smooth(nbhd_indices)
         else:
             self.is_fitted_ = True
@@ -708,7 +708,7 @@ class FlexNbhdEstimator(BaseEstimator):
             nbhd_indices=nbhd_indices,
         )
 
-        if self.smooth_flag:
+        if self.smooth:
             return self.dimension_pw_, self.dimension_pw_smooth_
         else:
             return self.dimension_pw_
