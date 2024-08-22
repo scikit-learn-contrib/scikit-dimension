@@ -1,7 +1,8 @@
 import pytest
 import numpy as np
 from skdim.id_flex import lBPCA
-from sklearn.datasets import make_swiss_roll, hyperBall
+from sklearn.datasets import make_swiss_roll
+from skdim.datasets import hyperBall
 
 VERSIONS = ["FO", "maxgap", "Kaiser", "broken_stick"]
 
@@ -14,7 +15,7 @@ def data():
 
 
 @pytest.mark.parametrize("ver", VERSIONS)
-def test_lpca_results(data, ver):
+def test_lbpca_results(data, ver):
     pca = lBPCA(ver=ver, nbhd_type="eps", radius=0.5)
     assert pca.fit(data).dimension_ == pytest.approx(5, 0.5)
 
