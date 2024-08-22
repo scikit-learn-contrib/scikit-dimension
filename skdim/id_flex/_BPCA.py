@@ -31,7 +31,7 @@
 #
 import numpy as np
 from numpy.linalg import solve
-from skdim.id_flex import lPCA
+from .._commonfuncs import FlexNbhdEstimator
 from sklearn.utils.validation import check_array
 from sklearn.utils.parallel import Parallel, delayed
 from joblib import effective_n_jobs
@@ -41,16 +41,8 @@ from sklearn.decomposition import PCA
 from skdim.errors import ConvergenceFailure
 from scipy.stats import special_ortho_group
 
-class lBPCA(lPCA):
+class lBPCA(FlexNbhdEstimator):
     """Intrinsic dimension estimation using the Bayesian PCA algorithm. [Bishop98]
-
-    Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.\n
-    Version 'Fan' is the method by Fan et al.\n
-    Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.\n
-    Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.\n
-    Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
-    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1)\n
-    Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
 
     Parameters
     ----------
@@ -58,36 +50,16 @@ class lBPCA(lPCA):
         Number of maximum EM algorithm iterations 
     conv_tol: float, default = 1e-5
         Convergence tolerance criterion. If change in estimated W is less than conv_tol then EM stops iterating
-    ver: str, default='FO'
-        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
-    alphaRatio: float in (0,1)
-        Only for ver = 'ratio'. ID is estimated to be
-        the number of principal components needed to retain at least alphaRatio of the variance.
-    alphaFO: float in (0,1)
-        Only for ver = 'FO'. An eigenvalue is considered significant
-        if it is larger than alpha times the largest eigenvalue.
-    alphaFan: float
-        Only for ver = 'Fan'. The alpha parameter (large gap threshold).
-    betaFan: float
-        Only for ver = 'Fan'. The beta parameter (total covariance threshold).
-    PFan: float
-        Only for ver = 'Fan'. Total covariance in non-noise.
-    verbose: bool, default=False
-
+    thresh: float, default = 1e-5
+        Estimated dimension is the number of columns in Weight matrix with norm**2 > thresh
     """
 
     def __init__(
         self,
         max_iter = 2000,
         conv_tol = 1e-5,
-        rotate = False,
-        ver="FO",
-        alphaRatio=0.05,
-        alphaFO=0.05,
-        alphaFan=10,
-        betaFan=0.8,
-        PFan=0.95,
-        verbose=True,
+        rotate = True,
+        thresh = 1e-5,
         nbhd_type="knn",
         pt_nbhd_incl_pt=True,
         metric="euclidean",
@@ -98,14 +70,7 @@ class lBPCA(lPCA):
         n_neighbors=20,
     ):
         super().__init__(
-            ver=ver,
-            alphaRatio=alphaRatio,
-            alphaFO=alphaFO,
-            alphaFan=alphaFan,
-            betaFan=betaFan,
-            PFan=PFan,
-            verbose=verbose,
-            fit_explained_variance=False,
+            pw_dim=True,
             nbhd_type=nbhd_type,
             pt_nbhd_incl_pt=pt_nbhd_incl_pt,
             metric=metric,
@@ -114,14 +79,15 @@ class lBPCA(lPCA):
             n_jobs=n_jobs,
             radius=radius,
             n_neighbors=n_neighbors,
+            sort_radial=False,
         )
 
         self.max_iter = max_iter
         self.conv_tol = conv_tol
         self.rotate = rotate
+        self.thresh = thresh
 
     def _fit(self, X, nbhd_indices, radial_dists):
-        # override parent class
         self.child_attr_checks(X.shape[1])
         X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
@@ -138,7 +104,7 @@ class lBPCA(lPCA):
                 [self._pcaLocalDimEst(np.take(X, nbhd, 0))[0] for nbhd in nbhd_indices]
             )
     def _pcaLocalDimEst(self, X):
-        #override lPCA parent class
+
         N = X.shape[0]
         d = X.shape[1]
         if N >= d: #need number of points to be greater than dimensions for initial mle to work
@@ -146,21 +112,7 @@ class lBPCA(lPCA):
                 X = X @ special_ortho_group.rvs(d).T #randomly rotate data to make matrix non-sparse, otherwise there may be convergence issues.
             try: 
                 component_norm_sq, noise_variance,  = self._EM(X)
-                #use the number of column vectors of weight matrix with large norm as the estimated dimension; borrow eigenvalue separation heuristics from PCA
-                if self.ver == "FO":
-                    q_eff, _ =  self._FO(component_norm_sq)
-                elif self.ver == "Fan":
-                    q_eff, _ = self._fan(component_norm_sq)
-                elif self.ver == "maxgap":
-                    q_eff, _ = self._maxgap(component_norm_sq)
-                elif self.ver == "ratio":
-                    q_eff, _ = self._ratio(component_norm_sq)
-                elif self.ver == "participation_ratio":
-                    q_eff, _ = self._participation_ratio(component_norm_sq)
-                elif self.ver == "Kaiser":
-                    q_eff, _ = self._Kaiser(component_norm_sq)
-                elif self.ver == "broken_stick":
-                    q_eff, _ = self._broken_stick(component_norm_sq)
+                q_eff = np.sum(component_norm_sq > self.thresh)
             except ConvergenceFailure:
                 q_eff, noise_variance, component_norm_sq = np.nan, np.nan, np.nan
         else:
@@ -251,4 +203,8 @@ class lBPCA(lPCA):
         if not isinstance(self.rotate, bool):
             raise ValueError('Rotate parameter is either True of False.') 
         if self.n_neighbors < d:
-            raise ValueError('Size of knn neighbourhoods needs to be greater than the extrinsic dimension.') 
+            raise ValueError('Size of knn neighbourhoods needs to be greater than the extrinsic dimension.')
+        if not isinstance(self.thresh, float):
+            raise ValueError('Dimension threshold needs to be a small positive float.') 
+        elif self.thresh < 1e-9:
+            raise ValueError('Dimension threshold needs to be a small positive float.') 

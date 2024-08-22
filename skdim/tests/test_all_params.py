@@ -253,7 +253,7 @@ def test_lBPCA_params(data):
     x = skdim.id_flex.lBPCA().fit(data)
     x = skdim.id_flex.lBPCA(nbhd_type = 'knn').fit(data)
     x = skdim.id_flex.lBPCA(nbhd_type = 'eps').fit(data)
-    x = skdim.id_flex.lBPCA(rotate = True).fit(data)
+    x = skdim.id_flex.lBPCA(rotate = False).fit(data)
     x = skdim.id_flex.lBPCA(max_iter = 10).fit(data)
     x = skdim.id_flex.lBPCA(conv_tol = 1e-2).fit(data)
 
@@ -263,3 +263,5 @@ def test_lBPCA_params(data):
         skdim.id_flex.lBPCA(conv_tol = -0.0).fit(data)
     with pytest.raises(ValueError):
         skdim.id_flex.lBPCA(rotate = 12343).fit(data)
+    with pytest.raises(ValueError):
+        skdim.id_flex.lBPCA(thresh = -0.0).fit(data)
