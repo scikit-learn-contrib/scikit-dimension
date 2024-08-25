@@ -30,6 +30,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+from scipy.special import loggamma
 from sklearn.decomposition import PCA
 from sklearn.utils.validation import check_array
 from sklearn.utils.parallel import Parallel, delayed
@@ -222,3 +223,54 @@ class lPCA(FlexNbhdEstimator):
                 de = i + 1
                 break
         return de, gaps
+
+    def _laplace(self, eigenvalues, N_pts):
+        d = len(eigenvalues)
+        krange = np.arange(1, d+1)
+        m = d*krange - krange * (krange + 1)/2 
+        u = self._stieffel_density(d)
+        ev_indpt_part =  - np.log(N_pts/8) * krange / 2 + np.log(2*np.pi)* (m + krange) /2  + u
+
+        ###
+        nu = np.cumsum(eigenvalues[::-1][:-1])[::-1] / d - krange[:-1] # k = 1,...,d-1
+        lognuterm = -N_pts * (d - krange) * np.array(list(np.log(nu) ) + [0.0])/ 2 #include k = d which has no contribution, but makes vector good
+        sumlogevs = -N_pts * np.cumsum(np.log(eigenvalues))/ 2
+        hessterm = self._laplace_hessian(eigenvalues, nu, m, N_pts)
+
+        L = lognuterm + sumlogevs + hessterm + ev_indpt_part
+
+        return np.argmin(L) + 1, L
+    
+    @staticmethod
+    def _stieffel_density(d):
+        v = (d - np.arange(d))/2
+        u = loggamma(v)- np.log(np.pi) * v
+        return np.cumsum(u) - np.log(2) * np.arange(1, d+1)
+    @staticmethod
+    def _laplace_hessian(eigenvalues, nu, m, N_pts):
+        
+        d = len(eigenvalues)
+        triu_idx = np.triu_indices(d, k =1)
+
+        
+
+        Ediff = np.zeros([d,d])
+        Ediff[triu_idx] = np.log(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]])
+        Ediffterm = np.cumsum(np.sum(Ediff, axis = 1))
+
+        Ehatinvdiff = np.zeros([d,d])
+        Ehatinvdiff[triu_idx] = np.log(1/eigenvalues[triu_idx[1]] - 1/eigenvalues[triu_idx[0]])
+        Ehatinvdiffterm_a = np.cumsum(np.sum(Ehatinvdiff, axis = 0))
+
+        Ehatinvdiff_b = np.zeros([d-1,d-1])
+        triu_idx = np.triu_indices(d-1, k =0)
+        Ehatinvdiff_b[triu_idx] = np.log(1/nu[triu_idx[1]] - 1/eigenvalues[triu_idx[0]])
+
+        Ehatinvdiffterm_b = np.sum(Ehatinvdiff_b, axis = 0) * (d - np.arange(1, d))
+        
+        s = np.zeros([d])
+        s += m *np.log(N_pts)
+        s += Ediffterm
+        s += Ehatinvdiffterm_a
+        s[:-1] += Ehatinvdiffterm_b
+        return -s/2
