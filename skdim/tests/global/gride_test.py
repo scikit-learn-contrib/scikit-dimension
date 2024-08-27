@@ -6,22 +6,37 @@ from sklearn.datasets import make_swiss_roll
 from sklearn.exceptions import NotFittedError
 from dadapy.data import Data
 
-def test_wrong_n1_n2_values_are_not_accepted():
+@pytest.fixture
+def data():
+    X = np.zeros((1000, 10))
+    X[:, :5] = skdim.datasets.hyperBall(n=1000, d=5, radius=1, random_state=0)
+    return X
+
+def test_wrong_n1_n2_values_are_not_accepted(data):
     with pytest.raises(ValueError):
         g = Gride(n1=0)
+        g.fit(data)
     with pytest.raises(ValueError):
         g =Gride(n1=-1)
+        g.fit(data)
     with pytest.raises(ValueError):
         g = Gride(n1 = 2, n2=1)
+        g.fit(data)
     with pytest.raises(ValueError):
         g = Gride(n1 = 0.5)
+        g.fit(data)
     with pytest.raises(ValueError):
         g = Gride(n1 = 2, n2=7.1)
+        g.fit(data)
 
-def test_wrong_dimenstion_intervals_are_not_accepted():
+def test_wrong_dimenstion_intervals_are_not_accepted(data):
     with pytest.raises(ValueError):
         g = Gride(d0=-1)
-        g = Gride(d1=2, d2=1)
+        g.fit(data)
+    with pytest.raises(ValueError):
+        g = Gride(d0=2, d1=1)
+        g.fit(data)
+        
 
 def test_multiple_single_scale_estim_eq_multiscale():
     np.random.seed(782)
