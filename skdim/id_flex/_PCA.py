@@ -49,7 +49,7 @@ class lPCA(FlexNbhdEstimator):
     Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
     Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1)\n
     Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
-    Version 'Laplace' calculates the dimension that maximises the Laplacian approximation of the Bayseian evidence
+    Version 'LB' calculates the dimension that maximises the Laplace approximation of the Bayseian evidence prob(data | dim)\n
 
     Parameters
     ----------
@@ -127,11 +127,11 @@ class lPCA(FlexNbhdEstimator):
                     delayed(self._pcaLocalDimEst)(np.take(X, nbhd, 0))
                     for nbhd in nbhd_indices
                 )
-            self.dimension_pw_ = np.array([result[0] for result in results])
         else:
-            self.dimension_pw_ = np.array(
-                [self._pcaLocalDimEst(np.take(X, nbhd, 0))[0] for nbhd in nbhd_indices]
-            )
+            results = [self._pcaLocalDimEst(np.take(X, nbhd, 0)) for nbhd in nbhd_indices]
+        
+        self.dimension_pw_ = np.array([result[0] for result in results])
+        if self.verbose: self.additional_data_ = [result[1] for result in results ]
 
     def _pcaLocalDimEst(self, X):
         N = X.shape[0]
@@ -156,7 +156,7 @@ class lPCA(FlexNbhdEstimator):
                 return self._Kaiser(explained_var)
             elif self.ver == "broken_stick":
                 return self._broken_stick(explained_var)
-            elif self.ver == 'Laplace':
+            elif self.ver == 'LB':
                 return self._laplace(explained_var, N)
         else:
             return np.nan, np.nan
@@ -231,30 +231,36 @@ class lPCA(FlexNbhdEstimator):
         '''
         Computes p(data | intrinsic dim) as a vector ranging form id = k = 1,...,d
         '''
-        eigenvalues = np.sort(eigenvalues)[::-1]
         d = len(eigenvalues)
         dmax = min(d, N_pts)
-        krange = np.arange(1, dmax+1)
 
-        ### calculate eigenvalue independent terms
-        m = d*krange - krange * (krange + 1)/2 
-        u = self._stieffel_density(d, dmax)
-        ev_indpt_part =  - np.log(N_pts/8) * krange / 2 + np.log(2*np.pi)* (m + krange) /2  + u
+        if dmax > 1:
+            eigenvalues = np.sort(eigenvalues)[::-1]
+            krange = np.arange(1, dmax+1)
 
-        ### calculate eigenvalue dependent terms
-        nu = np.cumsum(eigenvalues[::-1][:-1])[::-1][:dmax-1] / (d - krange[:-1]) # k = 1,...,d-1
-        lognuterm = np.zeros([dmax])
-        lognuterm[:-1] += -N_pts * (d - krange[:-1]) * np.log(np.maximum(nu, 1e-9)) / 2 #if  k = d then no contribution
-        sumlogevs = -N_pts * np.cumsum(np.log(np.maximum(eigenvalues[:dmax], 1e-9)))/ 2
-        hessterm = self._laplace_hessian(eigenvalues, nu, m, N_pts, dmax)
+            ### calculate eigenvalue independent terms
+            m = d*krange - krange * (krange + 1)/2 
+            u = self._stieffel_density(d, dmax)
+            ev_indpt_part =  - np.log(N_pts/8) * krange / 2 + np.log(2*np.pi)* (m + krange) /2  + u
 
-        log_evidence = lognuterm + sumlogevs + hessterm + ev_indpt_part
-        return np.argmax(log_evidence) + 1, log_evidence
-    
+            ### calculate eigenvalue dependent terms
+            nu = np.cumsum(eigenvalues[::-1][:-1])[::-1][:dmax-1] / (d - krange[:-1]) # k = 1,...,d-1
+            lognuterm = np.zeros([dmax])
+            lognuterm[:-1] += -N_pts * (d - krange[:-1]) * np.log(np.maximum(nu, 1e-9)) / 2 #if  k = d then no contribution
+            sumlogevs = -N_pts * np.cumsum(np.log(np.maximum(eigenvalues[:dmax], 1e-9)))/ 2
+            hessterm = self._laplace_hessian(eigenvalues, nu, m, N_pts, dmax)
+
+            log_evidence = lognuterm + sumlogevs + hessterm + ev_indpt_part # sum up all the terms
+            #determine dimension that maximises evidence
+            max_log_evidence_dim = np.argmax(log_evidence) + 1
+            max_log_evidence_gap = np.argmax(log_evidence[1:] - log_evidence[:-1]) + 2 #maxgap, since sometimes evidence vs k plateaus slowly up to largest dim past intrinsic dim
+            return min(max_log_evidence_dim, max_log_evidence_gap), log_evidence
+        else:
+            return np.nan, np.nan
     @staticmethod
     def _stieffel_density(d, dmax):
         '''
-        The p(U) term in the formula, in 
+        The p(U) term in the formula
         '''
         v = (d - np.arange(dmax))/2
         u = loggamma(v)- np.log(np.pi) * v

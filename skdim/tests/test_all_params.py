@@ -106,6 +106,7 @@ def test_lpca_params(data):
     x = skdim.id.lPCA(ver="Kaiser").fit(data)
     x = skdim.id.lPCA(ver="broken_stick").fit(data)
     x = skdim.id.lPCA(ver="participation_ratio").fit(data)
+    x = skdim.id.lPCA(ver="LB").fit(data)
 
 
 def test_tle_params(data):

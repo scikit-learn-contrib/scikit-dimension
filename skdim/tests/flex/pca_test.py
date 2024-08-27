@@ -3,7 +3,7 @@ import numpy as np
 import skdim.id_flex
 from sklearn.datasets import make_swiss_roll
 
-VERSIONS = ["FO", "maxgap", "Kaiser", "broken_stick", "Laplace"]
+VERSIONS = ["FO", "maxgap", "Kaiser", "broken_stick", "LB"]
 
 
 @pytest.fixture
