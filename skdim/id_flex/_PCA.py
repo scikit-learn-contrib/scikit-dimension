@@ -81,7 +81,7 @@ class lPCA(FlexNbhdEstimator):
         alphaFan=10,
         betaFan=0.8,
         PFan=0.95,
-        verbose=True,
+        verbose=False, #currently not implemented
         fit_explained_variance=False,
         nbhd_type="knn",
         pt_nbhd_incl_pt=True,
@@ -140,7 +140,7 @@ class lPCA(FlexNbhdEstimator):
                 explained_var = X
             else:
                 pca = PCA().fit(X)
-                self.explained_var_ = explained_var = pca.explained_variance_
+                explained_var = pca.explained_variance_
 
             if self.ver == "FO":
                 return self._FO(explained_var)
