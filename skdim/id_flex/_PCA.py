@@ -30,6 +30,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
+from scipy.special import loggamma
 from sklearn.decomposition import PCA
 from sklearn.utils.validation import check_array
 from sklearn.utils.parallel import Parallel, delayed
@@ -48,6 +49,7 @@ class lPCA(FlexNbhdEstimator):
     Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
     Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1)\n
     Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
+    Version 'LB' calculates the dimension that maximises the Laplace approximation of the Bayseian evidence prob(data | dim)\n
 
     Parameters
     ----------
@@ -125,11 +127,11 @@ class lPCA(FlexNbhdEstimator):
                     delayed(self._pcaLocalDimEst)(np.take(X, nbhd, 0))
                     for nbhd in nbhd_indices
                 )
-            self.dimension_pw_ = np.array([result[0] for result in results])
         else:
-            self.dimension_pw_ = np.array(
-                [self._pcaLocalDimEst(np.take(X, nbhd, 0))[0] for nbhd in nbhd_indices]
-            )
+            results = [self._pcaLocalDimEst(np.take(X, nbhd, 0)) for nbhd in nbhd_indices]
+        
+        self.dimension_pw_ = np.array([result[0] for result in results])
+        if self.verbose: self.additional_data_ = [result[1] for result in results ]
 
     def _pcaLocalDimEst(self, X):
         N = X.shape[0]
@@ -154,6 +156,8 @@ class lPCA(FlexNbhdEstimator):
                 return self._Kaiser(explained_var)
             elif self.ver == "broken_stick":
                 return self._broken_stick(explained_var)
+            elif self.ver == 'LB':
+                return self._laplace(explained_var, N)
         else:
             return np.nan, np.nan
 
@@ -222,3 +226,80 @@ class lPCA(FlexNbhdEstimator):
                 de = i + 1
                 break
         return de, gaps
+
+    def _laplace(self, eigenvalues, N_pts):
+        '''
+        Computes p(data | intrinsic dim) as a vector ranging form id = k = 1,...,d
+        '''
+        d = len(eigenvalues)
+        dmax = min(d, N_pts)
+
+        if dmax > 1:
+            eigenvalues = np.sort(eigenvalues)[::-1]
+            krange = np.arange(1, dmax+1)
+
+            ### calculate eigenvalue independent terms
+            m = d*krange - krange * (krange + 1)/2 
+            u = self._stieffel_density(d, dmax)
+            ev_indpt_part =  - np.log(N_pts/8) * krange / 2 + np.log(2*np.pi)* (m + krange) /2  + u
+
+            ### calculate eigenvalue dependent terms
+            nu = np.cumsum(eigenvalues[::-1][:-1])[::-1][:dmax-1] / (d - krange[:-1]) # k = 1,...,d-1
+            lognuterm = np.zeros([dmax])
+            lognuterm[:-1] += -N_pts * (d - krange[:-1]) * np.log(np.maximum(nu, 1e-9)) / 2 #if  k = d then no contribution
+            sumlogevs = -N_pts * np.cumsum(np.log(np.maximum(eigenvalues[:dmax], 1e-9)))/ 2
+            hessterm = self._laplace_hessian(eigenvalues, nu, m, N_pts, dmax)
+
+            log_evidence = lognuterm + sumlogevs + hessterm + ev_indpt_part # sum up all the terms
+            #determine dimension that maximises evidence
+            max_log_evidence_dim = np.argmax(log_evidence) + 1
+            max_log_evidence_gap = np.argmax(log_evidence[1:] - log_evidence[:-1]) + 2 #maxgap, since sometimes evidence vs k plateaus slowly up to largest dim past intrinsic dim
+            return min(max_log_evidence_dim, max_log_evidence_gap), log_evidence
+        else:
+            return np.nan, np.nan
+    @staticmethod
+    def _stieffel_density(d, dmax):
+        '''
+        The p(U) term in the formula
+        '''
+        v = (d - np.arange(dmax))/2
+        u = loggamma(v)- np.log(np.pi) * v
+        return np.cumsum(u) - np.log(2) * np.arange(1, dmax+1)
+    
+    @staticmethod
+    def _laplace_hessian(eigenvalues, nu, m, N_pts, dmax):
+        '''
+        Computes log determinant of Hessian w.r.t. Z variable at Z = identity
+        '''
+        d = len(eigenvalues)
+        triu_idx = np.triu_indices(n = dmax, m = d, k =1)
+
+        ### calculate the contributions of (lambda_i - lambda_j) terms, i = 1,...,k, j = i+1... d
+        ediff = np.zeros([dmax,d])
+        ediff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9))
+        ediffterm = np.cumsum(np.sum(ediff, axis = 1))
+
+        ### calculate the contributions of (1/hat lambda_j - 1/hat lambda_i) terms, i = 1,...,k, j = i+1... d
+        ### First calculate i = 1,...,k, j = i+1... k, where hat lambda are equal to lambda
+
+        ehatinvdiff = np.zeros([dmax, dmax])
+        triu_idx = np.triu_indices(n = dmax, m = dmax, k =1)
+        ehatinvdiff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]] * eigenvalues[triu_idx[1]], 1e-9))
+        ehatinvdiffterm_a = np.cumsum(np.sum(ehatinvdiff, axis = 0))
+
+        ### second calculate i = 1,...,k, j = k...d, where hat lambda_i is lambda but hat lambda_j is nu 
+
+        l = min(dmax, d - 1)
+        ehatinvdiff_b = np.zeros([l,l])
+        triu_idx = np.triu_indices(l, k =0)
+        ehatinvdiff_b[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - nu[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]]*nu[triu_idx[1]], 1e-9))
+
+        ehatinvdiffterm_b = np.sum(ehatinvdiff_b, axis = 0) * (d - np.arange(1, l + 1))
+        
+        ### calculate how this term varies with k
+        s = np.zeros([dmax])
+        s += m *np.log(N_pts)
+        s += ediffterm
+        s += ehatinvdiffterm_a
+        s[:l] += ehatinvdiffterm_b
+        return -s/2
