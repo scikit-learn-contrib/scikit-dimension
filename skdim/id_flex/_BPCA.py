@@ -88,7 +88,7 @@ class lBPCA(FlexNbhdEstimator):
         self.thresh = thresh
 
     def _fit(self, X, nbhd_indices, radial_dists):
-        self.child_attr_checks(X.shape[1])
+        self._child_attr_checks(X.shape[1])
         X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
 
         if effective_n_jobs(self.n_jobs) > 1:
@@ -190,7 +190,7 @@ class lBPCA(FlexNbhdEstimator):
         return W, nv, alpha, component_norm_sq
 
 
-    def child_attr_checks(self, d):
+    def _child_attr_checks(self, d):
         if not isinstance(self.max_iter, int):
             raise ValueError("Max_iter needs to be a positive integer.")
         elif self.max_iter < 1:
