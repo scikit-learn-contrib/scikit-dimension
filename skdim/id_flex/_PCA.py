@@ -275,31 +275,31 @@ class lPCA(FlexNbhdEstimator):
         triu_idx = np.triu_indices(n = dmax, m = d, k =1)
 
         ### calculate the contributions of (lambda_i - lambda_j) terms, i = 1,...,k, j = i+1... d
-        Ediff = np.zeros([dmax,d])
-        Ediff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9))
-        Ediffterm = np.cumsum(np.sum(Ediff, axis = 1))
+        ediff = np.zeros([dmax,d])
+        ediff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9))
+        ediffterm = np.cumsum(np.sum(ediff, axis = 1))
 
         ### calculate the contributions of (1/hat lambda_j - 1/hat lambda_i) terms, i = 1,...,k, j = i+1... d
         ### First calculate i = 1,...,k, j = i+1... k, where hat lambda are equal to lambda
 
-        Ehatinvdiff = np.zeros([dmax, dmax])
+        ehatinvdiff = np.zeros([dmax, dmax])
         triu_idx = np.triu_indices(n = dmax, m = dmax, k =1)
-        Ehatinvdiff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]] * eigenvalues[triu_idx[1]], 1e-9))
-        Ehatinvdiffterm_a = np.cumsum(np.sum(Ehatinvdiff, axis = 0))
+        ehatinvdiff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]] * eigenvalues[triu_idx[1]], 1e-9))
+        ehatinvdiffterm_a = np.cumsum(np.sum(ehatinvdiff, axis = 0))
 
         ### second calculate i = 1,...,k, j = k...d, where hat lambda_i is lambda but hat lambda_j is nu 
 
         l = min(dmax, d - 1)
-        Ehatinvdiff_b = np.zeros([l,l])
+        ehatinvdiff_b = np.zeros([l,l])
         triu_idx = np.triu_indices(l, k =0)
-        Ehatinvdiff_b[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - nu[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]]*nu[triu_idx[1]], 1e-9))
+        ehatinvdiff_b[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - nu[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]]*nu[triu_idx[1]], 1e-9))
 
-        Ehatinvdiffterm_b = np.sum(Ehatinvdiff_b, axis = 0) * (d - np.arange(1, l + 1))
+        ehatinvdiffterm_b = np.sum(ehatinvdiff_b, axis = 0) * (d - np.arange(1, l + 1))
         
         ### calculate how this term varies with k
         s = np.zeros([dmax])
         s += m *np.log(N_pts)
-        s += Ediffterm
-        s += Ehatinvdiffterm_a
-        s[:l] += Ehatinvdiffterm_b
+        s += ediffterm
+        s += ehatinvdiffterm_a
+        s[:l] += ehatinvdiffterm_b
         return -s/2
