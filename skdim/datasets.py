@@ -346,7 +346,7 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
 def toroidal_spiral(n, n_twists=20, r1=1.0, r2=0.25, random_state=None):
     if not r1 > r2:
         raise ValueError("The radii must satisfy r1 > r2.")
-    phi_sample = hyperBall(n=n, d=1, radius=2 * np.pi, random_state=random_state)
+    phi_sample = hyperBall(n=n, d=1, radius=2 * np.pi, random_state=random_state).reshape([-1,1])
     u = np.hstack((r1 * np.cos(phi_sample), r1 * np.sin(phi_sample), np.zeros([n, 1])))
     v = r2 * (
         np.cos(phi_sample * n_twists) * u
