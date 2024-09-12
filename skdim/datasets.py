@@ -381,8 +381,8 @@ def torus(n_points, r1=1.0, r2=0.25, random_state=None):
     while data.shape[0] < n_points:
         num_to_sample = n_points - data.shape[0]
 
-        phi_sample = random_state.rand(num_to_sample) * 2 * np.pi
-        theta_sample = random_state.rand(num_to_sample) * 2 * np.pi
+        phi_sample = random_state.rand([num_to_sample,1]) * 2 * np.pi
+        theta_sample = random_state.rand([num_to_sample,1]) * 2 * np.pi
 
         u = np.hstack(
             (
