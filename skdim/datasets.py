@@ -33,7 +33,6 @@ import numpy as np
 import pandas as pd
 from sklearn.utils.validation import check_random_state
 from sklearn.datasets import fetch_openml
-from scipy.special import gammainc
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
@@ -381,8 +380,8 @@ def torus(n, r1=1.0, r2=0.25, random_state=None):
     while data.shape[0] < n:
         num_to_sample = n - data.shape[0]
 
-        phi_sample = random_state.rand([num_to_sample,1]) * 2 * np.pi
-        theta_sample = random_state.rand([num_to_sample,1]) * 2 * np.pi
+        phi_sample = random_state.rand(num_to_sample,1) * 2 * np.pi
+        theta_sample = random_state.rand(num_to_sample,1) * 2 * np.pi
 
         u = np.hstack(
             (
@@ -488,7 +487,7 @@ def dumbbell(n, connecting_radius=0.1, random_state=None):
             raise ValueError(out_of_bounds_message)
 
     dumbbell_surface = SurfaceOfRevolution(profile_function, random_state=random_state)
-    return dumbbell_surface.sample_points(n=n)
+    return dumbbell_surface.generate(n=n)
 
 
 class HilbertCurve:
@@ -1048,7 +1047,7 @@ class BenchmarkManifolds:
 class SurfaceOfRevolution:
     """Implementation of surfaces of revolution."""
 
-    def __init__(self, func, how="x", xmin=-1.0, xmax=1.0, random_state=None):
+    def __init__(self, func = lambda x: np.sin(x*np.pi), how="x", xmin=-1.0, xmax=1.0, random_state=None):
         """
         Create a surface of revolution which is symmetric around the x-axix.
 
@@ -1111,7 +1110,7 @@ class SurfaceOfRevolution:
 
         return xvals, fvals, f_prime_vals, jacobian_vals
 
-    def sample_points(self, n=10000):
+    def generate(self, n=10000):
         """
         Sample n points from the surface of revolution.
         :param n: the number of points to sample
