@@ -135,7 +135,7 @@ class lPCA(FlexNbhdEstimator):
 
     def _pcaLocalDimEst(self, X):
         N = X.shape[0]
-        if N > 0:
+        if N > 1:
             if self.fit_explained_variance:
                 explained_var = X
             else:
@@ -158,6 +158,8 @@ class lPCA(FlexNbhdEstimator):
                 return self._broken_stick(explained_var)
             elif self.ver == 'LB':
                 return self._laplace(explained_var, N)
+        elif N == 1:
+            return 0, np.nan
         else:
             return np.nan, np.nan
 
