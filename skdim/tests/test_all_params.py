@@ -269,7 +269,7 @@ def test_lBPCA_params(data):
  
 def test_packing_numbers_params(data):
     x = skdim.id.PackingNumbers().fit(data)
-    x = skdim.id.PackingNumbers(r1=1, r2=2).fit(data)
+    x = skdim.id.PackingNumbers(r1=1, radius_multiplier=2).fit(data)
     x = skdim.id.PackingNumbers(accuracy=0.1).fit(data)
     x = skdim.id.PackingNumbers(iter_number=10).fit(data)
 

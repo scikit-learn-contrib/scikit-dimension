@@ -46,13 +46,13 @@ class PackingNumbers(GlobalEstimator):
         https://proceedings.neurips.cc/paper/2002/hash/1177967c7957072da3dc1db4ceb30e7a-Abstract.html
     """
     
-    def __init__(self, r1=1, r2=2, accuracy=0.9, metric="euclidean", iter_number=10):
+    def __init__(self, r1=1, radius_multiplier=2, accuracy=0.9, metric="euclidean", iter_number=10):
         """Initialize the Packing Numbers estimator.
         Parameters
         r1 : float, default=1
             The first radius used for calculating the r-packing number.
-        r2 : float, default=1
-            The second radius used for calculating the r-packing number.
+        radius_multiplier : float, default=2
+            Radius of second ball used for calculating the r-packing number is r1 * radius_multiplier
         accuracy : float, default=0.9
             The accuracy of the estimation.
         metric : string, default="euclidean"
@@ -62,7 +62,7 @@ class PackingNumbers(GlobalEstimator):
         ----------
         """
         self.r1 = r1
-        self.r2 = r2
+        self.r2 = r1 * radius_multiplier
         self.accuracy = accuracy
         self.metric = metric
         self.iter_number = iter_number
