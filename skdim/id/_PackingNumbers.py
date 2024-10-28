@@ -100,7 +100,7 @@ class PackingNumbers(GlobalEstimator):
         log_packing_numbers = [[], []]
         LOG_RS_DIFF = np.log(self.r2) - np.log(self.r1)
         RADIUSES = [self.r1, self.r2]
-        MAX_ITER = 10 * self.iter_number
+        MAX_ITER = self.iter_number
         while True:
             iter_counter += 1
             perm_set = np.random.permutation(X)
