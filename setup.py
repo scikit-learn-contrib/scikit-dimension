@@ -49,7 +49,7 @@ URL = "https://github.com/j-bac/scikit-dimension"
 LICENSE = "BSD-3-clause"
 DOWNLOAD_URL = "https://github.com/j-bac/scikit-dimension"
 VERSION = __version__
-INSTALL_REQUIRES = ["numpy", "numba", "scipy", "scikit-learn"]
+INSTALL_REQUIRES = ["numpy", "numba", "scipy", "scikit-learn", "matplotlib"]
 CLASSIFIERS = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved",
