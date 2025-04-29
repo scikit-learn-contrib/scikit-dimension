@@ -33,7 +33,7 @@ import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
 from .._commonfuncs import get_nn, GlobalEstimator
-from sklearn.utils.validation import check_array
+from sklearn.utils.validation import check_array, check_symmetric
 
 
 class CorrInt(GlobalEstimator):
@@ -86,11 +86,11 @@ class CorrInt(GlobalEstimator):
 
         n_elements = len(X) ** 2  # number of elements
 
-        dists, _ = get_nn(X, self.k2)
-
         if self.DM is False:
+            dists, _ = get_nn(X, self.k2)
             chunked_distmat = pairwise_distances_chunked(X)
         else:
+            dists = np.sort(X, axis=1)[:, 1 : self.k2 + 1]
             chunked_distmat = X
 
         r1 = np.median(dists[:, self.k1 - 1])
