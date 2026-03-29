@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/scikit-dimension)
 [![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
 [![Downloads](https://pepy.tech/badge/scikit-dimension)](https://pepy.tech/project/scikit-dimension)
- 
+
 # scikit-dimension
 
 scikit-dimension is a Python module for intrinsic dimension estimation built according to the [scikit-learn](https://github.com/scikit-learn/scikit-learn) API and distributed under the 3-Clause BSD license.
