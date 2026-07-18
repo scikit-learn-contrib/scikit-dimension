@@ -81,7 +81,8 @@ class MLE(LocalEstimator):
         K=5,
     ):
 
-        _, _, _, values = inspect.getargvalues(inspect.currentframe())
+        _, _, _, values_proxy = inspect.getargvalues(inspect.currentframe())
+        values = dict(values_proxy)
         values.pop("self")
 
         for arg, val in values.items():
