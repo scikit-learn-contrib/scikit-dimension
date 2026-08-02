@@ -109,6 +109,42 @@ def test_lpca_results(data):
     )
 
 
+def test_lpca_center_participation_ratio():
+    # Small example with a strong non-zero mean so that centering the data
+    # (default) and not centering it give different eigenvalues (issue #14).
+    from sklearn.decomposition import PCA
+
+    X = np.array(
+        [
+            [10.0, 10.0, 0.0],
+            [10.0, 9.0, 0.0],
+            [9.0, 10.0, 1.0],
+            [11.0, 10.0, 0.0],
+            [10.0, 11.0, 0.0],
+        ]
+    )
+
+    # (a) default behavior is unchanged: participation ratio from the eigenvalues
+    # of the centered covariance matrix, i.e. sklearn PCA's explained_variance_.
+    ev_centered = PCA().fit(X).explained_variance_
+    pr_centered_expected = ev_centered.sum() ** 2 / (ev_centered ** 2).sum()
+    pr_centered = skdim.id.lPCA(ver="participation_ratio").fit(X).dimension_
+    assert np.isclose(pr_centered, pr_centered_expected)
+
+    # (b) center=False uses the eigenvalues of X.T @ X without demeaning.
+    # Independent hand computation via a symmetric eigensolver on X.T @ X.
+    eig_uncentered = np.linalg.eigvalsh(X.T @ X)
+    pr_uncentered_expected = eig_uncentered.sum() ** 2 / (eig_uncentered ** 2).sum()
+    est = skdim.id.lPCA(ver="participation_ratio", center=False).fit(X)
+    assert np.isclose(est.dimension_, pr_uncentered_expected)
+
+    # the stored eigenvalues match those of X.T @ X (up to ordering)
+    assert np.allclose(np.sort(est.explained_var_)[::-1], np.sort(eig_uncentered)[::-1])
+
+    # the two options are genuinely different on this data
+    assert not np.isclose(pr_centered, est.dimension_)
+
+
 def test_corrint_results(data):
     #     assert np.isclose(skdim.id.CorrInt().fit(data).dimension_,np.array(ider.corint(data,k1=10,k2=20)))
     assert np.isclose(skdim.id.CorrInt().fit(data).dimension_, 2.9309171335492548)
