@@ -64,7 +64,13 @@ class lPCA(GlobalEstimator):
     PFan: float
         Only for ver = 'Fan'. Total covariance in non-noise.
     verbose: bool, default=False
-    explained_variance: bool, default=False
+    center: bool, default=True
+        If True, eigenvalues are computed from ``sklearn.decomposition.PCA``, which
+        centers (demeans) the data. If False, they are computed as the eigenvalues of
+        ``X.T @ X`` without centering, so for ver='participation_ratio' the estimate is
+        ``sum(eigenvalues) ** 2 / sum(eigenvalues ** 2)`` of ``X.T @ X``.
+        Ignored when ``fit_explained_variance`` is True.
+    fit_explained_variance: bool, default=False
         If True, lPCA.fit(X) expects as input 
         a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
     
@@ -84,6 +90,7 @@ class lPCA(GlobalEstimator):
         betaFan=0.8,
         PFan=0.95,
         verbose=True,
+        center=True,
         fit_explained_variance=False,
     ):
         self.ver = ver
@@ -93,6 +100,7 @@ class lPCA(GlobalEstimator):
         self.betaFan = betaFan
         self.PFan = PFan
         self.verbose = verbose
+        self.center = center
         self.fit_explained_variance = fit_explained_variance
 
     def fit(self, X, y=None):
@@ -145,9 +153,14 @@ class lPCA(GlobalEstimator):
     def _pcaLocalDimEst(self, X):
         if self.fit_explained_variance:
             explained_var = X
-        else:
+        elif self.center:
             pca = PCA().fit(X)
             self.explained_var_ = explained_var = pca.explained_variance_
+        else:
+            # Eigenvalues of X.T @ X without centering the data (issue #14).
+            # Computed from the singular values of X to avoid forming X.T @ X.
+            singular_values = np.linalg.svd(X, compute_uv=False)
+            self.explained_var_ = explained_var = singular_values ** 2
 
         if self.ver == "FO":
             return self._FO(explained_var)
