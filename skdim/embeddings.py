@@ -2,7 +2,7 @@
 """
 Methods to embed a dataset into a higher dimensional space.
 
-Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 """
 
 from itertools import combinations_with_replacement

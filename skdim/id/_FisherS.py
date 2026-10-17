@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
+# Adapted from https://github.com/auranic/FisherSeparabilityAnalysis by Andrei Zinovyev, Evgeny Mirkes,
+# Luca Albergante and Jonathan Bac; see LICENSES_bundled.txt
 from sklearn.utils.validation import check_array
 import numba as nb
 import numpy as np
@@ -12,7 +14,7 @@ warnings.filterwarnings("ignore")
 
 
 class FisherS(GlobalEstimator):
-    """Intrinsic dimension estimation using the Fisher Separability algorithm. [Albergante2019]_
+    """Intrinsic dimension estimation using the Fisher Separability algorithm. [Albergante2019]_ [IDFisherS]_
 
     Parameters
     ----------

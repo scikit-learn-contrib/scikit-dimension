@@ -70,3 +70,4 @@ doc/generated/
 # PyBuilder
 target/
 .pixi/
+doc/_build/

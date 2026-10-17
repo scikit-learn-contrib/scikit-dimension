@@ -19,7 +19,7 @@ class GRIDE(GlobalEstimator):
     Raising n1 probes larger scales without decimating the data, which reduces the effect of
     short-scale noise.
 
-    Reimplemented from [Denti2022]_; see DADApy (https://github.com/sissa-data-science/DADApy)
+    Reimplemented from [Denti2022]_; see DADApy [IDDADApy]_ (https://github.com/sissa-data-science/DADApy)
     for the reference implementation, whose conventions are followed: the likelihood uses
     (N - 1) log d in place of N log d (unbiased at n1 = 1), and ratios above
     q50 + 20 (q95 - q50) are discarded as likely overlapping points. Unlike DADApy, tied

@@ -74,8 +74,8 @@ MATLAB
 ^^^^^^
 .. [IDLombardi] Gabriele Lombardi,
   `idLombardi <https://fr.mathworks.com/matlabcentral/fileexchange/40112-intrinsic-dimensionality-estimation-techniques>__`.
-.. [IDRadovanović] Miloš Radovanović,
-  `idRadovanović <https://perun.pmf.uns.ac.rs/radovanovic/tle/>__`.
+.. [IDRadovanović] Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović, Weeris Treeratanajaru,
+  `TLE <https://github.com/radacha/tle>`__ (earlier version: `<https://perun.pmf.uns.ac.rs/radovanovic/tle/>`__).
 
 C++
 ^^^
@@ -86,4 +86,13 @@ Python
 ^^^^^^
 .. [IDMottes] Francesco Mottes,
    `TwoNN <https://github.com/fmottes/TWO-NN>`__.
+.. [IDFisherS] Andrei Zinovyev, Evgeny Mirkes, Luca Albergante, Jonathan Bac,
+   `FisherSeparabilityAnalysis <https://github.com/auranic/FisherSeparabilityAnalysis>`__.
+.. [IDGeoMLE] Mokrov Nikita, Marina Gomtsyan, Maxim Panov, Yury Yanovich,
+   `GeoMLE <https://github.com/stat-ml/GeoMLE>`__.
+.. [IDDADApy] Glielmo, A. *et al.* (2022), DADApy: Distance-based analysis of data-manifolds in Python,
+   *Patterns* 3, 100589. doi:10.1016/j.patter.2022.100589. `<https://github.com/sissa-data-science/DADApy>`__.
+.. [IDkmyim] Ka Man Yim, John Harvey, Jakub Malinowski,
+   `kmyim/scikit-dimension <https://github.com/kmyim/scikit-dimension>`__; see Binnie, J. A. D. *et al.* (2025),
+   *A Survey of Dimension Estimation Methods*, arXiv:2507.13887.
 

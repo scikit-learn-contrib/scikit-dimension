@@ -108,3 +108,38 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+===============================================================================
+ider (R package)
+Source: https://cran.r-project.org/package=ider
+Used in: skdim/id/_CorrInt.py, skdim/id/_MADA.py, skdim/datasets.py (lineDiskBall)
+
+Author: Hideitsu Hino. Originally released under the GNU General Public License,
+version 2 (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html); included in
+scikit-dimension under the BSD 3-Clause License with the author's agreement.
+
+===============================================================================
+Tight Local ID Estimator (TLE) MATLAB scripts
+Source: https://github.com/radacha/tle (earlier version: https://perun.pmf.uns.ac.rs/radovanovic/tle/)
+Used in: skdim/id/_TLE.py, skdim/id/_MOM.py
+
+Authors: Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi,
+Milos Radovanovic and Weeris Treeratanajaru. Originally released under the Creative
+Commons Attribution-ShareAlike 4.0 International License
+(http://creativecommons.org/licenses/by-sa/4.0/); included in scikit-dimension under
+the BSD 3-Clause License with the authors' agreement. Attribution, as requested by the
+authors: Amsaleg L., Chelly O., Houle M. E., Kawarabayashi K., Radovanovic M.,
+Treeratanajaru W. Intrinsic dimensionality estimation within tight localities.
+Proceedings of the 2019 SIAM International Conference on Data Mining, 181-189.
+doi:10.1137/1.9781611975673.21. Extended version: arXiv:2209.14475 (2022).
+
+===============================================================================
+FisherSeparabilityAnalysis
+Source: https://github.com/auranic/FisherSeparabilityAnalysis
+Used in: skdim/id/_FisherS.py
+
+Authors: Andrei Zinovyev, Evgeny Mirkes, Luca Albergante, Jonathan Bac. No licence file
+in the source repository; included in scikit-dimension under the BSD 3-Clause License
+with the authors' agreement. Reference: Albergante L., Bac J., Zinovyev A. Estimating the
+effective dimension of large biological datasets using Fisher separability analysis.
+IJCNN 2019. doi:10.1109/IJCNN.2019.8852450.

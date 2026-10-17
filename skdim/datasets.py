@@ -1,34 +1,11 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause AND MIT
+# hyperTwinPeaks, swissRoll3Sph: adapted from R intrinsicDimension, Copyright (c) 2017 Kerstin Johnsson, MIT.
+# BenchmarkManifolds: adapted from https://github.com/stat-ml/GeoMLE, Copyright (c) 2019 Mokrov Nikita,
+#   Marina Gomtsyan, Maxim Panov and Yury Yanovich, MIT.
+# lorenz_attractor: adapted from https://github.com/scipython/scipython-maths, Copyright (c) 2021 Christian Hill, MIT.
+# lineDiskBall: adapted from R package ider by Hideitsu Hino, originally GPL-2.
+# product, torus, toroidal_spiral, dumbbell, ...: from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+# See LICENSES_bundled.txt and AUTHORS.md
 import numpy as np
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
@@ -38,7 +15,7 @@ from scipy.integrate import solve_ivp
 def product(n, sample_1, sample_1_kwargs=None, sample_2=None, sample_2_kwargs=None):
     """
     Generates a sample from the product of two datasets of this module, by stacking their coordinates.
-    Adapted from the kmyim/scikit-dimension fork (John Harvey).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey) [IDkmyim]_.
 
     Parameters
     ----------
@@ -164,7 +141,7 @@ def hyperTwinPeaksUniform(n, d=2, height=1.0, random_state=None):
     """
     Generates a sample from the hyperTwinPeaks surface that is uniform with respect to its surface measure,
     by rejection sampling on the volume element sqrt(1 + |grad z|^2) of z = height * prod_i sin(2 pi x_i).
-    Adapted from the kmyim/scikit-dimension fork (John Harvey).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey) [IDkmyim]_.
 
     Parameters
     ----------
@@ -206,7 +183,7 @@ def hyperTwinPeaksUniform(n, d=2, height=1.0, random_state=None):
 def lineDiskBall(n, random_state=None):
     """ 
     Generates a sample from a uniform distribution on a line, an oblong disk and an oblong ball
-    Translated from ldbl function in Hideitsu Hino's package
+    Translated from the ldbl function of Hideitsu Hino's R package ider [IDHino]_.
 
     Parameters
     ----------
@@ -333,7 +310,7 @@ def toroidal_spiral(n, n_twists=20, r1=1.0, r2=0.25, random_state=None):
     """
     Generates a sample from a uniform distribution (with respect to arc length) on a curve
     winding n_twists times around a torus in R^3.
-    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 
     Parameters
     ----------
@@ -372,7 +349,7 @@ def toroidal_spiral(n, n_twists=20, r1=1.0, r2=0.25, random_state=None):
 def torus(n, r1=1.0, r2=0.25, random_state=None):
     """
     Generates a sample from a uniform distribution on the 2d torus in R^3.
-    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 
     Parameters
     ----------
@@ -410,7 +387,7 @@ def lorenz_attractor(n=10000, tmax=100.0):
     Generates a deterministic sample from the Lorenz attractor (sigma=10, beta=2.667, rho=28),
     by integrating the Lorenz equations from (0, 1, 1.05) and evaluating the trajectory at n
     evenly spaced times in [0, tmax]. The initial transient is included.
-    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 
     Parameters
     ----------
@@ -452,7 +429,7 @@ def dumbbell(n, connecting_radius=0.1, random_state=None):
     Generates a sample from a uniform distribution on a piecewise-linear 2d dumbbell surface in R^3:
     the surface of revolution around the x-axis of a profile on [-1, 1] that rises linearly from 0
     to 0.5 at the ends and narrows to a tube of radius connecting_radius on [-0.2, 0.2].
-    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 
     Parameters
     ----------
@@ -481,7 +458,7 @@ def dumbbell(n, connecting_radius=0.1, random_state=None):
 
 class BenchmarkManifolds:
     """
-    Generates a commonly used benchmark set of synthetic manifolds with known intrinsic dimension described by Hein et al. and Campadelli et al. [Campadelli2015]_
+    Generates a commonly used benchmark set of synthetic manifolds with known intrinsic dimension described by Hein et al. and Campadelli et al. [Campadelli2015]_ Adapted from GeoMLE [IDGeoMLE]_.
 
     Parameters
     ----------
@@ -489,29 +466,7 @@ class BenchmarkManifolds:
         Type of noise to generate
     """
 
-    # class modified and adapted from https://github.com/stat-ml/GeoMLE
-    # Original licence citation:
-    # MIT License
-    #
-    # Copyright (c) 2019 Mokrov Nikita, Marina Gomtsyan, Maxim Panov and Yury Yanovich
-    #
-    # Permission is hereby granted, free of charge, to any person obtaining a copy
-    # of this software and associated documentation files (the "Software"), to deal
-    # in the Software without restriction, including without limitation the rights
-    # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    # copies of the Software, and to permit persons to whom the Software is
-    # furnished to do so, subject to the following conditions:
-    #
-    # The above copyright notice and this permission notice shall be included in all
-    # copies or substantial portions of the Software.
-    #
-    # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    # SOFTWARE.
+    # Adapted from https://github.com/stat-ml/GeoMLE (MIT); notice in LICENSES_bundled.txt
 
     def __init__(self, random_state: int = None, noise_type: str = "uniform"):
 
@@ -925,7 +880,7 @@ class SurfaceOfRevolution:
     Generates a uniform sample from the surface obtained by rotating the graph of y = func(x),
     x in [xmin, xmax], around the x-axis (how="x") or the y-axis (how="y"), by rejection sampling
     on the area element tabulated on a grid of 20001 points.
-    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim) [IDkmyim]_.
 
     Parameters
     ----------

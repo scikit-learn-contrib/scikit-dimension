@@ -70,7 +70,7 @@ class PH(GlobalEstimator):
     .. [Binnie2025] Binnie, J., Dłotko, P., Harvey, J., Malinowski, J. & Yim, K. M. (2025).
        A survey of dimension estimation methods. arXiv:2507.13887
 
-    Implementation adapted from the kmyim/scikit-dimension fork (Ka Man Yim).
+    Implementation adapted from the kmyim/scikit-dimension fork (Ka Man Yim) [IDkmyim]_.
     """
 
     def __init__(

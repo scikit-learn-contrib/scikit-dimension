@@ -83,7 +83,7 @@ class MLE(LocalEstimator):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by 
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
             smooth_ 
 
         Returns
@@ -173,7 +173,7 @@ class MLE(LocalEstimator):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by 
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
             smooth_ 
 
         Returns

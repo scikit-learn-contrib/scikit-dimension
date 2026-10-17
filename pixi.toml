@@ -46,5 +46,17 @@ dadapy = { git = "https://github.com/sissa-data-science/DADApy", rev = "d729b883
 install-ider = "Rscript -e \"if (!requireNamespace('ider', quietly=TRUE)) install.packages('ider', repos='https://cloud.r-project.org')\""
 make-fixtures = { cmd = "python skdim/tests/reference/generate_fixtures.py", depends-on = ["install-ider"] }
 
+[feature.docs.dependencies]
+sphinx = ">=7"
+sphinx_rtd_theme = ">=2"
+numpydoc = "*"
+nbsphinx = ">=0.9"
+ipykernel = "*"
+pandoc = "*"
+
+[feature.docs.tasks]
+docs = "sphinx-build -b html doc doc/_build/html"
+
 [environments]
 ref = ["ref"]
+docs = ["docs"]
