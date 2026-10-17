@@ -33,6 +33,41 @@ import numpy as np
 import pandas as pd
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
+from scipy.integrate import solve_ivp
+
+
+def product(n, sample_1, sample_1_kwargs=None, sample_2=None, sample_2_kwargs=None):
+    """
+    Generates a sample from the product of two datasets of this module, by stacking their coordinates.
+    Adapted from the kmyim/scikit-dimension fork (John Harvey).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    sample_1: callable
+        Generator of the first factor, called as sample_1(n=n, **sample_1_kwargs)
+    sample_1_kwargs: dict, optional
+        Keyword arguments passed to sample_1
+    sample_2: callable, optional
+        Generator of the second factor. Defaults to sample_1
+    sample_2_kwargs: dict, optional
+        Keyword arguments passed to sample_2. Pass different random_state values to
+        the two factors, otherwise their coordinates may be correlated.
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data, the columns of sample_1 followed by those of sample_2
+    """
+    if sample_2 is None:
+        sample_2 = sample_1
+    return np.hstack(
+        (
+            sample_1(n=n, **(sample_1_kwargs or {})),
+            sample_2(n=n, **(sample_2_kwargs or {})),
+        )
+    )
 
 
 def hyperBall(n, d, radius=1.0, center=[], random_state=None):
@@ -69,16 +104,20 @@ def hyperBall(n, d, radius=1.0, center=[], random_state=None):
     return p
 
 
-def hyperSphere(n, d, random_state=None):
+def hyperSphere(n, d, radius=1.0, center=None, random_state=None):
     """
     Generates a sample from a uniform distribution on the hypersphere
 
     Parameters
     ----------
-    n: int 
+    n: int
         Number of data points.
     d: int
         Dimension of the hypersphere
+    radius: float
+        Radius of the hypersphere
+    center: list, tuple, np.array, optional
+        Center of the hypersphere, of length d+1. Defaults to the origin
     random_state: int, np.random.RandomState instance
         Random number generator
 
@@ -88,9 +127,11 @@ def hyperSphere(n, d, random_state=None):
         Generated data
     """
     random_state = check_random_state(random_state)
-    vec = random_state.randn(n, d+1)
+    vec = random_state.randn(n, d + 1)
     vec /= np.linalg.norm(vec, axis=1)[:, None]
-    return vec
+    if center is None:
+        center = np.zeros(d + 1)
+    return np.asarray(center) + radius * vec
 
 
 def hyperTwinPeaks(n, d=2, height=1.0, random_state=None):
@@ -118,6 +159,49 @@ def hyperTwinPeaks(n, d=2, height=1.0, random_state=None):
     base_coord = random_state.uniform(size=(n, d))
     _height = height * np.prod(np.sin(2 * np.pi * base_coord), axis=1, keepdims=1)
     return np.hstack((base_coord, _height))
+
+
+def hyperTwinPeaksUniform(n, d=2, height=1.0, random_state=None):
+    """
+    Generates a sample from the hyperTwinPeaks surface that is uniform with respect to its surface measure,
+    by rejection sampling on the volume element sqrt(1 + |grad z|^2) of z = height * prod_i sin(2 pi x_i).
+    Adapted from the kmyim/scikit-dimension fork (John Harvey).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    d: int
+        Dimension of the dataset
+    height: float
+        Height of the peaks
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x ndim)
+        Generated data
+    """
+    random_state = check_random_state(random_state)
+    # sum_j cos_j^2 prod_{i!=j} sin_i^2 <= 1, so the volume element is bounded by:
+    vol_max = np.sqrt(1 + (2 * np.pi * height) ** 2)
+    data = np.empty((0, d + 1))
+    while data.shape[0] < n:
+        x = random_state.uniform(size=(n, d))
+        s, c = np.sin(2 * np.pi * x), np.cos(2 * np.pi * x)
+        grad = np.stack(
+            [
+                2 * np.pi * height * c[:, j] * np.prod(np.delete(s, j, axis=1), axis=1)
+                for j in range(d)
+            ],
+            axis=1,
+        )
+        vol = np.sqrt(1 + np.sum(grad**2, axis=1))
+        keep = random_state.uniform(0, vol_max, n) < vol
+        z = height * np.prod(s[keep], axis=1, keepdims=True)
+        data = np.vstack((data, np.hstack((x[keep], z))))
+    return data[:n]
 
 
 def lineDiskBall(n, random_state=None):
@@ -244,6 +328,156 @@ def swissRoll3Sph(n_swiss, n_sphere, a=1, b=2, nturn=1.5, h=4, random_state=None
         w = np.concatenate((w, sph[:, 3]))
 
     return np.hstack((x[:, None], y[:, None], z[:, None], w[:, None]))
+
+
+def toroidal_spiral(n, n_twists=20, r1=1.0, r2=0.25, random_state=None):
+    """
+    Generates a sample from a uniform distribution (with respect to arc length) on a curve
+    winding n_twists times around a torus in R^3.
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    n_twists: int
+        Number of turns around the tube of the torus
+    r1: float
+        Radius of the central circle
+    r2: float
+        Radius of the tube, must satisfy r2 < r1
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x 3)
+        Generated data
+    """
+    if not r1 > r2:
+        raise ValueError("The radii must satisfy r1 > r2.")
+    random_state = check_random_state(random_state)
+    # speed |gamma'(phi)| = sqrt((r1 + r2 cos(k phi))^2 + (k r2)^2)
+    k = n_twists
+    speed_max = np.sqrt((r1 + r2) ** 2 + (k * r2) ** 2)
+    phi = np.empty(0)
+    while phi.shape[0] < n:
+        p = random_state.uniform(0, 2 * np.pi, n)
+        speed = np.sqrt((r1 + r2 * np.cos(k * p)) ** 2 + (k * r2) ** 2)
+        phi = np.concatenate((phi, p[random_state.uniform(0, speed_max, n) < speed]))
+    phi = phi[:n]
+    rho = r1 + r2 * np.cos(k * phi)
+    return np.stack((rho * np.cos(phi), rho * np.sin(phi), r2 * np.sin(k * phi)), axis=1)
+
+
+def torus(n, r1=1.0, r2=0.25, random_state=None):
+    """
+    Generates a sample from a uniform distribution on the 2d torus in R^3.
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    r1: float
+        Radius of the central circle
+    r2: float
+        Radius of the tube, must satisfy r2 < r1
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x 3)
+        Generated data
+    """
+    if not r1 > r2:
+        raise ValueError("The radii must satisfy r1 > r2.")
+    random_state = check_random_state(random_state)
+    phi, theta = np.empty(0), np.empty(0)
+    while phi.shape[0] < n:
+        p = random_state.uniform(0, 2 * np.pi, n)
+        t = random_state.uniform(0, 2 * np.pi, n)
+        # area element (r1 + r2 cos(theta)) dphi dtheta
+        keep = random_state.uniform(0, r1 + r2, n) < r1 + r2 * np.cos(t)
+        phi, theta = np.concatenate((phi, p[keep])), np.concatenate((theta, t[keep]))
+    phi, theta = phi[:n], theta[:n]
+    rho = r1 + r2 * np.cos(theta)
+    return np.stack((rho * np.cos(phi), rho * np.sin(phi), r2 * np.sin(theta)), axis=1)
+
+
+def lorenz_attractor(n=10000, tmax=100.0):
+    """
+    Generates a deterministic sample from the Lorenz attractor (sigma=10, beta=2.667, rho=28),
+    by integrating the Lorenz equations from (0, 1, 1.05) and evaluating the trajectory at n
+    evenly spaced times in [0, tmax]. The initial transient is included.
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    tmax: float
+        Integration time
+
+    Returns
+    -------
+    data: np.array, (npoints x 3)
+        Generated data
+    """
+    # Adapted from lorenz.py by Christian Hill (2016, 2021),
+    # https://github.com/scipython/scipython-maths, MIT License; see LICENSES_bundled.txt
+    sigma, beta, rho = 10, 2.667, 28
+    u0, v0, w0 = 0, 1, 1.05
+
+    def lorenz(t, X, sigma, beta, rho):
+        """The Lorenz equations."""
+        u, v, w = X
+        up = -sigma * (u - v)
+        vp = rho * u - v - u * w
+        wp = -beta * w + u * v
+        return up, vp, wp
+
+    soln = solve_ivp(
+        lorenz,
+        (0, tmax),
+        (u0, v0, w0),
+        t_eval=np.linspace(0, tmax, n),
+        args=(sigma, beta, rho),
+    )
+    return soln.y.T
+
+
+def dumbbell(n, connecting_radius=0.1, random_state=None):
+    """
+    Generates a sample from a uniform distribution on a piecewise-linear 2d dumbbell surface in R^3:
+    the surface of revolution around the x-axis of a profile on [-1, 1] that rises linearly from 0
+    to 0.5 at the ends and narrows to a tube of radius connecting_radius on [-0.2, 0.2].
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+
+    Parameters
+    ----------
+    n: int
+        Number of data points.
+    connecting_radius: float
+        Radius of the connecting tube
+    random_state: int, np.random.RandomState instance
+        Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x 3)
+        Generated data
+    """
+    # profile breakpoints: radius 0 at +-1, 0.5 at +-0.6, connecting_radius on [-0.2, 0.2]
+    def profile_function(x):
+        return np.interp(
+            x,
+            [-1.0, -0.6, -0.2, 0.2, 0.6, 1.0],
+            [0.0, 0.5, connecting_radius, connecting_radius, 0.5, 0.0],
+        )
+
+    return SurfaceOfRevolution(profile_function, random_state=random_state).generate(n=n)
 
 
 class BenchmarkManifolds:
@@ -683,3 +917,72 @@ class BenchmarkManifolds:
         # Create the final dataset:
         data = np.concatenate([temp1, temp2, temp1, temp2], axis=1)
         return data
+
+
+class SurfaceOfRevolution:
+    """
+    Generates a uniform sample from the surface obtained by rotating the graph of y = func(x),
+    x in [xmin, xmax], around the x-axis (how="x") or the y-axis (how="y"), by rejection sampling
+    on the area element tabulated on a grid of 20001 points.
+    Adapted from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+
+    Parameters
+    ----------
+    func: callable
+        Vectorised real-valued function defining the profile curve y = func(x)
+    how: str, 'x' or 'y'
+        Axis of rotation
+    xmin: float
+        Left boundary of the profile curve
+    xmax: float
+        Right boundary of the profile curve
+    random_state: int, np.random.RandomState instance
+        Random number generator
+    """
+
+    def __init__(
+        self, func=lambda x: np.sin(x * np.pi), how="x", xmin=-1.0, xmax=1.0, random_state=None
+    ):
+        if not xmin < xmax:
+            raise ValueError("The variable xmin must be less than xmax")
+        if how not in ["x", "y"]:
+            raise ValueError("The variable how must be 'x' or 'y'.")
+        self.func = func
+        self.how = how
+        self.xmin = xmin
+        self.xmax = xmax
+        self.random_state = check_random_state(random_state)
+
+        self.xvals = np.linspace(xmin, xmax, 20001)
+        self.fvals = np.asarray(func(self.xvals), dtype=float)
+        # area element per dx dtheta: |rotation radius| * sqrt(1 + f'(x)^2)
+        radius = self.fvals if how == "x" else self.xvals
+        self.jacobian_vals = np.abs(radius) * np.sqrt(1 + np.gradient(self.fvals, self.xvals) ** 2)
+
+    def generate(self, n=10000):
+        """
+        Generates n points from the surface of revolution.
+
+        Parameters
+        ----------
+        n: int
+            Number of data points.
+
+        Returns
+        -------
+        data: np.array, (npoints x 3)
+            Generated data
+        """
+        rs = self.random_state
+        jac_max = np.max(self.jacobian_vals)
+        x = np.empty(0)
+        while x.shape[0] < n:
+            u = rs.uniform(self.xmin, self.xmax, n)
+            jac = np.interp(u, self.xvals, self.jacobian_vals)
+            x = np.concatenate((x, u[rs.uniform(0, jac_max, n) < jac]))
+        x = x[:n]
+        theta = rs.uniform(0, 2 * np.pi, n)
+        f = np.interp(x, self.xvals, self.fvals)
+        if self.how == "x":
+            return np.stack((x, f * np.cos(theta), f * np.sin(theta)), axis=1)
+        return np.stack((x * np.cos(theta), f, x * np.sin(theta)), axis=1)
