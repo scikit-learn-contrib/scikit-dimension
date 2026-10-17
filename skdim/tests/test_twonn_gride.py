@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause
 import numpy as np
+from skdim._commonfuncs import get_nn
 import pytest
 from sklearn.utils.estimator_checks import check_estimator
 
@@ -96,11 +97,13 @@ def test_duplicates_warn():
 
 
 def test_gride_n1_1_is_twonn_mle():
-    # with n1=1, n2=2 the Gride MLE is N / sum(log mu); TwoNN's unbiased MLE is (N - 1) / sum(log mu)
+    # with n1=1, n2=2 Gride is the unbiased TwoNN MLE (N - 1) / sum(log mu), after DADApy's outlier cut on mu
     X = hyperBall(1000, 5, random_state=0)
-    g = GRIDE().fit(X).dimension_
-    t = TwoNN(method="mle", discard_fraction=0).fit(X).dimension_
-    assert g == pytest.approx(t * len(X) / (len(X) - 1), rel=1e-8)
+    dists, _ = get_nn(X, k=2)
+    mu = dists[:, 1] / dists[:, 0]
+    q95, q50 = np.percentile(mu, [95, 50])
+    mu = mu[mu < 20 * (q95 - q50) + q50]
+    assert GRIDE().fit(X).dimension_ == pytest.approx((len(mu) - 1) / np.sum(np.log(mu)), rel=1e-8)
 
 
 def test_gride_exact_model_and_fisher_error():

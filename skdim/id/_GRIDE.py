@@ -15,13 +15,15 @@ class GRIDE(GlobalEstimator):
     d (mu^d - 1)^(n2 - n1 - 1) / (B(n2 - n1, n1) mu^((n2 - 1) d + 1)), mu > 1 [Denti2022]_.
     The ID is the root of the score of this likelihood, which is concave in d, and its error
     is 1 / sqrt(observed Fisher information). With n1 = 1, n2 = 2 the density is Pareto(1, d)
-    and the estimate is the TwoNN MLE N / sum(log mu).
+    and the estimate is the unbiased TwoNN MLE (N - 1) / sum(log mu), as in ``TwoNN(method="mle")``.
     Raising n1 probes larger scales without decimating the data, which reduces the effect of
     short-scale noise.
 
     Reimplemented from [Denti2022]_; see DADApy (https://github.com/sissa-data-science/DADApy)
-    for the reference implementation. DADApy uses (N - 1) log d in place of N log d in the
-    likelihood, so its estimates are smaller by a factor of about 1 - 1/N at n1 = 1.
+    for the reference implementation, whose conventions are followed: the likelihood uses
+    (N - 1) log d in place of N log d (unbiased at n1 = 1), and ratios above
+    q50 + 20 (q95 - q50) are discarded as likely overlapping points. Unlike DADApy, tied
+    distances (mu = 1) are dropped rather than nudged.
     The tests follow the comparison approach of Jakub Malinowski's Gride port in the
     kmyim/scikit-dimension fork.
 
@@ -112,6 +114,9 @@ def _gride(dists, n1, n2):
             "neighbour distances (duplicate points)."
         )
         log_mu = log_mu[ok]
+    # DADApy's outlier cut on mu (monotone in log mu), for overlapping or fat-tailed data
+    q95, q50 = np.percentile(np.exp(log_mu), [95, 50])
+    log_mu = log_mu[np.exp(log_mu) < 20 * (q95 - q50) + q50]
     N = len(log_mu)
     if N < 2:
         raise ValueError("Fewer than 2 points left to estimate the dimension.")
@@ -119,7 +124,7 @@ def _gride(dists, n1, n2):
     # d log L / dd; mu^d / (mu^d - 1) = 1 / (1 - exp(-d log mu))
     def score(d):
         return (
-            N / d
+            (N - 1) / d
             + (n2 - n1 - 1) * np.sum(log_mu / -np.expm1(-d * log_mu))
             - (n2 - 1) * np.sum(log_mu)
         )
