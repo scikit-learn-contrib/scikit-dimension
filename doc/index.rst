@@ -52,7 +52,7 @@ Feel free to report an `issue <https://github.com/j-bac/scikit-dimension/issues/
    installation
    quick_start
    api
-   release_notes
+   changelog
    references
    contributing
 
