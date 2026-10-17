@@ -11,6 +11,8 @@ from joblib import Parallel, delayed
 class TLE(LocalEstimator):
     """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm. [Amsaleg2019]_ [IDRadovanović]_
 
+    This is the variant including central measurements and reflections (``idtlec.m`` in [IDRadovanović]_).
+
     Parameters
     ----------
     epsilon: float
@@ -92,7 +94,8 @@ class TLE(LocalEstimator):
         # will subtract twice this number during ID computation below
         nV0 = np.sum(V0)
         # Drop T & S measurements below epsilon (V4: If $s_{ij}$ is thrown out, then for the sake of balance, $t_{ij}$ should be thrown out as well (or vice versa).)
-        TSeps = (T < self.epsilon) | (S < self.epsilon)
+        # also drop NaN measurements, obtained as 0/0 with duplicate points
+        TSeps = (T < self.epsilon) | (S < self.epsilon) | np.isnan(T) | np.isnan(S)
         np.fill_diagonal(TSeps, 0)
         nTSeps = np.sum(TSeps)
         T[TSeps] = r
@@ -107,8 +110,11 @@ class TLE(LocalEstimator):
         # Drop distances below epsilon and compute sum
         Deps = dists < self.epsilon
         nDeps = np.sum(Deps, dtype=int)
-        dists = dists[nDeps:]
+        dists = dists[:, nDeps:]
         s2 = np.sum(np.log(dists / r))
+        # Boundary case 5: (almost) all kNN distances are equal
+        if s1t + s1s > -self.epsilon:
+            return 0.0
         # Compute ID, subtracting numbers of dropped measurements
         ID = -2 * (n_neighbors ** 2 - nTSeps - nDeps - nV0) / (s1t + s1s + 2 * s2)
         return ID

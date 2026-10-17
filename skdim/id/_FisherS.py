@@ -249,7 +249,8 @@ class FisherS(GlobalEstimator):
 
         # print(counts)
 
-        py = counts / (n)
+        # fraction of the other n - 1 points (as in the original MATLAB code)
+        py = counts / (n - 1)
         py = py.T
         if addedone:
             py = py[1:-2, :]

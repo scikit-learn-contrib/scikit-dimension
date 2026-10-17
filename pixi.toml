@@ -37,6 +37,8 @@ r-fnn = "*"  # ider
 r-glm2 = "*"  # ider
 bioconductor-scran = "*"
 c-compiler = "*"
+octave = "*"  # original MATLAB TLE/MOM and FisherS scripts
+octave-statistics = "*"  # pdist/squareform
 
 [feature.ref.pypi-dependencies]
 dadapy = { git = "https://github.com/sissa-data-science/DADApy", rev = "d729b8835e771001ec7ba6ca68938b737b96edae" }

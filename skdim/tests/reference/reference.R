@@ -30,6 +30,10 @@ for (f in list.files(indir, pattern = "^id_.*\\.csv$", full.names = TRUE)) {
     pca_maxgap = pcaLocalDimEst(X, ver = "maxgap")$dim.est,
     mle_k20 = maxLikGlobalDimEst(X, k = 20)$dim.est,
     mle_k20_unbiased = maxLikGlobalDimEst(X, k = 20, unbiased = TRUE)$dim.est,
+    mle_k5 = maxLikGlobalDimEst(X, k = 5)$dim.est,
+    mle_k20_dnoise = maxLikGlobalDimEst(X, k = 20, n = 20, sigma = 0.1, dnoise = "dnoiseGaussH")$dim.est,
+    mle_k20_K10_global = maxLikGlobalDimEst(X, k = 20, K = 10, neighborhood.based = FALSE)$dim.est,
+    mle_k20_mean = maxLikGlobalDimEst(X, k = 20, neighborhood.aggregation = "mean")$dim.est,
     # first 30 rows: below 100 points skdim's ESS uses all combinations, like R (no subsampling)
     ess_a_n30 = essLocalDimEst(X[1:30, ], ver = "a")$dim.est,
     ess_b_n30 = essLocalDimEst(X[1:30, ], ver = "b")$dim.est,

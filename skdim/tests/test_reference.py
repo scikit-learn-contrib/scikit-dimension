@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Agreement with reference implementations, via outputs stored in reference/fixtures.json.
 
-Regenerate with: pixi run -e ref make-fixtures (R intrinsicDimension, ider, PCAtools, scran; DADApy).
+Regenerate with: pixi run -e ref make-fixtures (R intrinsicDimension, ider, PCAtools, scran;
+DADApy; original MATLAB TLE/MOM and FisherSeparabilityAnalysis code run in Octave).
 Tolerances: integer ranks exact; closed forms rtol 1e-6; Gride rtol 1e-6 (DADApy bisects to 1e-7)."""
 import json
 import os
@@ -13,13 +14,14 @@ import skdim
 
 HERE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reference")
 sys.path.insert(0, HERE)
-from data import EASY, id_datasets, rank_datasets  # noqa: E402
+from data import EASY, dup_datasets, id_datasets, rank_datasets  # noqa: E402
 
 with open(os.path.join(HERE, "fixtures.json")) as f:
     FX = json.load(f)
 
 ID = id_datasets()
 RANK = rank_datasets()
+DUP = dup_datasets()
 
 
 @pytest.mark.parametrize("name", sorted(ID))
@@ -30,6 +32,10 @@ def test_intrinsicDimension(name):
     assert skdim.id.lPCA(ver="maxgap").fit(X).dimension_ == ref["pca_maxgap"]
     assert skdim.id.MLE().fit(X, n_neighbors=20).dimension_ == pytest.approx(ref["mle_k20"], rel=1e-6)
     assert skdim.id.MLE(unbiased=True).fit(X, n_neighbors=20).dimension_ == pytest.approx(ref["mle_k20_unbiased"], rel=1e-6)
+    assert skdim.id.MLE().fit(X, n_neighbors=5).dimension_ == pytest.approx(ref["mle_k5"], rel=1e-6)
+    assert skdim.id.MLE(n=20, sigma=0.1, dnoise="dnoiseGaussH").fit(X, n_neighbors=20).dimension_ == pytest.approx(ref["mle_k20_dnoise"], rel=1e-6)
+    assert skdim.id.MLE(K=10, neighborhood_based=False).fit(X, n_neighbors=20).dimension_ == pytest.approx(ref["mle_k20_K10_global"], rel=1e-6)
+    assert skdim.id.MLE().fit(X, n_neighbors=20, comb="mean").dimension_ == pytest.approx(ref["mle_k20_mean"], rel=1e-6)
     assert skdim.id.ESS(ver="a").fit_once(X[:30]).dimension_ == pytest.approx(ref["ess_a_n30"], rel=1e-6)
     assert skdim.id.ESS(ver="b").fit_once(X[:30]).dimension_ == pytest.approx(ref["ess_b_n30"], rel=1e-6)
     # R's labels are swapped relative to Rozza et al. (2012), where MLi is the integer estimate:
@@ -51,6 +57,19 @@ def test_danco(name):
     fit = skdim.id.DANCo(k=ref["k"], D=ref["D"], fractal=False, calibration_data=cal).fit(X)
     assert fit.dimension_ == ref["dim_est"]
     assert fit.kl_divergence_ == pytest.approx(ref["kl_divergence"], rel=1e-6)
+
+
+@pytest.mark.parametrize("name", sorted(ID) + sorted(DUP))
+def test_matlab(name):
+    X, ref = {**ID, **DUP}[name], FX["matlab"][name]
+    k = ref["n_neighbors"]
+    np.testing.assert_allclose(skdim.id.TLE().fit(X, n_neighbors=k).dimension_pw_, ref["tle_pw"], rtol=1e-6)
+    np.testing.assert_allclose(skdim.id.MOM().fit(X, n_neighbors=k).dimension_pw_, ref["mom_pw"], rtol=1e-6)
+    if name in DUP:
+        return  # FisherS is compared on the ID datasets only
+    fs = skdim.id.FisherS().fit(X)
+    assert fs.dimension_ == pytest.approx(ref["fisher_n_single"], rel=1e-6)
+    np.testing.assert_allclose(np.ravel(fs.n_alpha_), ref["fisher_n_alpha"], rtol=1e-6)
 
 
 @pytest.mark.parametrize("name", sorted(ID))

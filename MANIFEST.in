@@ -1,3 +1,3 @@
 include requirements.txt
 include LICENSE LICENSES_bundled.txt AUTHORS.md CITATION.cff
-recursive-include skdim/tests/reference *.json *.R
+recursive-include skdim/tests/reference *.json *.R *.m

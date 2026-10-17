@@ -16,6 +16,12 @@ def id_datasets():
     }
 
 
+def dup_datasets():
+    """Data with duplicated points, for the boundary cases of the MATLAB TLE/MOM code."""
+    X = hyperBall(150, 5, random_state=3)
+    return {"ball5_dups": np.r_[X, X[:30]]}
+
+
 def spiked(n, p, theta, seed):
     """n x p data with covariance I + U diag(theta) U^T, U the first columns of a normalized Hadamard matrix."""
     rng = np.random.RandomState(seed)
