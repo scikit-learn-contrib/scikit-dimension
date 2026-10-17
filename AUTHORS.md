@@ -20,9 +20,9 @@ Code ported from https://github.com/kmyim/scikit-dimension, accompanying
 Binnie, Dłotko, Harvey, Malinowski, Yim, "A Survey of Dimension Estimation Methods"
 (arXiv:2507.13887). Git authorship of the original files is preserved.
 
-- Ka Man Yim ([@kmyim](https://github.com/kmyim))
-- John Harvey ([@johnharveymath](https://github.com/johnharveymath))
-- Jakub Malinowski
+- Ka Man Yim ([@kmyim](https://github.com/kmyim)): `id.PH`, Laplace-evidence code behind `lPCA(ver="Minka")`, datasets, embeddings
+- John Harvey ([@johnharveymath](https://github.com/johnharveymath)): datasets, embeddings, `lPCA(ver="Minka")`
+- Jakub Malinowski: GRIDE reference-test design (`id.GRIDE` itself is reimplemented from Denti et al. 2022)
 
 ## Third-party code
 

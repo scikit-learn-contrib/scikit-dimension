@@ -17,12 +17,14 @@ ID estimators
    id.DANCo
    id.ESS
    id.FisherS
+   id.GRIDE
    id.KNN
    id.lPCA
    id.MADA
    id.MiND_ML
    id.MLE
    id.MOM
+   id.PH
    id.TLE
    id.TwoNN
 
@@ -39,3 +41,20 @@ Datasets
    datasets.lineDiskBall
    datasets.swissRoll3Sph
    datasets.BenchmarkManifolds
+   datasets.product
+   datasets.hyperTwinPeaksUniform
+   datasets.toroidal_spiral
+   datasets.torus
+   datasets.lorenz_attractor
+   datasets.dumbbell
+   datasets.SurfaceOfRevolution
+
+
+Embeddings
+----------
+
+.. autosummary::
+   :toctree: .
+
+   embeddings.monomial_embedding
+   embeddings.delay_embedding

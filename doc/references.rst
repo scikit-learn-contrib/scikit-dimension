@@ -24,6 +24,9 @@ Articles
 .. [Ceruti2012] Ceruti, C. *et al.* (2012) 
    *DANCo: Dimensionality from Angle and Norm Concentration.*,
    `arXiv preprint 1206.3881`. 
+.. [Denti2022] Denti, F., Doimo, D., Laio, A. and Mira, A. (2022),
+   *The generalized ratios intrinsic dimension estimator.*,
+   `Scientific Reports, 12, 20005. doi:10.1038/s41598-022-20991-1`.
 .. [Facco2019] Facco, E. *et al.* (2019),
    *Estimating the intrinsic dimension of datasets by a minimal neighborhood information.*,
    `Nature`.

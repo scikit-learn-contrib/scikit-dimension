@@ -47,3 +47,10 @@ lpca = skdim.id.lPCA().fit_pw(data,
 #get estimated intrinsic dimension
 print(danco.dimension_, np.mean(lpca.dimension_pw_)) 
 ```
+
+### Citing and credits
+
+Please cite Bac et al. (2021), *Scikit-Dimension: A Python Package for Intrinsic Dimension Estimation*, Entropy 23(10):1368, [doi:10.3390/e23101368](https://doi.org/10.3390/e23101368) (see `CITATION.cff`), together with the paper of each method you use (listed in its docstring).
+Contributors are listed in `AUTHORS.md`; code adapted from other projects and its licences are listed in `LICENSES_bundled.txt`.
+
+Related packages: [DADApy](https://github.com/sissa-data-science/DADApy) (Glielmo et al., Patterns 2022), [intrinsicDimension](https://cran.r-project.org/package=intrinsicDimension), [Rdimtools](https://cran.r-project.org/package=Rdimtools), [PCAtools](https://bioconductor.org/packages/PCAtools).

@@ -28,7 +28,7 @@ EXPECTED_FAILED_CHECKS = {
     "check_transformer_preserve_dtypes": SCALAR_TRANSFORM,
 }
 # check_estimator fits on 10 samples; DANCo needs k + 1 samples
-ESTIMATOR_KWARGS = {"DANCo": {"k": 5}}
+ESTIMATOR_KWARGS = {"DANCo": {"k": 5}, "PH": {"nsteps": 5, "subsamples": 2}}
 
 
 @pytest.mark.parametrize("Estimator", estimators)
