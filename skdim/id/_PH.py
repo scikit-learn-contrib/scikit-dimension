@@ -3,6 +3,7 @@ from numbers import Integral
 
 import numpy as np
 from joblib import Parallel, delayed
+from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import minimum_spanning_tree
 from scipy.spatial.distance import pdist, squareform
 from sklearn.linear_model import LinearRegression
@@ -150,6 +151,9 @@ class PH(GlobalEstimator):
 
 def _total_persistence(D, alpha):
     """Sum of MST edge lengths to the power alpha (PH0 total persistence)"""
-    # zero distances (duplicate points) are dropped as non-edges; they contribute 0 anyway
-    w = minimum_spanning_tree(D).data
+    # dense csgraph input treats |d| <= 1e-8 as a missing edge (duplicate points would be
+    # joined by a longer edge); sparse input keeps explicit zeros as edges
+    i, j = np.triu_indices(len(D), 1)
+    G = csr_matrix((D[i, j], (i.astype(np.int32), j.astype(np.int32))), shape=D.shape)
+    w = minimum_spanning_tree(G).data
     return np.sum(w[:, None] ** np.atleast_1d(alpha), axis=0) if alpha.ndim else np.sum(w**alpha)

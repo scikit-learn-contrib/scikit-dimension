@@ -5,7 +5,7 @@ from sklearn.base import clone
 from sklearn.utils.estimator_checks import check_estimator
 
 import skdim
-from skdim.id._PH import PH
+from skdim.id._PH import PH, _total_persistence
 from skdim.tests.test_all_params import EXPECTED_FAILED_CHECKS
 
 FAST = dict(n_range_min=0.1, nsteps=10, subsamples=10, random_state=0)
@@ -21,6 +21,36 @@ def test_ph_ground_truth(d, shape):
         X = skdim.datasets.hyperBall(n=500, d=d, random_state=d)
     est = PH(**FAST).fit(X).dimension_
     assert abs(est - d) < 0.2 * d, est
+
+
+def _kruskal_sum(D):
+    n = len(D)
+    parent = list(range(n))
+
+    def find(i):
+        while parent[i] != i:
+            i = parent[i]
+        return i
+
+    total = 0.0
+    for w, i, j in sorted((D[i, j], i, j) for i in range(n) for j in range(i + 1, n)):
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[ri] = rj
+            total += w
+    return total
+
+
+def test_total_persistence_duplicates():
+    from scipy.spatial.distance import pdist, squareform
+
+    X = np.array([[0.0], [0.0], [1.0]])
+    assert np.isclose(_total_persistence(squareform(pdist(X)), np.float64(1.0)), 1.0)
+    rng = np.random.default_rng(0)
+    X = rng.integers(0, 3, size=(40, 2)).astype(float)  # many duplicate rows
+    D = squareform(pdist(X))
+    assert np.isclose(_total_persistence(D, np.float64(1.0)), _kruskal_sum(D))
+    assert np.isclose(_total_persistence(D * 1e-10, np.float64(1.0)), _kruskal_sum(D) * 1e-10)
 
 
 def test_ph_reproducible_across_n_jobs():
