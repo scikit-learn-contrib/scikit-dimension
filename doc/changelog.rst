@@ -3,8 +3,15 @@
 Changelog
 =========
 
-Version 0.4.0 :small:`unreleased`
----------------------------------
+Version 0.4.1 :small:`October 2026`
+-----------------------------------
+- Documentation: fix the build on Read the Docs (source links failed when skdim is installed
+  non-editably); the CI documentation job now installs skdim the same way.
+- Remove invalid escape sequences from ``ESS`` docstrings (``SyntaxWarning`` on recent Python).
+  No change to results.
+
+Version 0.4.0 :small:`October 2026`
+-----------------------------------
 
 New estimators and options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
