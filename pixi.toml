@@ -1,4 +1,4 @@
-# Development and reference-test environments. Packaging stays in setup.py.
+# Development and reference-test environments. Packaging metadata is in pyproject.toml.
 #   pixi run test                    # test suite
 #   pixi run -e ref make-fixtures    # regenerate skdim/tests/reference/fixtures.json from R and DADApy
 [workspace]
@@ -50,7 +50,7 @@ make-fixtures = { cmd = "python skdim/tests/reference/generate_fixtures.py", dep
 
 [feature.docs.dependencies]
 sphinx = ">=7"
-sphinx_rtd_theme = ">=2"
+pydata-sphinx-theme = "*"
 numpydoc = "*"
 nbsphinx = ">=0.9"
 ipykernel = "*"

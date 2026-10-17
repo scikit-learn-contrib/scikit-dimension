@@ -48,6 +48,19 @@ API and compatibility
 - ``lPCA(ver="Fan")`` no longer modifies a user-supplied explained-variance array.
 - ``transform(X)`` raises when ``X`` has a different number of features than the fitted data.
 - pandas is imported only by ``datasets.BenchmarkManifolds``.
+- ``datasets.hyperSphere`` gains ``radius`` and ``center`` after ``random_state``, so existing positional
+  calls are unchanged; all pre-existing dataset generators return identical samples for a given seed.
+- Requires Python >= 3.10.
+
+Packaging, CI and documentation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- Packaging metadata moves from ``setup.py``/``setup.cfg`` to ``pyproject.toml``; the README is the PyPI description.
+- GitHub Actions replace Travis, AppVeyor and CircleCI: tests on Python 3.10-3.13 (Linux) and 3.13
+  (macOS, Windows), a documentation build and a package build check on every pull request; releases
+  are published to PyPI from GitHub releases with trusted publishing.
+- Documentation uses the pydata-sphinx-theme, builds with Sphinx >= 7, and gains an estimator overview
+  and this changelog; outdated pinned documentation dependencies are removed.
+- ``pixi.toml`` provides development, documentation and reference-implementation environments.
 
 Validation
 ^^^^^^^^^^

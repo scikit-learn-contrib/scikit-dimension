@@ -1,8 +1,7 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true)](https://ci.appveyor.com/project/j-bac/scikit-dimension/branch/master)
-[![CircleCI](https://circleci.com/gh/scikit-learn-contrib/scikit-dimension/tree/master.svg?style=shield)](https://app.circleci.com/pipelines/github/scikit-learn-contrib/scikit-dimension)
+[![Tests](https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml/badge.svg)](https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/scikit-dimension/badge/?version=latest)](https://scikit-dimension.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/scikit-dimension)
-[![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/scikit-dimension)](https://pypi.org/project/scikit-dimension)
+[![License](https://img.shields.io/github/license/scikit-learn-contrib/scikit-dimension)](https://github.com/scikit-learn-contrib/scikit-dimension/blob/master/LICENSE)
 [![Downloads](https://pepy.tech/badge/scikit-dimension)](https://pepy.tech/project/scikit-dimension)
 
 # scikit-dimension
@@ -20,7 +19,7 @@ pip install scikit-dimension
 
 From source:
 ```bash
-git clone https://github.com/j-bac/scikit-dimension
+git clone https://github.com/scikit-learn-contrib/scikit-dimension
 cd scikit-dimension
 pip install .
 ```

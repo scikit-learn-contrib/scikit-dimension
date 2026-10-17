@@ -1,0 +1,23 @@
+# Publishes to PyPI when a GitHub release is published. Authentication: PyPI trusted publishing
+# (add this repository, workflow publish.yml and environment "pypi" as a trusted publisher of
+# scikit-dimension on pypi.org), or a PYPI_API_TOKEN repository secret.
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  pypi:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv build
+      - run: uvx twine check --strict dist/*
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}

@@ -15,11 +15,11 @@ Development Version
 
 To work with the latest development version, install from GitHub_ using::
 
-    pip install git+https://github.com/j-bac/scikit-dimension
+    pip install git+https://github.com/scikit-learn-contrib/scikit-dimension
 
 or::
 
-    git clone https://github.com/j-bac/scikit-dimension
+    git clone https://github.com/scikit-learn-contrib/scikit-dimension
     pip install -e scikit-dimension
 
 Dependencies
@@ -34,5 +34,5 @@ Dependencies
 If you run into issues, do not hesitate to approach us or raise a `GitHub issue`_.
 
 .. _PyPI: https://pypi.org/project/scikit-dimension
-.. _Github: https://github.com/j-bac/scikit-dimension
-.. _`Github issue`: https://github.com/j-bac/scikit-dimension/issues/new/choose
+.. _Github: https://github.com/scikit-learn-contrib/scikit-dimension
+.. _`Github issue`: https://github.com/scikit-learn-contrib/scikit-dimension/issues/new/choose
