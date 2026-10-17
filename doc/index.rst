@@ -75,14 +75,9 @@ Feel free to report an `issue <https://github.com/scikit-learn-contrib/scikit-di
 
    installation
    quick_start
+   basics
    api
    changelog
    references
    contributing
 
-.. toctree::
-   :caption: Tutorials
-   :maxdepth: 1
-   :hidden:
-
-   basics

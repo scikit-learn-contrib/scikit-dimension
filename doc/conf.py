@@ -124,6 +124,7 @@ html_theme_options = {
     ],
     "navigation_with_keys": False,
     "show_toc_level": 2,
+    "header_links_before_dropdown": 5,
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -316,9 +317,15 @@ intersphinx_mapping = {
 # }
 
 
+# Plotly figures saved with the notebook renderer call MathJax.Hub.Config (MathJax 2 API) before
+# defining plotly; with MathJax >= 3 that throws and the figures stay empty. Provide a no-op Hub.
+MATHJAX2_SHIM = """window.MathJax = window.MathJax || {};
+if (!window.MathJax.Hub) { window.MathJax.Hub = { Config: function () {} }; }"""
+
+
 def setup(app):
-    # a copy button to copy snippet of code from the documentation
     app.add_css_file("css/custom.css")
+    app.add_js_file(None, body=MATHJAX2_SHIM, priority=900)
 
 
 # -- Options for other output ------------------------------------------
