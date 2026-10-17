@@ -7,7 +7,7 @@ Contributions from the community are highly appreciated.
 
 Even if you are not familiar with programming languages and tools,
 you may contribute by filing bugs or any problems as a
-`GitHub issue <https://github.com/j-bac/scikit-dimension/issues>`_.
+`GitHub issue <https://github.com/scikit-learn-contrib/scikit-dimension/issues>`_.
 
 
 Git and branching model
@@ -32,19 +32,19 @@ Workflow
 
 In case of large changes to the software, please first get in contact
 with the authors for coordination, for example by filing an
-`issue <https://github.com/j-bac/scikit-dimension/issues>`_.
+`issue <https://github.com/scikit-learn-contrib/scikit-dimension/issues>`_.
 If you want to fix small issues (typos in the docs, obvious errors, etc.)
 you can - of course - directly submit a pull request (PR).
 
 #. Create a fork of `scikit-dimension` in your GitHub account.
-    Simply click "Fork" button on `<https://github.com/j-bac/scikit-dimension>`_.
+    Simply click "Fork" button on `<https://github.com/scikit-learn-contrib/scikit-dimension>`_.
 
 
 #. Clone your fork on your computer.
     $ ``git clone git@github.com:YOUR-ACCOUNT-GOES-HERE/scikit-dimension.git && cd scikit-dimension``
 
 #. Add remote upstream.
-    $ ``git remote add upstream git@github.com:j-bac/scikit-dimension.git``
+    $ ``git remote add upstream git@github.com:scikit-learn-contrib/scikit-dimension.git``
 
 #. Create feature/bugfix branch.
     In case of feature or noncritical bugfix:

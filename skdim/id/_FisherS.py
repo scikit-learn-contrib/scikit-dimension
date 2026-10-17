@@ -1,48 +1,20 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause
+# Adapted from https://github.com/auranic/FisherSeparabilityAnalysis by Andrei Zinovyev, Evgeny Mirkes,
+# Luca Albergante and Jonathan Bac; see LICENSES_bundled.txt
 from sklearn.utils.validation import check_array
 import numba as nb
 import numpy as np
 import sklearn.decomposition as sk
 from scipy.special import lambertw
 from matplotlib import pyplot as plt
-from .._commonfuncs import GlobalEstimator
+from .._commonfuncs import _check_X, GlobalEstimator
 import warnings
 
 warnings.filterwarnings("ignore")
 
 
 class FisherS(GlobalEstimator):
-    """Intrinsic dimension estimation using the Fisher Separability algorithm. [Albergante2019]_
+    """Intrinsic dimension estimation using the Fisher Separability algorithm. [Albergante2019]_ [IDFisherS]_
 
     Parameters
     ----------
@@ -107,7 +79,7 @@ class FisherS(GlobalEstimator):
             Input alpha values   
         """
 
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
 
         # test_alphas introduced to pass sklearn checks (sklearn doesn't take arrays as default parameters)
         if self.alphas is None:
@@ -277,7 +249,8 @@ class FisherS(GlobalEstimator):
 
         # print(counts)
 
-        py = counts / (n)
+        # fraction of the other n - 1 points (as in the original MATLAB code)
+        py = counts / (n - 1)
         py = py.T
         if addedone:
             py = py[1:-2, :]
@@ -654,7 +627,7 @@ class FisherS(GlobalEstimator):
             plt.hist(p_alpha[alpha_ind_selected, :][0], bins=nbins)
             plt.xlabel(
                 "Inseparability prob. for \u03B1=%2.2f"
-                % (self._alphas[0, alpha_ind_selected]),
+                % np.ravel(self._alphas[0, alpha_ind_selected])[0],
                 fontsize=16,
             )
             plt.ylabel("Number of values")

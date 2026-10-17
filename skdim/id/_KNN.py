@@ -1,42 +1,14 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause AND MIT
+# Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
+# Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
 import numpy as np
+from sklearn.utils import check_random_state
 from scipy.spatial.distance import pdist, squareform
 from sklearn.utils.validation import check_array
-from .._commonfuncs import GlobalEstimator
+from .._commonfuncs import _check_X, GlobalEstimator
 
 
 class KNN(GlobalEstimator):
-    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the kNN algorithm. [Carter2010]_ [IDJohnsson]_
 
     This is a simplified version of the kNN dimension estimation method described by Carter et al. (2010), 
@@ -54,13 +26,16 @@ class KNN(GlobalEstimator):
         Number of bootstrap samples for each sample size.
     gamma: int, default=2
         Weighting constant.
+    random_state: int, np.random.RandomState instance or None, default=None
+        Seed for the bootstrap samples.
     """
 
-    def __init__(self, k=None, ps=None, M=1, gamma=2):
+    def __init__(self, k=None, ps=None, M=1, gamma=2, random_state=None):
         self.k = k
         self.ps = ps
         self.M = M
         self.gamma = gamma
+        self.random_state = random_state
 
     def fit(self, X, y=None):
         """A reference implementation of a fitting function.
@@ -83,8 +58,9 @@ class KNN(GlobalEstimator):
         self._k = 2 if self.k is None else self.k
         self._ps = np.arange(self._k + 1, self._k + 5) if self.ps is None else self.ps
 
-        X = check_array(X, ensure_min_samples=self._k + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=self._k + 1, ensure_min_features=2)
 
+        self._rng = check_random_state(self.random_state)
         self.dimension_, self.residual_ = self._knnDimEst(X)
         self.is_fitted_ = True
         # `fit` should always return `self`
@@ -104,7 +80,7 @@ class KNN(GlobalEstimator):
 
         for i in range(Q):
             for j in range(self.M):
-                samp_ind = np.random.randint(0, n, self._ps[i])
+                samp_ind = self._rng.randint(0, n, self._ps[i])
                 for l in samp_ind:
                     L[i, j] += np.sum(
                         np.sort(dist[l, samp_ind])[1 : (self._k + 1)] ** self.gamma

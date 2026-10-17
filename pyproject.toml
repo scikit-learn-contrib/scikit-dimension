@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scikit-dimension"
+dynamic = ["version"]
+description = "Intrinsic dimension estimation with a scikit-learn API"
+readme = "README.md"
+license = "BSD-3-Clause"
+license-files = ["LICENSE", "LICENSES_bundled.txt", "AUTHORS.md"]
+authors = [{ name = "Jonathan Bac" }]
+maintainers = [{ name = "Jonathan Bac" }]
+requires-python = ">=3.10"
+dependencies = ["numpy", "numba", "scipy", "scikit-learn", "matplotlib"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+tests = ["pytest", "pandas"]
+docs = ["sphinx>=7", "pydata-sphinx-theme", "numpydoc", "nbsphinx>=0.9", "ipykernel"]
+
+[project.urls]
+Homepage = "https://github.com/scikit-learn-contrib/scikit-dimension"
+Documentation = "https://scikit-dimension.readthedocs.io"
+Changelog = "https://scikit-dimension.readthedocs.io/en/latest/changelog.html"
+Paper = "https://doi.org/10.3390/e23101368"
+
+[tool.setuptools.dynamic]
+version = { attr = "skdim._version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["skdim*"]
+
+[tool.setuptools.package-data]
+"skdim.id" = ["DANCoFit/*.npz"]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"

@@ -1,34 +1,7 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause
+# Adapted from the MATLAB code of Amsaleg, Chelly, Houle, Kawarabayashi, Radovanovic and Treeratanajaru
+# (https://github.com/radacha/tle; doi:10.1137/1.9781611975673.21, arXiv:2209.14475),
+# originally released under CC BY-SA 4.0; see LICENSES_bundled.txt
 import numpy as np
 from .._commonfuncs import LocalEstimator
 from scipy.spatial.distance import pdist, squareform
@@ -37,6 +10,8 @@ from joblib import Parallel, delayed
 
 class TLE(LocalEstimator):
     """Intrinsic dimension estimation using the Tight Local intrinsic dimensionality Estimator algorithm. [Amsaleg2019]_ [IDRadovanović]_
+
+    This is the variant including central measurements and reflections (``idtlec.m`` in [IDRadovanović]_).
 
     Parameters
     ----------
@@ -119,7 +94,8 @@ class TLE(LocalEstimator):
         # will subtract twice this number during ID computation below
         nV0 = np.sum(V0)
         # Drop T & S measurements below epsilon (V4: If $s_{ij}$ is thrown out, then for the sake of balance, $t_{ij}$ should be thrown out as well (or vice versa).)
-        TSeps = (T < self.epsilon) | (S < self.epsilon)
+        # also drop NaN measurements, obtained as 0/0 with duplicate points
+        TSeps = (T < self.epsilon) | (S < self.epsilon) | np.isnan(T) | np.isnan(S)
         np.fill_diagonal(TSeps, 0)
         nTSeps = np.sum(TSeps)
         T[TSeps] = r
@@ -134,8 +110,11 @@ class TLE(LocalEstimator):
         # Drop distances below epsilon and compute sum
         Deps = dists < self.epsilon
         nDeps = np.sum(Deps, dtype=int)
-        dists = dists[nDeps:]
+        dists = dists[:, nDeps:]
         s2 = np.sum(np.log(dists / r))
+        # Boundary case 5: (almost) all kNN distances are equal
+        if s1t + s1s > -self.epsilon:
+            return 0.0
         # Compute ID, subtracting numbers of dropped measurements
         ID = -2 * (n_neighbors ** 2 - nTSeps - nDeps - nV0) / (s1t + s1s + 2 * s2)
         return ID

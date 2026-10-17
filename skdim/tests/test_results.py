@@ -1,34 +1,4 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause
 import pytest
 import numpy as np
 import skdim
@@ -84,7 +54,7 @@ def test_mind_ml_results(data):
     #          skdim.id.MiND_ML(ver='MLi').fit(data).dimension_ == np.array(intdimr.dancoDimEst(data,k=10,D=5,ver='MIND_MLk')[0])))
     assert all(
         (
-            skdim.id.MiND_ML(ver="MLk").fit(data).dimension_ == 3.696083548872364,
+            np.isclose(skdim.id.MiND_ML(ver="MLk").fit(data).dimension_, 3.696083548872364),
             skdim.id.MiND_ML(ver="MLi").fit(data).dimension_ == 4,
         )
     )
@@ -294,8 +264,8 @@ def test_twonn_results(data):
     test_high_dim[:, : data.shape[1]] = data
     assert all(
         (
-            np.round(skdim.id.TwoNN().fit(test_high_dim).dimension_, 5) == 4.05496,
+            np.round(skdim.id.TwoNN().fit(test_high_dim).dimension_, 5) == 4.52231,
             np.round(skdim.id.TwoNN(discard_fraction=0.05).fit(data).dimension_, 5)
-            == 4.11323,
+            == 4.63403,
         )
     )

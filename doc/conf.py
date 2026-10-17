@@ -2,7 +2,6 @@ from skdim import __version__
 import sphinx
 import sys
 import os
-import sphinx_rtd_theme
 
 sys.path.append("../skdim/")
 
@@ -63,7 +62,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 project = "scikit-dimension"
-copyright = "2020, Jonathan Bac"
+copyright = "2020-2026, Jonathan Bac and scikit-dimension contributors"
 
 # The short X.Y version.
 version = __version__
@@ -116,7 +115,16 @@ pygments_style = "sphinx"
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+html_title = "scikit-dimension"
+html_theme_options = {
+    "github_url": "https://github.com/scikit-learn-contrib/scikit-dimension",
+    "icon_links": [
+        {"name": "PyPI", "url": "https://pypi.org/project/scikit-dimension", "icon": "fa-brands fa-python"},
+    ],
+    "navigation_with_keys": False,
+    "show_toc_level": 2,
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -366,7 +374,7 @@ def get_linenos(obj):
 
 # set project_dir: project/docs/source/conf.py/../../.. → project/
 project_dir = Path(__file__).parent.parent.parent
-github_url_scvelo = "https://github.com/j-bac/scikit-dimension/tree/master"
+github_url_scvelo = "https://github.com/scikit-learn-contrib/scikit-dimension/tree/master"
 from pathlib import PurePosixPath
 
 

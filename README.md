@@ -1,8 +1,7 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true)](https://ci.appveyor.com/project/j-bac/scikit-dimension/branch/master)
-[![CircleCI](https://circleci.com/gh/scikit-learn-contrib/scikit-dimension/tree/master.svg?style=shield)](https://app.circleci.com/pipelines/github/scikit-learn-contrib/scikit-dimension)
+[![Tests](https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml/badge.svg)](https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml)
 [![Documentation Status](https://readthedocs.org/projects/scikit-dimension/badge/?version=latest)](https://scikit-dimension.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/j-bac/scikit-dimension/branch/master/graph/badge.svg)](https://codecov.io/gh/j-bac/scikit-dimension)
-[![GitHub license](https://img.shields.io/github/license/j-bac/scikit-dimension)](https://github.com/j-bac/scikit-dimension/blob/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/scikit-dimension)](https://pypi.org/project/scikit-dimension)
+[![License](https://img.shields.io/github/license/scikit-learn-contrib/scikit-dimension)](https://github.com/scikit-learn-contrib/scikit-dimension/blob/master/LICENSE)
 [![Downloads](https://pepy.tech/badge/scikit-dimension)](https://pepy.tech/project/scikit-dimension)
 
 # scikit-dimension
@@ -20,7 +19,7 @@ pip install scikit-dimension
 
 From source:
 ```bash
-git clone https://github.com/j-bac/scikit-dimension
+git clone https://github.com/scikit-learn-contrib/scikit-dimension
 cd scikit-dimension
 pip install .
 ```
@@ -47,3 +46,10 @@ lpca = skdim.id.lPCA().fit_pw(data,
 #get estimated intrinsic dimension
 print(danco.dimension_, np.mean(lpca.dimension_pw_)) 
 ```
+
+### Citing and credits
+
+Please cite Bac et al. (2021), *Scikit-Dimension: A Python Package for Intrinsic Dimension Estimation*, Entropy 23(10):1368, [doi:10.3390/e23101368](https://doi.org/10.3390/e23101368) (see `CITATION.cff`), together with the paper of each method you use (listed in its docstring).
+Contributors are listed in `AUTHORS.md`; code adapted from other projects and its licences are listed in `LICENSES_bundled.txt`.
+
+Related packages: [DADApy](https://github.com/sissa-data-science/DADApy) (Glielmo et al., Patterns 2022), [intrinsicDimension](https://cran.r-project.org/package=intrinsicDimension), [Rdimtools](https://cran.r-project.org/package=Rdimtools), [PCAtools](https://bioconductor.org/packages/PCAtools).

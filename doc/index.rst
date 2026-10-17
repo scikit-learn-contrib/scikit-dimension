@@ -1,19 +1,11 @@
-|Travis|_ |Appveyor|_ |Codecov|_ |CircleCI|_ |Documentation|_ |LanguageGrade|_ |License|_
-
-.. |Travis| image:: https://travis-ci.com/j-bac/scikit-dimension.svg?branch=master
-.. _Travis: https://travis-ci.com/j-bac/scikit-dimension
-.. |Appveyor| image:: https://ci.appveyor.com/api/projects/status/tvumlfad69g6ap3u/branch/master?svg=true
-.. _Appveyor: https://ci.appveyor.com/project/j-bac/scikit-dimension/branch/master
-.. |Codecov| image:: https://codecov.io/gh/j-bac/scikit-dimension/badge.svg?branch=master&service=github
-.. _Codecov: https://codecov.io/gh/j-bac/scikit-dimension/
-.. |CircleCI| image:: https://circleci.com/gh/j-bac/scikit-dimension/tree/master.svg?style=shield
-.. _CircleCI: https://circleci.com/gh/j-bac/scikit-dimension/tree/master
-.. |Documentation| image:: https://readthedocs.org/projects/scikit-dimension/badge/?version=latest
-.. _Documentation: https://scikit-dimension.readthedocs.io
-.. |LanguageGrade| image:: https://img.shields.io/lgtm/grade/python/g/j-bac/scikit-dimension.svg?logo=lgtm&logoWidth=18
-.. _LanguageGrade: https://lgtm.com/projects/g/j-bac/scikit-dimension/context:python
-.. |License| image:: https://img.shields.io/github/license/j-bac/scikit-dimension.svg
-.. _License: https://github.com/j-bac/scikit-dimension/blob/master/LICENSE
+.. image:: https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/scikit-learn-contrib/scikit-dimension/actions/workflows/tests.yml
+.. image:: https://readthedocs.org/projects/scikit-dimension/badge/?version=latest
+   :target: https://scikit-dimension.readthedocs.io
+.. image:: https://img.shields.io/pypi/v/scikit-dimension
+   :target: https://pypi.org/project/scikit-dimension
+.. image:: https://img.shields.io/github/license/scikit-learn-contrib/scikit-dimension
+   :target: https://github.com/scikit-learn-contrib/scikit-dimension/blob/master/LICENSE
 
 scikit-dimension - Intrinsic dimension estimation in Python
 ===========================================================
@@ -37,12 +29,44 @@ Organization of `scikit-dimension`
 Functionalities
 ^^^^^^^^^^^^^^^
 - estimate global intrinsic dimension
-- estimate local intrinsic dimension 
-- generate toy datasets and widely used synthetic manifolds to benchmark estimators 
+- estimate local intrinsic dimension
+- choose the number of principal components (signal rank)
+- generate toy datasets and widely used synthetic manifolds to benchmark estimators
+
+Estimators
+^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Family
+     - Estimators
+   * - Nearest-neighbour distances
+     - ``TwoNN``, ``GRIDE``, ``MLE``, ``MOM``, ``TLE``, ``MADA``, ``KNN``
+   * - Angles and norms
+     - ``DANCo``, ``MiND_ML``, ``ESS``
+   * - Correlation and topology
+     - ``CorrInt``, ``PH``
+   * - Separability
+     - ``FisherS``
+   * - PCA and signal rank
+     - ``lPCA``: explained-variance rules (FO, Fan, maxgap, ratio, participation ratio, Kaiser, broken stick),
+       random matrix theory (Marchenko-Pastur, Gavish-Donoho, Kritchman-Nadler), parallel analysis,
+       Minka's PPCA evidence and scran's denoised PCA rule
+
+Each estimator's docstring cites the method paper and, where one exists, the reference
+implementation it is tested against (see :doc:`changelog`).
+
+Citing
+^^^^^^
+If you use scikit-dimension, please cite Bac et al. (2021), *Scikit-Dimension: A Python Package for
+Intrinsic Dimension Estimation*, Entropy 23(10):1368, `doi:10.3390/e23101368 <https://doi.org/10.3390/e23101368>`_,
+and the paper of each method you use.
 
 Support
 ^^^^^^^
-Feel free to report an `issue <https://github.com/j-bac/scikit-dimension/issues/new/choose>`_
+Feel free to report an `issue <https://github.com/scikit-learn-contrib/scikit-dimension/issues/new/choose>`_
 
 .. toctree::
    :maxdepth: 1
@@ -52,7 +76,7 @@ Feel free to report an `issue <https://github.com/j-bac/scikit-dimension/issues/
    installation
    quick_start
    api
-   release_notes
+   changelog
    references
    contributing
 

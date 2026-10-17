@@ -1,46 +1,22 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause AND MIT
+# Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
+# Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
 
 
 from sklearn.utils.validation import check_array, check_random_state
 
 import sys
 import warnings
+import os
+
 import numpy as np
+from scipy.interpolate import PchipInterpolator
 from scipy.optimize import minimize
 from scipy.special import i0, i1, digamma
 from scipy.interpolate import interp1d
 from ..datasets import hyperBall
 from .._commonfuncs import (
+    _check_X,
     binom_coeff,
     get_nn,
     lens,
@@ -49,8 +25,10 @@ from .._commonfuncs import (
 )
 
 
+# Calibration table for ver="DANCoFit"; regenerate with tools/make_danco_fit_table.py
+_FIT_TABLE = os.path.join(os.path.dirname(__file__), "DANCoFit", "danco_fit_table.npz")
+
 class DANCo(GlobalEstimator):
-    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Dimensionality from Angle and Norm Concentration algorithm. [Ceruti2012]_ [IDLombardi]_ [IDJohnsson]_ 
 
     Parameters
@@ -60,7 +38,11 @@ class DANCo(GlobalEstimator):
     D: int, default=None
         Maximal dimension
     ver: str, default='DANCo'
-        Version to use. possible values: 'DANCo', 'MIND_MLi', 'MIND_MLk'.
+        Version to use. possible values: 'DANCo', 'DANCoFit', 'MIND_MLi', 'MIND_MLk'.
+        'DANCoFit' replaces the simulated calibration by a precomputed table of the calibration
+        statistics (mean over 100 hyperball samples per cell, k=10, dimensions 1-100,
+        N = 20 to 5000), interpolated in N. It is faster and less noisy than 'DANCo' but
+        requires k=10, D <= 100 and 20 <= n_samples <= 5000.
     calibration_data: dict, default=None
         Precomputed calibration data. 
     fractal: bool, default=True
@@ -106,7 +88,7 @@ class DANCo(GlobalEstimator):
         self.calibration_data : dict
             Calibration data that can be reused when applying DANCo to data sets of the same size with the same neighborhood parameter k.
         """
-        X = check_array(X, ensure_min_samples=self.k + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=self.k + 1, ensure_min_features=2)
 
         if self.k >= len(X):
             warnings.warn("k larger or equal to len(X), using len(X)-2")
@@ -118,7 +100,7 @@ class DANCo(GlobalEstimator):
 
         self.random_state_ = check_random_state(self.random_state)
 
-        if self.ver not in ["DANCo", "DANCoFit"]:
+        if self.ver not in ("DANCo", "DANCoFit"):
             self.dimension_ = self._dancoDimEst(X)
         else:
             (
@@ -302,23 +284,23 @@ class DANCo(GlobalEstimator):
         dancoCalDat["maxdim"] = newdim
         return dancoCalDat
 
-    #    @staticmethod
-    #    def increaseMaxDimByOne_precomputedSpline(dancoCalDat,DANCo_splines):
-    #        newdim = dancoCalDat['maxdim'] + 1
-    #        dancoCalDat['calibration_data'].append({'dhat':DANCo_splines['spline_dhat'](newdim,dancoCalDat['N']),
-    #                                                'mu_nu':DANCo_splines['spline_mu'](newdim,dancoCalDat['N']),
-    #                                                'mu_tau':DANCo_splines['spline_tau'](newdim,dancoCalDat['N'])})
-    #        dancoCalDat['maxdim'] = newdim
-    #        return(dancoCalDat)
-
-    def _computeDANCoCalibrationData(self, N):
-        print("Computing calibration X...\nCurrent dimension: ", end=" ")
-        cal = self._DancoCalibrationData(self._k, N)
-        while cal["maxdim"] < self._D:
-            if cal["maxdim"] % 10 == 0:
-                print(cal["maxdim"], end=" ")
-            cal = self._increaseMaxDimByOne(cal)
-        return cal
+    def _fit_calibration(self, N):
+        """DANCoFit calibration: precomputed statistics for d = 1..D at k = 10, PCHIP-interpolated in N."""
+        t = np.load(_FIT_TABLE)
+        card = t["cardinalities"]
+        if self._k != int(t["k"]):
+            raise ValueError(f"ver='DANCoFit' requires k={int(t['k'])}, got k={self._k}")
+        if not card[0] <= N <= card[-1]:
+            raise ValueError(f"ver='DANCoFit' requires {card[0]} <= n_samples <= {card[-1]}, got {N}")
+        if self._D > len(t["dhat"]):
+            raise ValueError(f"ver='DANCoFit' requires D <= {len(t['dhat'])}, got D={self._D}")
+        stats = {key: PchipInterpolator(card, t[key][: self._D], axis=1)(N) for key in ("dhat", "mu_nu", "mu_tau")}
+        return dict(
+            k=self._k,
+            N=N,
+            maxdim=self._D,
+            calibration_data=[{key: float(v[d]) for key, v in stats.items()} for d in range(self._D)],
+        )
 
     def _dancoDimEst(self, X):
 
@@ -339,7 +321,7 @@ class DANCo(GlobalEstimator):
                     cal["N"],
                 )
 
-        if self.ver not in ["DANCo", "DANCoFit"]:
+        if self.ver not in ("DANCo", "DANCoFit"):
             return self._MIND_MLx(X, self._D)
 
         nocal = self._dancoDimEstNoCalibration(X, self._D)
@@ -347,36 +329,19 @@ class DANCo(GlobalEstimator):
             return np.nan, np.nan, cal
 
         if cal is None:
-            cal = self._DancoCalibrationData(N)
+            cal = self._fit_calibration(N) if self.ver == "DANCoFit" else self._DancoCalibrationData(N)
 
         if cal["maxdim"] < self._D:
-
-            if self.ver == "DANCoFit":
-                if self.verbose:
-                    print(
-                        "Generating DANCo calibration data from precomputed spline interpolation for cardinality 50 to 5000, k = 10, dimensions 1 to 100"
+            if self.verbose:
+                print(
+                    "Computing DANCo calibration data for N = {}, k = {} for dimensions {} to {}".format(
+                        N, self._k, cal["maxdim"] + 1, self._D
                     )
-                raise ValueError("DANCoFit not yet implemented")
-                # load precomputed splines as a function of dimension and dataset cardinality
-                # DANCo_splines = {}
-                # for spl in ['spline_dhat','spline_mu','spline_tau']:
-                #    with open('DANCoFit/DANCo_'+spl+'.pkl', 'rb') as f:
-                #        DANCo_splines[spl]=pickle.load(f)
-                ##compute interpolated statistics
-                # while (cal['maxdim'] < self._D):
-                #    cal = self.increaseMaxDimByOne_precomputedSpline(cal,DANCo_splines)
+                )
 
-            else:
-                if self.verbose:
-                    print(
-                        "Computing DANCo calibration data for N = {}, k = {} for dimensions {} to {}".format(
-                            N, self._k, cal["maxdim"] + 1, self._D
-                        )
-                    )
-
-                # compute statistics
-                while cal["maxdim"] < self._D:
-                    cal = self._increaseMaxDimByOne(cal)
+            # compute statistics
+            while cal["maxdim"] < self._D:
+                cal = self._increaseMaxDimByOne(cal)
 
         kl = np.array([np.nan] * self._D)
         for d in range(self._D):

@@ -1,34 +1,6 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause AND MIT
+# Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
+# Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
 
 import numpy as np
 import bisect
@@ -36,6 +8,7 @@ from scipy.special import gamma
 from functools import lru_cache
 from joblib import Parallel, delayed
 from .._commonfuncs import (
+    _check_X,
     lens,
     indComb,
     indnComb,
@@ -47,7 +20,6 @@ from .._commonfuncs import LocalEstimator
 
 
 class ESS(LocalEstimator):
-    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Expected Simplex Skewness algorithm. [Johnsson2015]_ [IDJohnsson]_
     The ESS method assumes that the data is local, i.e. that it is a neighborhood taken from a larger data set, such that the curvature and the noise within the neighborhood is relatively small. In the ideal case (no noise, no curvature) this is equivalent to the data being uniformly distributed over a hyper ball. 
     
@@ -104,7 +76,7 @@ class ESS(LocalEstimator):
             Returns self.
         """
         self.random_state_ = check_random_generator(self.random_state)
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
 
         self.dimension_, self.essval_ = self._essLocalDimEst(X)
 

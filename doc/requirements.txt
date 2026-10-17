@@ -1,6 +1,0 @@
-sphinx>=7
-sphinx_rtd_theme>=2
-numpydoc
-nbsphinx>=0.9
-ipykernel
-pandoc

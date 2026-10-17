@@ -24,6 +24,9 @@ Articles
 .. [Ceruti2012] Ceruti, C. *et al.* (2012) 
    *DANCo: Dimensionality from Angle and Norm Concentration.*,
    `arXiv preprint 1206.3881`. 
+.. [Denti2022] Denti, F., Doimo, D., Laio, A. and Mira, A. (2022),
+   *The generalized ratios intrinsic dimension estimator.*,
+   `Scientific Reports, 12, 20005. doi:10.1038/s41598-022-20991-1`.
 .. [Facco2019] Facco, E. *et al.* (2019),
    *Estimating the intrinsic dimension of datasets by a minimal neighborhood information.*,
    `Nature`.
@@ -71,8 +74,8 @@ MATLAB
 ^^^^^^
 .. [IDLombardi] Gabriele Lombardi,
   `idLombardi <https://fr.mathworks.com/matlabcentral/fileexchange/40112-intrinsic-dimensionality-estimation-techniques>__`.
-.. [IDRadovanović] Miloš Radovanović,
-  `idRadovanović <https://perun.pmf.uns.ac.rs/radovanovic/tle/>__`.
+.. [IDRadovanović] Laurent Amsaleg, Oussama Chelly, Michael E. Houle, Ken-ichi Kawarabayashi, Miloš Radovanović, Weeris Treeratanajaru,
+  `TLE <https://github.com/radacha/tle>`__ (earlier version: `<https://perun.pmf.uns.ac.rs/radovanovic/tle/>`__).
 
 C++
 ^^^
@@ -83,4 +86,13 @@ Python
 ^^^^^^
 .. [IDMottes] Francesco Mottes,
    `TwoNN <https://github.com/fmottes/TWO-NN>`__.
+.. [IDFisherS] Andrei Zinovyev, Evgeny Mirkes, Luca Albergante, Jonathan Bac,
+   `FisherSeparabilityAnalysis <https://github.com/auranic/FisherSeparabilityAnalysis>`__.
+.. [IDGeoMLE] Mokrov Nikita, Marina Gomtsyan, Maxim Panov, Yury Yanovich,
+   `GeoMLE <https://github.com/stat-ml/GeoMLE>`__.
+.. [IDDADApy] Glielmo, A. *et al.* (2022), DADApy: Distance-based analysis of data-manifolds in Python,
+   *Patterns* 3, 100589. doi:10.1016/j.patter.2022.100589. `<https://github.com/sissa-data-science/DADApy>`__.
+.. [IDkmyim] Ka Man Yim, John Harvey, Jakub Malinowski,
+   `kmyim/scikit-dimension <https://github.com/kmyim/scikit-dimension>`__; see Binnie, J. A. D. *et al.* (2025),
+   *A Survey of Dimension Estimation Methods*, arXiv:2507.13887.
 

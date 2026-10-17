@@ -1,37 +1,8 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause
 import numpy as np
 import numba as nb
 import itertools
+import math
 import numbers
 import warnings
 from sklearn.neighbors import NearestNeighbors
@@ -39,6 +10,14 @@ from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
 from joblib import delayed, Parallel
 from abc import abstractmethod
+
+
+def _check_X(est, X, **kwargs):
+    """check_array that also records n_features_in_ on the estimator, as the sklearn API requires"""
+    X = check_array(X, **kwargs)
+    if X.ndim == 2:
+        est.n_features_in_ = X.shape[1]
+    return X
 
 
 def indComb(NN):
@@ -185,6 +164,14 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             "_skip_test": "check_methods_subset_invariance"
         }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
 
+    def __sklearn_tags__(self):
+        # sklearn>=1.6 refuses estimators defining _more_tags without __sklearn_tags__
+        from sklearn.utils import TransformerTags
+
+        tags = super().__sklearn_tags__()
+        tags.transformer_tags = TransformerTags()
+        return tags
+
     def transform(self, X=None):
         """Predict dimension after a previous call to self.fit
 
@@ -198,6 +185,12 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             The estimated ID
         """
         check_is_fitted(self, "is_fitted_")
+        if X is not None:
+            X = check_array(X)
+            if X.shape[1] != getattr(self, "n_features_in_", X.shape[1]):
+                raise ValueError(
+                    f"X has {X.shape[1]} features, but {type(self).__name__} is expecting {self.n_features_in_} features as input."
+                )
         return self.dimension_
 
     def fit_transform(self, X, y=None):
@@ -216,7 +209,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         return self.fit(X).dimension_
 
     def fit_pw(self, X, precomputed_knn=None, smooth=False, n_neighbors=100, n_jobs=1):
-        """Creates an array of pointwise ID estimates (self.dimension_pw_) by fitting the estimator in kNN of each point.
+        """Creates an array of pointwise ID estimates (``self.dimension_pw_``) by fitting the estimator in kNN of each point.
 
         Parameters
         ----------
@@ -230,15 +223,14 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
 
         Returns
         -------
         self : object
             Returns self
         """
-        X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
 
         if precomputed_knn is not None:
             knnidx = precomputed_knn
@@ -315,8 +307,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
 
         Returns
         -------
@@ -326,7 +317,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
         """
 
-        X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
 
         if precomputed_knn is not None:
             knnidx = precomputed_knn
@@ -377,6 +368,14 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         """Skips a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant"""
         return {"_skip_test": "check_methods_subset_invariance"}
 
+    def __sklearn_tags__(self):
+        # sklearn>=1.6 refuses estimators defining _more_tags without __sklearn_tags__
+        from sklearn.utils import TransformerTags
+
+        tags = super().__sklearn_tags__()
+        tags.transformer_tags = TransformerTags()
+        return tags
+
     @abstractmethod
     def _fit(self, X, dists=None, knnidx=None, n_jobs=1):
         """Custom method to each local ID estimator, called in fit"""
@@ -407,8 +406,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
 
         Returns
         -------
@@ -416,22 +414,19 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Returns self.
         """
         # check inputs and define internal parameters
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
         if n_neighbors is None:
             n_neighbors = self._N_NEIGHBORS
         if n_neighbors >= len(X):
             warnings.warn("n_neighbors >= len(X), setting n_neighbors = len(X)-1")
             n_neighbors = len(X) - 1
-        self.n_neighbors = n_neighbors
-        self.comb = comb
-
-        X = check_array(
-            X, ensure_min_samples=self.n_neighbors + 1, ensure_min_features=2
-        )
+        self.n_neighbors_ = n_neighbors
+        self.comb_ = comb
 
         if precomputed_knn_arrays is not None:
             dists, knnidx = precomputed_knn_arrays
         else:
-            dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
+            dists, knnidx = get_nn(X, k=self.n_neighbors_, n_jobs=n_jobs)
 
         # fit
         self._fit(X=X, dists=dists, knnidx=knnidx, n_jobs=n_jobs)
@@ -469,6 +464,12 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             The estimated ID
         """
         check_is_fitted(self, "is_fitted_")
+        if X is not None:
+            X = check_array(X)
+            if X.shape[1] != getattr(self, "n_features_in_", X.shape[1]):
+                raise ValueError(
+                    f"X has {X.shape[1]} features, but {type(self).__name__} is expecting {self.n_features_in_} features as input."
+                )
         return self.dimension_
 
     def fit_transform(
@@ -496,8 +497,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-            smooth_
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
 
         Returns
         -------
@@ -561,8 +561,7 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Number of processes
         smooth: bool, default = False
             Additionally computes a smoothed version of pointwise estimates by
-            taking the ID of a point as the average ID of each point in its neighborhood (self.dimension_pw_)
-           smooth_
+            taking the ID of a point as the average ID of each point in its neighborhood (``self.dimension_pw_``)
 
         Returns
         -------
@@ -615,36 +614,8 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
 
 
 def binom_coeff(n, k):
-    """
-    Taken from : https://stackoverflow.com/questions/26560726/python-binomial-coefficient
-    Compute the number of ways to choose $k$ elements out of a pile of $n.$
-
-    Use an iterative approach with the multiplicative formula:
-    $$\frac{n!}{k!(n - k)!} =
-    \frac{n(n - 1)\dots(n - k + 1)}{k(k-1)\dots(1)} =
-    \prod_{i = 1}^{k}\frac{n + 1 - i}{i}$$
-
-    Also rely on the symmetry: $C_n^k = C_n^{n - k},$ so the product can
-    be calculated up to $\min(k, n - k).$
-
-    :param n: the size of the pile of elements
-    :param k: the number of elements to take from the pile
-    :return: the number of ways to choose k elements out of a pile of n
-    """
-
-    # When k out of sensible range, should probably throw an exception.
-    # For compatibility with scipy.special.{comb, binom} returns 0 instead.
-    if k < 0 or k > n:
-        return 0
-
-    if k == 0 or k == n:
-        return 1
-
-    total_ways = 1
-    for i in range(min(k, n - k)):
-        total_ways = total_ways * (n - i) // (i + 1)
-
-    return total_ways
+    """Number of ways to choose k elements out of n (0 when k is out of range, like scipy.special.comb)."""
+    return math.comb(n, k) if 0 <= k <= n else 0
 
 
 def check_random_generator(seed):
