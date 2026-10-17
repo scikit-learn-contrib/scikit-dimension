@@ -27,7 +27,7 @@ Behaviour changes:
 
 Testing:
 
-- ``skdim/tests/test_reference.py`` checks agreement with R intrinsicDimension, ider, PCAtools, scran and DADApy through stored fixtures;
+- ``skdim/tests/test_reference.py`` checks agreement with R intrinsicDimension (incl. DANCo given shared calibration data), ider, PCAtools, scran and DADApy through stored fixtures;
   regenerate them with ``pixi run -e ref make-fixtures`` (``pixi.toml``; packaging is unchanged).
 - Per-file licence headers shortened to SPDX identifiers; third-party notices in ``LICENSES_bundled.txt``.
 

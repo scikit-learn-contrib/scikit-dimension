@@ -20,6 +20,7 @@ out <- list(versions = list(
 
 out$intrinsicDimension <- list()
 out$ider <- list()
+out$danco <- list()
 for (f in list.files(indir, pattern = "^id_.*\\.csv$", full.names = TRUE)) {
   X <- read_mat(f)
   name <- sub("^id_(.*)\\.csv$", "\\1", basename(f))
@@ -34,6 +35,17 @@ for (f in list.files(indir, pattern = "^id_.*\\.csv$", full.names = TRUE)) {
     ess_b_n30 = essLocalDimEst(X[1:30, ], ver = "b")$dim.est,
     mind_mli_k20_D10 = dancoDimEst(X, k = 20, D = 10, ver = "MIND_MLi")$dim.est,
     mind_mlk_k20_D10 = dancoDimEst(X, k = 20, D = 10, ver = "MIND_MLk")$dim.est
+  )
+  # DANCo calibration simulates data, so R's calibration is exported and fed to skdim
+  D <- ncol(X)
+  set.seed(0)
+  dn <- dancoDimEst(X, k = 10, D = D, ver = "DANCo")
+  out$danco[[name]] <- list(
+    k = 10, D = D, N = nrow(X),
+    dim_est = dn$dim.est,
+    kl_divergence = dn$kl.divergence,
+    nocal = as.list(intrinsicDimension:::dancoDimEstNoCalibration(X, 10, D)),
+    calibration = lapply(dn$calibration.data$calibration.data, as.list)
   )
   out$ider[[name]] <- list(
     corint_k10_k20 = corint(X, k1 = 10, k2 = 20),

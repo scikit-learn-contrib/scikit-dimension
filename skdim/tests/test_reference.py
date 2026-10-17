@@ -39,6 +39,21 @@ def test_intrinsicDimension(name):
 
 
 @pytest.mark.parametrize("name", sorted(ID))
+def test_danco(name):
+    X, ref = ID[name], FX["danco"][name]
+    est = skdim.id.DANCo(k=ref["k"], D=ref["D"])
+    est._k = ref["k"]
+    nocal = est._dancoDimEstNoCalibration(X, ref["D"])
+    for key in ("dhat", "mu_nu", "mu_tau"):
+        assert nocal[key] == pytest.approx(ref["nocal"][key], rel=1e-6)
+    # with R's calibration data the rest of DANCo is deterministic
+    cal = dict(k=ref["k"], N=ref["N"], maxdim=len(ref["calibration"]), calibration_data=ref["calibration"])
+    fit = skdim.id.DANCo(k=ref["k"], D=ref["D"], fractal=False, calibration_data=cal).fit(X)
+    assert fit.dimension_ == ref["dim_est"]
+    assert fit.kl_divergence_ == pytest.approx(ref["kl_divergence"], rel=1e-6)
+
+
+@pytest.mark.parametrize("name", sorted(ID))
 def test_ider(name):
     X, ref = ID[name], FX["ider"][name]
     assert skdim.id.CorrInt(k1=10, k2=20).fit(X).dimension_ == pytest.approx(ref["corint_k10_k20"], rel=1e-6)
