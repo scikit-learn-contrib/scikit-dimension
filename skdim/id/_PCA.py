@@ -15,7 +15,7 @@ from .._commonfuncs import _check_X, GlobalEstimator
 # matrices", consistent with Johnstone (2001, Ann. Stat., Table 1); re-checked to 4 decimals
 # with Bornemann's (2010) Fredholm-determinant quadrature. scipy has no TW distribution.
 _TW1_UPPER = {0.1: 0.4501, 0.05: 0.9793, 0.01: 2.0234, 0.005: 2.4223, 0.001: 3.2722}
-_RANK_VERS = ("MP", "GD", "KN", "parallel")
+_RANK_VERS = ("MP", "GD", "KN", "Minka", "parallel")
 _VERS = ("FO", "Fan", "maxgap", "ratio", "participation_ratio", "Kaiser", "broken_stick") + _RANK_VERS
 
 
@@ -41,13 +41,14 @@ class lPCA(GlobalEstimator):
     Version 'MP' counts eigenvalues above the Marchenko-Pastur edge sigma^2 (1 + sqrt(p/n))^2 [Marchenko1967]_.\n
     Version 'GD' is the Gavish-Donoho optimal hard threshold, omega(beta) times the median singular value [Gavish2014]_. It is MSE-optimal and drops detectable but weak spikes by design.\n
     Version 'KN' is the Kritchman-Nadler sequential Tracy-Widom test at level alphaKN, with sigma^2 estimated jointly with the signal eigenvalues under each step's null [Kritchman2008]_.\n
+    Version 'Minka' maximizes Minka's Laplace approximation of the PPCA evidence [Minka2000]_. Also valid when n_samples < n_features. Ported from the kmyim fork of scikit-dimension (KM Yim, John Harvey).\n
     Version 'parallel' is Horn's parallel analysis [Horn1965]_ [Buja1992]_ with a permutation (each column permuted independently) or sign-flip null: the rank is the number of leading eigenvalues above the ``quantile`` of their null distribution over ``n_permutations`` draws. Cost is n_permutations PCAs (times the number of neighbourhoods in ``fit_pw``). It can underestimate under strong factors (shadowing) and, as each eigenvalue is compared with the same-index null eigenvalue, overestimate when weak spikes are present.\n
 
     Parameters
     ----------
     ver: str, default='FO'
         Version. Possible values: 'FO', 'Fan', 'maxgap', 'ratio', 'participation_ratio', 'Kaiser', 'broken_stick',
-        'MP', 'GD', 'KN', 'parallel'.
+        'MP', 'GD', 'KN', 'Minka', 'parallel'.
     alphaRatio: float in (0,1)
         Only for ver = 'ratio'. ID is estimated to be 
         the number of principal components needed to retain at least alphaRatio of the variance.
@@ -71,12 +72,12 @@ class lPCA(GlobalEstimator):
     fit_explained_variance: bool, default=False
         If True, lPCA.fit(X) expects as input 
         a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
-        For 'MP', 'GD' and 'KN' it must be of length n_features (pad with zeros if
+        For 'MP', 'GD', 'KN' and 'Minka' it must be of length n_features (pad with zeros if
         n_samples < n_features) and ``n_samples`` must be given. Not possible for 'parallel',
         which needs X.
     n_samples: int, default=None
-        Number of samples the explained variance was computed from. Required for 'MP', 'GD' and 'KN'
-        when ``fit_explained_variance`` is True; ignored otherwise.
+        Number of samples the explained variance was computed from. Required for 'MP', 'GD', 'KN'
+        and 'Minka' when ``fit_explained_variance`` is True; ignored otherwise.
     noise_var: float, default=None
         Known noise variance sigma^2 for 'MP', 'GD' and 'KN'. If None, it is estimated: from the
         median eigenvalue matched to the Marchenko-Pastur median ('MP', 'GD'), or jointly with the
@@ -106,6 +107,7 @@ class lPCA(GlobalEstimator):
     .. [Marchenko1967] Marchenko, V. A., Pastur, L. A. (1967). Distribution of eigenvalues for some sets of random matrices. Math. USSR Sb. 1, 457-483. doi:10.1070/SM1967v001n04ABEH001994
     .. [Gavish2014] Gavish, M., Donoho, D. L. (2014). The optimal hard threshold for singular values is 4/sqrt(3). IEEE Trans. Inf. Theory 60, 5040-5053. doi:10.1109/TIT.2014.2323359
     .. [Kritchman2008] Kritchman, S., Nadler, B. (2008). Determining the number of components in a factor model from limited noisy data. Chemom. Intell. Lab. Syst. 94, 19-32. doi:10.1016/j.chemolab.2008.06.002
+    .. [Minka2000] Minka, T. P. (2000). Automatic choice of dimensionality for PCA. NeurIPS 13.
     .. [Horn1965] Horn, J. L. (1965). A rationale and test for the number of factors in factor analysis. Psychometrika 30, 179-185. doi:10.1007/BF02289447
     .. [Buja1992] Buja, A., Eyuboglu, N. (1992). Remarks on parallel analysis. Multivariate Behav. Res. 27, 509-540. doi:10.1207/s15327906mbr2704_2
     """
@@ -253,6 +255,8 @@ class lPCA(GlobalEstimator):
             ev = explained_var if self.center else explained_var / n
         ev = np.concatenate([np.sort(ev)[::-1], np.zeros(p - len(ev))])
 
+        if self.ver == "Minka":
+            return self._minka(ev, n)
         if self.ver == "parallel":
             return self._parallel(X, explained_var)
 
@@ -291,6 +295,31 @@ class lPCA(GlobalEstimator):
             if n * ev[k - 1] <= sigma2 * (mu + s * xi):
                 return k - 1
         return min(n, p) - 1
+
+    def _minka(self, ev, n):
+        """argmax over k = 1..r-1 of Minka's (2000) Laplace evidence (r = numerical rank).
+        Same terms as sklearn's _assess_dimension, accumulated in k so the cost is O(r p)."""
+        d = len(ev)
+        L = ev / ev[0]  # argmax is scale invariant; normalizing keeps the log clamp meaningful
+        r = int(np.sum(L > d * np.finfo(float).eps))
+        if r < 2:
+            return r
+        log = lambda x: np.log(np.maximum(x, np.finfo(float).tiny))
+        ll = np.empty(r - 1)
+        pu = ediff = ainv = 0.0
+        for k in range(1, r):
+            i = k - 1
+            pu += loggamma((d - i) / 2) - np.log(np.pi) * (d - i) / 2
+            ediff += log(L[i] - L[i + 1 :]).sum()  # log(l_i - l_j), j > i
+            ainv += log((L[:i] - L[i]) / (L[:i] * L[i])).sum()  # log(1/l_j - 1/l_i), i < j <= k
+            nu = L[k:].sum() / (d - k)
+            binv = (d - k) * log((L[:k] - nu) / (L[:k] * nu)).sum()  # j > k: hat l_j = nu
+            m = d * k - k * (k + 1) / 2
+            pa = m * np.log(n) + ediff + ainv + binv
+            ll[i] = (pu - k * np.log(2) - n / 2 * log(L[:k]).sum() - n * (d - k) / 2 * np.log(nu)
+                     + np.log(2 * np.pi) * (m + k) / 2 - pa / 2 - k * np.log(n) / 2)
+        self.log_evidence_ = ll
+        return int(np.argmax(ll)) + 1
 
     def _parallel(self, X, explained_var):
         rng = check_random_state(self.random_state)
@@ -381,83 +410,6 @@ class lPCA(GlobalEstimator):
                 de = i  # number of leading eigenvalues above the broken stick
                 break
         return de, gaps
-
-    def _laplace(self, eigenvalues, N_pts):
-        '''
-        Computes p(data | intrinsic dim) as a vector ranging form id = k = 1,...,d
-        '''
-        d = len(eigenvalues)
-        dmax = min(d, N_pts)
-
-        if dmax > 1:
-            eigenvalues = np.sort(eigenvalues)[::-1]
-            krange = np.arange(1, dmax+1)
-
-            ### calculate eigenvalue independent terms
-            m = d*krange - krange * (krange + 1)/2 
-            u = self._stieffel_density(d, dmax)
-            ev_indpt_part =  - np.log(N_pts/8) * krange / 2 + np.log(2*np.pi)* (m + krange) /2  + u
-
-            ### calculate eigenvalue dependent terms
-            nu = np.cumsum(eigenvalues[::-1][:-1])[::-1][:dmax-1] / (d - krange[:-1]) # k = 1,...,d-1
-            lognuterm = np.zeros([dmax])
-            lognuterm[:-1] += -N_pts * (d - krange[:-1]) * np.log(np.maximum(nu, 1e-9)) / 2 #if  k = d then no contribution
-            sumlogevs = -N_pts * np.cumsum(np.log(np.maximum(eigenvalues[:dmax], 1e-9)))/ 2
-            hessterm = self._laplace_hessian(eigenvalues, nu, m, N_pts, dmax)
-
-            log_evidence = lognuterm + sumlogevs + hessterm + ev_indpt_part # sum up all the terms
-            #determine dimension that maximises evidence
-            max_log_evidence_dim = np.argmax(log_evidence) + 1
-            max_log_evidence_gap = np.argmax(log_evidence[1:] - log_evidence[:-1]) + 2 #maxgap, since sometimes evidence vs k plateaus slowly up to largest dim past intrinsic dim
-            return min(max_log_evidence_dim, max_log_evidence_gap), log_evidence
-        else:
-            return np.nan, np.nan
-    @staticmethod
-    def _stieffel_density(d, dmax):
-        '''
-        The p(U) term in the formula
-        '''
-        v = (d - np.arange(dmax))/2
-        u = loggamma(v)- np.log(np.pi) * v
-        return np.cumsum(u) - np.log(2) * np.arange(1, dmax+1)
-    
-    @staticmethod
-    def _laplace_hessian(eigenvalues, nu, m, N_pts, dmax):
-        '''
-        Computes log determinant of Hessian w.r.t. Z variable at Z = identity
-        '''
-        d = len(eigenvalues)
-        triu_idx = np.triu_indices(n = dmax, m = d, k =1)
-
-        ### calculate the contributions of (lambda_i - lambda_j) terms, i = 1,...,k, j = i+1... d
-        ediff = np.zeros([dmax,d])
-        ediff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9))
-        ediffterm = np.cumsum(np.sum(ediff, axis = 1))
-
-        ### calculate the contributions of (1/hat lambda_j - 1/hat lambda_i) terms, i = 1,...,k, j = i+1... d
-        ### First calculate i = 1,...,k, j = i+1... k, where hat lambda are equal to lambda
-
-        ehatinvdiff = np.zeros([dmax, dmax])
-        triu_idx = np.triu_indices(n = dmax, m = dmax, k =1)
-        ehatinvdiff[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - eigenvalues[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]] * eigenvalues[triu_idx[1]], 1e-9))
-        ehatinvdiffterm_a = np.cumsum(np.sum(ehatinvdiff, axis = 0))
-
-        ### second calculate i = 1,...,k, j = k...d, where hat lambda_i is lambda but hat lambda_j is nu 
-
-        l = min(dmax, d - 1)
-        ehatinvdiff_b = np.zeros([l,l])
-        triu_idx = np.triu_indices(l, k =0)
-        ehatinvdiff_b[triu_idx] = np.log(np.maximum(eigenvalues[triu_idx[0]] - nu[triu_idx[1]], 1e-9)) - np.log(np.maximum(eigenvalues[triu_idx[0]]*nu[triu_idx[1]], 1e-9))
-
-        ehatinvdiffterm_b = np.sum(ehatinvdiff_b, axis = 0) * (d - np.arange(1, l + 1))
-        
-        ### calculate how this term varies with k
-        s = np.zeros([dmax])
-        s += m *np.log(N_pts)
-        s += ediffterm
-        s += ehatinvdiffterm_a
-        s[:l] += ehatinvdiffterm_b
-        return -s/2
 
 
 def _mp_median(beta):

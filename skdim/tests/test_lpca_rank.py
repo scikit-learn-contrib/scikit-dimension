@@ -22,7 +22,7 @@ def test_broken_stick_hand_example():
 
 # ---- rank-selection versions: spiked-covariance ground truth (plan section 4.3) ----
 # Tolerances fixed before running: MP, GD, KN exact in >= 9/10 seeds; parallel within +-1 in
-# >= 9/10 (5/5 here). Failures are kept as xfail with what was observed.
+# >= 9/10 (5/5 here); Minka exact in >= 8/10. Failures are kept as xfail with what was observed.
 
 
 def _spiked(n, p, theta, seed, rotate=True):
@@ -37,7 +37,7 @@ def _spiked(n, p, theta, seed, rotate=True):
 
 @lru_cache(maxsize=None)
 def _spiked_spectrum(n, p, mult, seed):
-    # MP, GD and KN depend on X only through the spectrum, so compute it once per cell
+    # MP, GD, KN and Minka depend on X only through the spectrum, so compute it once per cell
     from sklearn.decomposition import PCA
     theta = np.array(mult) * np.sqrt(p / n)
     ev = PCA().fit(_spiked(n, p, theta, seed, rotate=False)).explained_variance_
@@ -55,9 +55,13 @@ def _gd_truth(theta, gamma):
 
 # (n, p, theta / sqrt(beta)); GD cutoff margins checked from the asymptotic formula beforehand
 CELLS = [(500, 250, (4, 2, 0.5)), (400, 800, (4, 2, 0.5)), (1000, 100, (8,) * 10)]
+_MINKA_XFAIL = pytest.mark.xfail(reason="Minka's evidence misses spikes near the BBP edge "
+                                 "(observed 7/10 and 5/10 exact in the first run)", strict=False)
 
 
-@pytest.mark.parametrize("ver,cell", [(v, c) for v in ["MP", "GD", "KN"] for c in CELLS])
+@pytest.mark.parametrize("ver,cell", [(v, c) for v in ["MP", "GD", "KN"] for c in CELLS]
+                         + [pytest.param("Minka", c, marks=_MINKA_XFAIL) for c in CELLS[:2]]
+                         + [("Minka", CELLS[2])])
 def test_spiked_truth(ver, cell):
     n, p, mult = cell
     gamma = p / n
@@ -66,7 +70,7 @@ def test_spiked_truth(ver, cell):
     est = [lPCA(ver=ver, fit_explained_variance=True, n_samples=n).fit(_spiked_spectrum(n, p, mult, s)).dimension_
            for s in range(10)]
     hits = sum(e == truth for e in est)
-    assert hits >= 9, (truth, est)
+    assert hits >= (8 if ver == "Minka" else 9), (truth, est)
 
 
 @pytest.mark.xfail(reason="same-index null comparison overestimates after the spikes "
@@ -85,7 +89,7 @@ def test_center_false_scaling():
     n, p, mult = CELLS[0]
     theta = np.array(mult) * np.sqrt(p / n)
     X = _spiked(n, p, theta, 0, rotate=False)
-    for ver in ["MP", "GD", "KN"]:
+    for ver in ["MP", "GD", "KN", "Minka"]:
         assert lPCA(ver=ver, center=False).fit(X).dimension_ == lPCA(ver=ver).fit(X).dimension_
 
 
@@ -116,7 +120,15 @@ def test_null_fpr_parallel(null):
     assert _wilson_low(fp, m) <= 0.05, fp
 
 
-@pytest.mark.parametrize("ver", ["MP", "GD", "KN"])
+def test_minka_matches_sklearn():
+    from sklearn.decomposition import PCA
+    rng = np.random.RandomState(0)
+    for _ in range(10):
+        X = rng.randn(200, 20) * np.r_[3, 2.5, 2, 1.5, 1.3, np.ones(15)]
+        assert lPCA(ver="Minka").fit(X).dimension_ == PCA(n_components="mle").fit(X).n_components_
+
+
+@pytest.mark.parametrize("ver", ["MP", "GD", "KN", "Minka"])
 @pytest.mark.parametrize("n,p", [(500, 250), (100, 300)])
 def test_explained_variance_path(ver, n, p):
     from sklearn.decomposition import PCA
@@ -140,7 +152,7 @@ def test_errors():
                dict(ver="parallel", null="bootstrap"), dict(ver="parallel", quantile=0)]:
         with pytest.raises(ValueError):
             lPCA(**kw).fit(X)
-    for ver in ["parallel", "MP", "GD", "KN"]:
+    for ver in ["parallel", "MP", "GD", "KN", "Minka"]:
         with pytest.raises(ValueError):
             lPCA(ver=ver, fit_explained_variance=True).fit(ev)
 
