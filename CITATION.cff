@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use scikit-dimension, please cite the paper below."
+title: scikit-dimension
+repository-code: "https://github.com/scikit-learn-contrib/scikit-dimension"
+license: BSD-3-Clause
+authors:
+  - family-names: Bac
+    given-names: Jonathan
+preferred-citation:
+  type: article
+  title: "Scikit-Dimension: A Python Package for Intrinsic Dimension Estimation"
+  journal: Entropy
+  volume: 23
+  issue: 10
+  start: 1368
+  year: 2021
+  doi: 10.3390/e23101368
+  authors:
+    - family-names: Bac
+      given-names: Jonathan
+    - family-names: Mirkes
+      given-names: Evgeny M.
+    - family-names: Gorban
+      given-names: Alexander N.
+    - family-names: Tyukin
+      given-names: Ivan
+    - family-names: Zinovyev
+      given-names: Andrei

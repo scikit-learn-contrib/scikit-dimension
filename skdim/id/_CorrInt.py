@@ -32,7 +32,7 @@
 import warnings
 import numpy as np
 from sklearn.metrics import pairwise_distances_chunked
-from .._commonfuncs import get_nn, GlobalEstimator
+from .._commonfuncs import _check_X, get_nn, GlobalEstimator
 from sklearn.utils.validation import check_array, check_symmetric
 
 
@@ -67,15 +67,16 @@ class CorrInt(GlobalEstimator):
         self : object
             Returns self.
         """
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
 
-        if self.k2 >= len(X):
+        self._k1, self._k2 = self.k1, self.k2
+        if self._k2 >= len(X):
             warnings.warn("k2 larger or equal to len(X), using len(X)-1")
-            self.k2 = len(X) - 1
+            self._k2 = len(X) - 1
 
-        if self.k1 >= len(X) or self.k1 > self.k2:
+        if self._k1 >= len(X) or self._k1 > self._k2:
             warnings.warn("k1 larger than k2 or len(X), using k2-1")
-            self.k1 = self.k2 - 1
+            self._k1 = self._k2 - 1
 
         self.dimension_ = self._corrint(X)
         self.is_fitted_ = True
@@ -87,14 +88,14 @@ class CorrInt(GlobalEstimator):
         n_elements = len(X) ** 2  # number of elements
 
         if self.DM is False:
-            dists, _ = get_nn(X, self.k2)
+            dists, _ = get_nn(X, self._k2)
             chunked_distmat = pairwise_distances_chunked(X)
         else:
-            dists = np.sort(X, axis=1)[:, 1 : self.k2 + 1]
+            dists = np.sort(X, axis=1)[:, 1 : self._k2 + 1]
             chunked_distmat = X
 
-        r1 = np.median(dists[:, self.k1 - 1])
-        r2 = np.median(dists[:, self.k2 - 1])
+        r1 = np.median(dists[:, self._k1 - 1])
+        r2 = np.median(dists[:, self._k2 - 1])
 
         n_diagonal_entries = len(X)  # remove diagonal from sum count
         s1 = -n_diagonal_entries

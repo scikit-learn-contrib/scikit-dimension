@@ -1,44 +1,15 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause AND MIT
+# Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
+# Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
 import inspect
 import scipy.integrate
 import numpy as np
 import warnings
-from .._commonfuncs import lens, get_nn, LocalEstimator
+from .._commonfuncs import _check_X, lens, get_nn, LocalEstimator
 from sklearn.utils.validation import check_array
 
 
 class MLE(LocalEstimator):
-    # SPDX-License-Identifier: MIT, 2017 Kerstin Johnsson [IDJohnsson]_
     """Intrinsic dimension estimation using the Maximum Likelihood algorithm. [Haro2008]_ [Hill1975]_ [Levina2005]_ [IDJohnsson]_
 
     The estimators are based on the referenced paper by Haro et al. (2008), using the assumption that there is a single manifold. 
@@ -121,37 +92,35 @@ class MLE(LocalEstimator):
             Returns self.
         """
         # check inputs and define internal parameters
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
         if n_neighbors is None:
             n_neighbors = self._N_NEIGHBORS
         if n_neighbors >= len(X):
             warnings.warn("n_neighbors >= len(X), setting n_neighbors = len(X)-1")
             n_neighbors = len(X) - 1
-        if self.K >= len(X):
-            warnings.warn("self.K >= len(X), setting n_neighbors = len(X)-1")
-            self.K = len(X) - 1
-        self.n_neighbors = n_neighbors
-        self.comb = comb
-
-        X = check_array(
-            X, ensure_min_samples=self.n_neighbors + 1, ensure_min_features=2
-        )
+        self._K = self.K
+        if self._K >= len(X):
+            warnings.warn("self.K >= len(X), setting K = len(X)-1")
+            self._K = len(X) - 1
+        self.n_neighbors_ = n_neighbors
+        self.comb_ = comb
 
         if precomputed_knn_arrays is not None:
             dists, knnidx = precomputed_knn_arrays
         else:
             if self.neighborhood_based:
-                dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
+                dists, knnidx = get_nn(X, k=self.n_neighbors_, n_jobs=n_jobs)
             else:
-                dists, knnidx = get_nn(X, k=self.K, n_jobs=n_jobs)
+                dists, knnidx = get_nn(X, k=self._K, n_jobs=n_jobs)
 
         if self.neighborhood_based:
             self.dimension_pw_ = self._maxLikPointwiseDimEst(dists)
             # combine local estimates
-            if self.comb == "mean":
+            if self.comb_ == "mean":
                 self.dimension_ = np.mean(self.dimension_pw_)
-            elif self.comb == "median":
+            elif self.comb_ == "median":
                 self.dimension_ = np.median(self.dimension_pw_)
-            elif self.comb == "mle":
+            elif self.comb_ == "mle":
                 self.dimension_ = 1 / np.mean(1 / self.dimension_pw_)
             else:
                 raise ValueError(
@@ -170,7 +139,7 @@ class MLE(LocalEstimator):
 
         else:
             Rs = np.sort(np.array(list(set(dists.flatten(order="F")))))[
-                : self.n_neighbors
+                : self.n_neighbors_
             ]
             # Since distances between points are used, noise is
             self.dimension_ = self._fit(Rs, np.sqrt(2) * self.sigma)
@@ -243,7 +212,7 @@ class MLE(LocalEstimator):
 
     def fit_once(self, X):
         # assuming data set is local
-        X = check_array(X, ensure_min_samples=2, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
         center = np.mean(X, axis=0)
         cent_X = X - center
         Rs = np.sort(lens(cent_X))

@@ -65,8 +65,8 @@ class MADA(LocalEstimator):
         distmat[distmat == 0] = np.max(distmat)
 
         sortedD = np.sort(distmat, axis=0, kind="mergesort")
-        RK = sortedD[self.n_neighbors - 1, :]
-        RK2 = sortedD[int(np.floor(self.n_neighbors / 2) - 1), :]
+        RK = sortedD[self.n_neighbors_ - 1, :]
+        RK2 = sortedD[int(np.floor(self.n_neighbors_ / 2) - 1), :]
         ests = np.log(2) / np.log(RK / RK2)
 
         return ests

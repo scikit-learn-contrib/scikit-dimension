@@ -1,34 +1,4 @@
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2020, Jonathan Bac
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
-#
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
-#
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+# SPDX-License-Identifier: BSD-3-Clause
 import numpy as np
 import numba as nb
 import itertools
@@ -39,6 +9,14 @@ from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.base import BaseEstimator
 from joblib import delayed, Parallel
 from abc import abstractmethod
+
+
+def _check_X(est, X, **kwargs):
+    """check_array that also records n_features_in_ on the estimator, as the sklearn API requires"""
+    X = check_array(X, **kwargs)
+    if X.ndim == 2:
+        est.n_features_in_ = X.shape[1]
+    return X
 
 
 def indComb(NN):
@@ -185,6 +163,14 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             "_skip_test": "check_methods_subset_invariance"
         }  # skip a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant
 
+    def __sklearn_tags__(self):
+        # sklearn>=1.6 refuses estimators defining _more_tags without __sklearn_tags__
+        from sklearn.utils import TransformerTags
+
+        tags = super().__sklearn_tags__()
+        tags.transformer_tags = TransformerTags()
+        return tags
+
     def transform(self, X=None):
         """Predict dimension after a previous call to self.fit
 
@@ -198,6 +184,12 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             The estimated ID
         """
         check_is_fitted(self, "is_fitted_")
+        if X is not None:
+            X = check_array(X)
+            if X.shape[1] != getattr(self, "n_features_in_", X.shape[1]):
+                raise ValueError(
+                    f"X has {X.shape[1]} features, but {type(self).__name__} is expecting {self.n_features_in_} features as input."
+                )
         return self.dimension_
 
     def fit_transform(self, X, y=None):
@@ -238,7 +230,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         self : object
             Returns self
         """
-        X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
 
         if precomputed_knn is not None:
             knnidx = precomputed_knn
@@ -326,7 +318,7 @@ class GlobalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Smoothed pointwise ID estimates returned if self.fit_pw(smooth=True)
         """
 
-        X = check_array(X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
+        X = _check_X(self, X, ensure_min_samples=n_neighbors + 1, ensure_min_features=2)
 
         if precomputed_knn is not None:
             knnidx = precomputed_knn
@@ -377,6 +369,14 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
         """Skips a test from sklearn.utils.estimator_checks because ID estimators are not subset invariant"""
         return {"_skip_test": "check_methods_subset_invariance"}
 
+    def __sklearn_tags__(self):
+        # sklearn>=1.6 refuses estimators defining _more_tags without __sklearn_tags__
+        from sklearn.utils import TransformerTags
+
+        tags = super().__sklearn_tags__()
+        tags.transformer_tags = TransformerTags()
+        return tags
+
     @abstractmethod
     def _fit(self, X, dists=None, knnidx=None, n_jobs=1):
         """Custom method to each local ID estimator, called in fit"""
@@ -416,22 +416,19 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             Returns self.
         """
         # check inputs and define internal parameters
+        X = _check_X(self, X, ensure_min_samples=2, ensure_min_features=2)
         if n_neighbors is None:
             n_neighbors = self._N_NEIGHBORS
         if n_neighbors >= len(X):
             warnings.warn("n_neighbors >= len(X), setting n_neighbors = len(X)-1")
             n_neighbors = len(X) - 1
-        self.n_neighbors = n_neighbors
-        self.comb = comb
-
-        X = check_array(
-            X, ensure_min_samples=self.n_neighbors + 1, ensure_min_features=2
-        )
+        self.n_neighbors_ = n_neighbors
+        self.comb_ = comb
 
         if precomputed_knn_arrays is not None:
             dists, knnidx = precomputed_knn_arrays
         else:
-            dists, knnidx = get_nn(X, k=self.n_neighbors, n_jobs=n_jobs)
+            dists, knnidx = get_nn(X, k=self.n_neighbors_, n_jobs=n_jobs)
 
         # fit
         self._fit(X=X, dists=dists, knnidx=knnidx, n_jobs=n_jobs)
@@ -469,6 +466,12 @@ class LocalEstimator(BaseEstimator):  # , metaclass=DocInheritorBase):
             The estimated ID
         """
         check_is_fitted(self, "is_fitted_")
+        if X is not None:
+            X = check_array(X)
+            if X.shape[1] != getattr(self, "n_features_in_", X.shape[1]):
+                raise ValueError(
+                    f"X has {X.shape[1]} features, but {type(self).__name__} is expecting {self.n_features_in_} features as input."
+                )
         return self.dimension_
 
     def fit_transform(

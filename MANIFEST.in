@@ -1,1 +1,2 @@
 include requirements.txt
+include LICENSE LICENSES_bundled.txt AUTHORS.md CITATION.cff
