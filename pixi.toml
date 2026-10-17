@@ -1,0 +1,46 @@
+# Development and reference-test environments. Packaging stays in setup.py.
+#   pixi run test                    # test suite
+#   pixi run -e ref make-fixtures    # regenerate skdim/tests/reference/fixtures.json from R and DADApy
+[workspace]
+name = "scikit-dimension"
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+python = ">=3.10"
+numpy = "*"
+numba = "*"
+scipy = "*"
+scikit-learn = "*"
+matplotlib-base = "*"
+pytest = "*"
+pandas = "*"  # BenchmarkManifolds only (optional at runtime)
+
+[pypi-dependencies]
+scikit-dimension = { path = ".", editable = true }
+
+[tasks]
+test = "pytest -q skdim/tests"
+
+# Reference implementations, used only to generate test fixtures (no code is copied from them)
+[feature.ref]
+platforms = ["linux-64"]  # no osx-arm64 bioconductor-pcatools, no osx-64 jaxlib (dadapy)
+
+[feature.ref.dependencies]
+python = "3.12.*"  # jaxlib wheels
+r-base = "*"
+r-jsonlite = "*"
+r-intrinsicdimension = "*"
+bioconductor-pcatools = "*"
+r-rmtstat = "*"  # PCAtools::chooseMarchenkoPastur
+bioconductor-scran = "*"
+c-compiler = "*"
+
+[feature.ref.pypi-dependencies]
+dadapy = { git = "https://github.com/sissa-data-science/DADApy", rev = "d729b8835e771001ec7ba6ca68938b737b96edae" }
+
+[feature.ref.tasks]
+make-fixtures = "python skdim/tests/reference/generate_fixtures.py"
+
+[environments]
+ref = ["ref"]

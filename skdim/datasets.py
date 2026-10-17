@@ -30,7 +30,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import numpy as np
-import pandas as pd
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
 from scipy.integrate import solve_ivp
@@ -573,6 +572,8 @@ class BenchmarkManifolds:
                 "9D paraboloid, nonlinearly embedded in (3*(9+1))D space, according to a multivariate Burr distribution (alpha=1)",
             ),
         }
+        import pandas as pd  # optional: only BenchmarkManifolds needs it
+
         self.truth = pd.DataFrame(
             self._dict_truth,
             index=["Intrinsic Dimension", "Number of variables", "Description"],

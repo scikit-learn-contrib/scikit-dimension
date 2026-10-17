@@ -15,7 +15,7 @@ from .._commonfuncs import _check_X, GlobalEstimator
 # matrices", consistent with Johnstone (2001, Ann. Stat., Table 1); re-checked to 4 decimals
 # with Bornemann's (2010) Fredholm-determinant quadrature. scipy has no TW distribution.
 _TW1_UPPER = {0.1: 0.4501, 0.05: 0.9793, 0.01: 2.0234, 0.005: 2.4223, 0.001: 3.2722}
-_RANK_VERS = ("MP", "GD", "KN", "Minka", "parallel")
+_RANK_VERS = ("MP", "GD", "KN", "Minka", "parallel", "denoised")
 _VERS = ("FO", "Fan", "maxgap", "ratio", "participation_ratio", "Kaiser", "broken_stick") + _RANK_VERS
 
 
@@ -43,12 +43,13 @@ class lPCA(GlobalEstimator):
     Version 'KN' is the Kritchman-Nadler sequential Tracy-Widom test at level alphaKN, with sigma^2 estimated jointly with the signal eigenvalues under each step's null [Kritchman2008]_.\n
     Version 'Minka' maximizes Minka's Laplace approximation of the PPCA evidence [Minka2000]_. Also valid when n_samples < n_features. Ported from the kmyim fork of scikit-dimension (KM Yim, John Harvey).\n
     Version 'parallel' is Horn's parallel analysis [Horn1965]_ [Buja1992]_ with a permutation (each column permuted independently) or sign-flip null: the rank is the number of leading eigenvalues above the ``quantile`` of their null distribution over ``n_permutations`` draws. Cost is n_permutations PCAs (times the number of neighbourhoods in ``fit_pw``). It can underestimate under strong factors (shadowing) and, as each eigenvalue is compared with the same-index null eigenvalue, overestimate when weak spikes are present.\n
+    Version 'denoised' is scran's denoisePCANumber/getDenoisedPCs rule [Lun2016]_: the smallest number of leading PCs such that the variance of the discarded PCs does not exceed the total technical variance (p * noise_var, or sum(noise_var) for per-feature values). To reproduce getDenoisedPCs, first drop features whose variance does not exceed their technical variance and clip the result to its min.rank/max.rank (default 5 and 50).\n
 
     Parameters
     ----------
     ver: str, default='FO'
         Version. Possible values: 'FO', 'Fan', 'maxgap', 'ratio', 'participation_ratio', 'Kaiser', 'broken_stick',
-        'MP', 'GD', 'KN', 'Minka', 'parallel'.
+        'MP', 'GD', 'KN', 'Minka', 'parallel', 'denoised'.
     alphaRatio: float in (0,1)
         Only for ver = 'ratio'. ID is estimated to be 
         the number of principal components needed to retain at least alphaRatio of the variance.
@@ -78,10 +79,11 @@ class lPCA(GlobalEstimator):
     n_samples: int, default=None
         Number of samples the explained variance was computed from. Required for 'MP', 'GD', 'KN'
         and 'Minka' when ``fit_explained_variance`` is True; ignored otherwise.
-    noise_var: float, default=None
-        Known noise variance sigma^2 for 'MP', 'GD' and 'KN'. If None, it is estimated: from the
-        median eigenvalue matched to the Marchenko-Pastur median ('MP', 'GD'), or jointly with the
-        signal eigenvalues ('KN').
+    noise_var: float or 1d array, default=None
+        Known noise variance sigma^2 for 'MP', 'GD', 'KN' and 'denoised' ('denoised' also accepts
+        per-feature technical variances, e.g. from a mean-variance trend). If None, it is estimated:
+        from the median eigenvalue matched to the Marchenko-Pastur median ('MP', 'GD', 'denoised'),
+        or jointly with the signal eigenvalues ('KN').
     alphaKN: float, default=0.05
         Only for ver = 'KN'. Significance level, one of 0.1, 0.05, 0.01, 0.005, 0.001
         (tabulated Tracy-Widom quantiles).
@@ -105,6 +107,7 @@ class lPCA(GlobalEstimator):
     References
     ----------
     .. [Marchenko1967] Marchenko, V. A., Pastur, L. A. (1967). Distribution of eigenvalues for some sets of random matrices. Math. USSR Sb. 1, 457-483. doi:10.1070/SM1967v001n04ABEH001994
+    .. [Lun2016] Lun, A. T. L., McCarthy, D. J., Marioni, J. C. (2016). A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research 5, 2122. doi:10.12688/f1000research.9501.2
     .. [Gavish2014] Gavish, M., Donoho, D. L. (2014). The optimal hard threshold for singular values is 4/sqrt(3). IEEE Trans. Inf. Theory 60, 5040-5053. doi:10.1109/TIT.2014.2323359
     .. [Kritchman2008] Kritchman, S., Nadler, B. (2008). Determining the number of components in a factor model from limited noisy data. Chemom. Intell. Lab. Syst. 94, 19-32. doi:10.1016/j.chemolab.2008.06.002
     .. [Minka2000] Minka, T. P. (2000). Automatic choice of dimensionality for PCA. NeurIPS 13.
@@ -202,6 +205,8 @@ class lPCA(GlobalEstimator):
             raise ValueError(f"ver={self.ver!r} needs X; it cannot be used with fit_explained_variance=True")
         if self.fit_explained_variance and self.ver in _RANK_VERS and self.n_samples is None:
             raise ValueError(f"ver={self.ver!r} with fit_explained_variance=True requires n_samples")
+        if np.ndim(self.noise_var) and self.ver != "denoised":
+            raise ValueError("an array noise_var (per-feature technical variances) is only valid for ver='denoised'")
         if self.ver == "KN" and self.alphaKN not in _TW1_UPPER:
             raise ValueError(f"alphaKN must be one of {sorted(_TW1_UPPER)}, got {self.alphaKN!r}")
         if self.ver == "parallel":
@@ -272,6 +277,10 @@ class lPCA(GlobalEstimator):
         if sigma2 is None:
             sigma2 = np.median(nz) / (_mp_median(beta) * max(n_eff, p) / n_eff)
         self.noise_var_ = sigma2
+        if self.ver == "denoised":
+            tech = np.sum(sigma2) if np.ndim(sigma2) else p * sigma2
+            above = np.cumsum(ev[::-1]) > tech  # variance of the j smallest PCs vs technical variance
+            return p - int(np.argmax(above)) if above.any() else 1
         if self.ver == "MP":
             thr = sigma2 * (1 + np.sqrt(p / n_eff)) ** 2
         else:  # GD: singular value > lambda*(beta) sqrt(max(n_eff, p)) sigma, Gavish-Donoho eq. (11)
