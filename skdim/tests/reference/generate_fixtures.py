@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Regenerate fixtures.json from reference implementations: pixi run -e ref make-fixtures
 
-R: intrinsicDimension, PCAtools, scran (reference.R). Python: DADApy.
+R: intrinsicDimension, ider, PCAtools, scran (reference.R). Python: DADApy.
 Only their outputs are stored; no code is taken from them."""
 import json
 import os

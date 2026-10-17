@@ -10,7 +10,7 @@ New estimators and options:
 
 - ``id.GRIDE`` (Denti et al. 2022) and ``TwoNN(method="mle")``.
 - ``id.PH``: persistent-homology (PH0) dimension, ported from the kmyim/scikit-dimension fork (Ka Man Yim).
-- ``lPCA`` signal-rank versions ``MP``, ``GD``, ``KN``, ``parallel`` and ``Minka`` (Minka ported from the fork, Ka Man Yim and John Harvey).
+- ``lPCA`` signal-rank versions ``MP``, ``GD``, ``KN``, ``parallel``, ``Minka`` (ported from the fork, Ka Man Yim and John Harvey) and ``denoised`` (scran's denoisePCANumber).
 - Datasets ``product``, ``hyperTwinPeaksUniform``, ``toroidal_spiral``, ``torus``, ``lorenz_attractor``, ``dumbbell``,
   ``SurfaceOfRevolution``, ``hyperSphere(radius, center)``, and ``skdim.embeddings`` (John Harvey, Ka Man Yim).
 
@@ -22,6 +22,13 @@ Behaviour changes:
 - Fit-time attributes ``n_neighbors`` and ``comb`` of local estimators renamed ``n_neighbors_`` and ``comb_``.
 - ``CorrInt`` and ``MLE`` no longer overwrite ``k1``/``k2``/``K``; ``KNN`` gains ``random_state``.
 - Compatible with scikit-learn >= 1.6 (``__sklearn_tags__``, ``n_features_in_``).
+- Python 3.13+ (``MLE`` no longer inspects its frame in ``__init__``) and numpy 2.x fixes; pandas is imported only by ``BenchmarkManifolds``.
+- ``GRIDE`` and ``TwoNN(method="mle")`` use the DADApy conventions ((N-1) log d, outlier cut on mu for GRIDE).
+
+Testing:
+
+- ``skdim/tests/test_reference.py`` checks agreement with R intrinsicDimension, ider, PCAtools, scran and DADApy through stored fixtures;
+  regenerate them with ``pixi run -e ref make-fixtures`` (``pixi.toml``; packaging is unchanged).
 - Per-file licence headers shortened to SPDX identifiers; third-party notices in ``LICENSES_bundled.txt``.
 
 Version 0.3 :small:`April 2021`

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Agreement with reference implementations, via outputs stored in reference/fixtures.json.
 
-Regenerate with: pixi run -e ref make-fixtures (R intrinsicDimension, PCAtools, scran; DADApy).
+Regenerate with: pixi run -e ref make-fixtures (R intrinsicDimension, ider, PCAtools, scran; DADApy).
 Tolerances: integer ranks exact; closed forms rtol 1e-6; Gride rtol 1e-6 (DADApy bisects to 1e-7)."""
 import json
 import os
@@ -36,6 +36,13 @@ def test_intrinsicDimension(name):
     # R's MIND_MLi returns the fractional and MIND_MLk the integer estimate
     assert skdim.id.MiND_ML(ver="MLk", k=20, D=10).fit(X).dimension_ == pytest.approx(ref["mind_mli_k20_D10"], rel=1e-6)
     assert skdim.id.MiND_ML(ver="MLi", k=20, D=10).fit(X).dimension_ == pytest.approx(ref["mind_mlk_k20_D10"], rel=1e-6)
+
+
+@pytest.mark.parametrize("name", sorted(ID))
+def test_ider(name):
+    X, ref = ID[name], FX["ider"][name]
+    assert skdim.id.CorrInt(k1=10, k2=20).fit(X).dimension_ == pytest.approx(ref["corint_k10_k20"], rel=1e-6)
+    np.testing.assert_allclose(skdim.id.MADA().fit(X, n_neighbors=20).dimension_pw_, ref["mada_local_k20"], rtol=1e-6)
 
 
 @pytest.mark.parametrize("name", sorted(RANK))

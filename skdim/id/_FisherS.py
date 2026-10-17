@@ -624,7 +624,7 @@ class FisherS(GlobalEstimator):
             plt.hist(p_alpha[alpha_ind_selected, :][0], bins=nbins)
             plt.xlabel(
                 "Inseparability prob. for \u03B1=%2.2f"
-                % (self._alphas[0, alpha_ind_selected]),
+                % np.ravel(self._alphas[0, alpha_ind_selected])[0],
                 fontsize=16,
             )
             plt.ylabel("Number of values")

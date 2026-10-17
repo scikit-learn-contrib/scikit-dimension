@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: BSD-3-Clause AND MIT
 # Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
 # Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
-import inspect
 import scipy.integrate
 import numpy as np
 import warnings
@@ -52,12 +51,13 @@ class MLE(LocalEstimator):
         K=5,
     ):
 
-        _, _, _, values_proxy = inspect.getargvalues(inspect.currentframe())
-        values = dict(values_proxy)
-        values.pop("self")
-
-        for arg, val in values.items():
-            setattr(self, arg, val)
+        self.dnoise = dnoise
+        self.sigma = sigma
+        self.n = n
+        self.integral_approximation = integral_approximation
+        self.unbiased = unbiased
+        self.neighborhood_based = neighborhood_based
+        self.K = K
 
     def fit(
         self,

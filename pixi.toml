@@ -33,6 +33,8 @@ r-jsonlite = "*"
 r-intrinsicdimension = "*"
 bioconductor-pcatools = "*"
 r-rmtstat = "*"  # PCAtools::chooseMarchenkoPastur
+r-fnn = "*"  # ider
+r-glm2 = "*"  # ider
 bioconductor-scran = "*"
 c-compiler = "*"
 
@@ -40,7 +42,9 @@ c-compiler = "*"
 dadapy = { git = "https://github.com/sissa-data-science/DADApy", rev = "d729b8835e771001ec7ba6ca68938b737b96edae" }
 
 [feature.ref.tasks]
-make-fixtures = "python skdim/tests/reference/generate_fixtures.py"
+# ider (Hino) is on CRAN only; pure R
+install-ider = "Rscript -e \"if (!requireNamespace('ider', quietly=TRUE)) install.packages('ider', repos='https://cloud.r-project.org')\""
+make-fixtures = { cmd = "python skdim/tests/reference/generate_fixtures.py", depends-on = ["install-ider"] }
 
 [environments]
 ref = ["ref"]

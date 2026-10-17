@@ -5,6 +5,7 @@ suppressMessages({
   library(intrinsicDimension)
   library(PCAtools)
   library(scran)
+  library(ider)
 })
 args <- commandArgs(trailingOnly = TRUE)
 indir <- args[1]
@@ -13,10 +14,12 @@ out <- list(versions = list(
   R = as.character(getRversion()),
   intrinsicDimension = as.character(packageVersion("intrinsicDimension")),
   PCAtools = as.character(packageVersion("PCAtools")),
-  scran = as.character(packageVersion("scran"))
+  scran = as.character(packageVersion("scran")),
+  ider = as.character(packageVersion("ider"))
 ))
 
 out$intrinsicDimension <- list()
+out$ider <- list()
 for (f in list.files(indir, pattern = "^id_.*\\.csv$", full.names = TRUE)) {
   X <- read_mat(f)
   name <- sub("^id_(.*)\\.csv$", "\\1", basename(f))
@@ -31,6 +34,10 @@ for (f in list.files(indir, pattern = "^id_.*\\.csv$", full.names = TRUE)) {
     ess_b_n30 = essLocalDimEst(X[1:30, ], ver = "b")$dim.est,
     mind_mli_k20_D10 = dancoDimEst(X, k = 20, D = 10, ver = "MIND_MLi")$dim.est,
     mind_mlk_k20_D10 = dancoDimEst(X, k = 20, D = 10, ver = "MIND_MLk")$dim.est
+  )
+  out$ider[[name]] <- list(
+    corint_k10_k20 = corint(X, k1 = 10, k2 = 20),
+    mada_local_k20 = as.numeric(mada(X, k = 20, local = TRUE))
   )
 }
 
