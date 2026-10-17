@@ -372,8 +372,6 @@ def get_linenos(obj):
         return start, start + len(lines) - 1
 
 
-# set project_dir: project/docs/source/conf.py/../../.. → project/
-project_dir = Path(__file__).parent.parent.parent
 github_url_scvelo = "https://github.com/scikit-learn-contrib/scikit-dimension/tree/master"
 from pathlib import PurePosixPath
 
@@ -381,18 +379,14 @@ from pathlib import PurePosixPath
 def modurl(qualname):
     """Get the full GitHub URL for some object’s qualname."""
     obj, module = get_obj_module(qualname)
-    github_url = github_url_scvelo
-    # try:
-    path = PurePosixPath(Path(module.__file__).resolve().relative_to(project_dir))
-    # except ValueError:
-    # trying to document something from another package
-    # github_url = (
-    #    if "read" in qualname
-    # )
-    # path = "/".join(module.__file__.split("/")[-2:])
+    if not module.__name__.startswith("skdim"):
+        return github_url_scvelo  # inherited from another package (e.g. sklearn)
+    # from the import name, so it works whether skdim is installed or used from the checkout
+    path = PurePosixPath(*module.__name__.split("."))
+    path = path / "__init__.py" if Path(module.__file__).name == "__init__.py" else path.with_suffix(".py")
     start, end = get_linenos(obj)
     fragment = f"#L{start}-L{end}" if start and end else ""
-    return f"{github_url}/{path}{fragment}"
+    return f"{github_url_scvelo}/{path}{fragment}"
 
 
 def api_image(qualname: str) -> Optional[str]:

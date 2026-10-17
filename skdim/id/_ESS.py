@@ -63,11 +63,11 @@ class ESS(LocalEstimator):
                 )
 
     def fit_once(self, X, y=None):
-        """ Fit ESS on a single neighborhood. /!\ Not meant to be used on a complete dataset - X should be a local patch of a dataset, otherwise call .fit()
+        """ Fit ESS on a single neighborhood. Warning: not meant to be used on a complete dataset - X should be a local patch of a dataset, otherwise call .fit()
         Parameters
         ----------
         X : {array-like}, shape (n_samples, n_features)
-            The training input samples. /!\ Should be a local patch of a dataset
+            The training input samples. Should be a local patch of a dataset
         y : dummy parameter to respect the sklearn API
 
         Returns

@@ -42,7 +42,7 @@ jobs:
         with:
           python-version: "3.12"
           activate-environment: true
-      - run: uv pip install -e ".[docs]"
+      - run: uv pip install ".[docs]"  # non-editable, as on Read the Docs
       - run: python -m sphinx -b html doc doc/_build/html
 
   build:
