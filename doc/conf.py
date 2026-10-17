@@ -1,5 +1,4 @@
 from skdim import __version__
-from distutils.version import LooseVersion
 import sphinx
 import sys
 import os
@@ -42,12 +41,6 @@ napoleon_custom_sections = [("Params", "Parameters")]
 # see https://github.com/numpy/numpydoc/issues/69
 numpydoc_show_class_members = False
 
-# pngmath / imgmath compatibility layer for different sphinx versions
-if LooseVersion(sphinx.__version__) < LooseVersion("1.4"):
-    extensions.append("sphinx.ext.pngmath")
-else:
-    extensions.append("sphinx.ext.imgmath")
-
 autodoc_default_flags = ["members", "inherited-members"]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -55,6 +48,7 @@ templates_path = ["_templates"]
 
 # generate autosummary even if no references
 autosummary_generate = True
+autosummary_imported_members = True
 
 # The suffix of source filenames.
 source_suffix = ".rst"
@@ -130,7 +124,6 @@ html_theme = "sphinx_rtd_theme"
 # html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -317,16 +310,14 @@ intersphinx_mapping = {
 
 def setup(app):
     # a copy button to copy snippet of code from the documentation
-    app.add_stylesheet("css/custom.css")
+    app.add_css_file("css/custom.css")
 
 
 # -- Options for other output ------------------------------------------
 import inspect
 from pathlib import Path
-from typing import Optional, Union, Mapping
+from typing import Optional
 import logging
-from sphinx.application import Sphinx
-from sphinx.ext import autosummary
 
 logger = logging.getLogger(__name__)
 author = "Jonathan Bac"
@@ -338,49 +329,6 @@ man_pages = [(master_doc, project, title_doc, [author], 1)]
 texinfo_documents = [
     (master_doc, project, title_doc, author, project, title, "Miscellaneous")
 ]
-
-
-# -- generate_options override ------------------------------------------
-
-
-def process_generate_options(app: Sphinx):
-    genfiles = app.config.autosummary_generate
-
-    if genfiles and not hasattr(genfiles, "__len__"):
-        env = app.builder.env
-        genfiles = [
-            env.doc2path(x, base=None)
-            for x in env.found_docs
-            if Path(env.doc2path(x)).is_file()
-        ]
-    if not genfiles:
-        return
-
-    from sphinx.ext.autosummary.generate import generate_autosummary_docs
-
-    ext = app.config.source_suffix
-    genfiles = [
-        genfile + (not genfile.endswith(tuple(ext)) and ext[0] or "")
-        for genfile in genfiles
-    ]
-
-    suffix = autosummary.get_rst_suffix(app)
-    if suffix is None:
-        return
-
-    generate_autosummary_docs(
-        genfiles,
-        builder=app.builder,
-        warn=logger.warning,
-        info=logger.info,
-        suffix=suffix,
-        base_path=app.srcdir,
-        imported_members=True,
-        app=app,
-    )
-
-
-autosummary.process_generate_options = process_generate_options
 
 
 # -- GitHub URLs for class and method pages ------------------------------------------
@@ -453,106 +401,3 @@ def api_image(qualname: str) -> Optional[str]:
 from jinja2.defaults import DEFAULT_FILTERS
 
 DEFAULT_FILTERS.update(modurl=modurl, api_image=api_image)
-
-# -- Override some classnames in autodoc --------------------------------------------
-
-import sphinx_autodoc_typehints
-
-qualname_overrides = {
-    "anndata.base.AnnData": "anndata.AnnData",
-}
-
-fa_orig = sphinx_autodoc_typehints.format_annotation
-
-
-def format_annotation(annotation):
-    if getattr(annotation, "__origin__", None) is Union or hasattr(
-        annotation, "__union_params__"
-    ):
-        params = getattr(annotation, "__union_params__", None) or getattr(
-            annotation, "__args__", None
-        )
-        return ", ".join(map(format_annotation, params))
-    if getattr(annotation, "__origin__", None) is Mapping:
-        return ":class:`~typing.Mapping`"
-    if inspect.isclass(annotation):
-        full_name = f"{annotation.__module__}.{annotation.__qualname__}"
-        override = qualname_overrides.get(full_name)
-        if override is not None:
-            return f":py:class:`~{qualname_overrides[full_name]}`"
-    return fa_orig(annotation)
-
-
-sphinx_autodoc_typehints.format_annotation = format_annotation
-
-
-# -- Prettier Param docs --------------------------------------------
-
-from typing import Dict, List, Tuple
-from docutils import nodes
-from sphinx import addnodes
-from sphinx.domains.python import PyTypedField, PyObject
-from sphinx.environment import BuildEnvironment
-
-
-class PrettyTypedField(PyTypedField):
-    list_type = nodes.definition_list
-
-    def make_field(
-        self,
-        types: Dict[str, List[nodes.Node]],
-        domain: str,
-        items: Tuple[str, List[nodes.inline]],
-        env: BuildEnvironment = None,
-    ) -> nodes.field:
-        def makerefs(rolename, name, node):
-            return self.make_xrefs(rolename, domain, name, node, env=env)
-
-        def handle_item(
-            fieldarg: str, content: List[nodes.inline]
-        ) -> nodes.definition_list_item:
-            head = nodes.term()
-            head += makerefs(self.rolename, fieldarg, addnodes.literal_strong)
-            fieldtype = types.pop(fieldarg, None)
-            if fieldtype is not None:
-                head += nodes.Text(" : ")
-                if len(fieldtype) == 1 and isinstance(fieldtype[0], nodes.Text):
-                    (text_node,) = fieldtype  # type: nodes.Text
-                    head += makerefs(
-                        self.typerolename, text_node.astext(), addnodes.literal_emphasis
-                    )
-                else:
-                    head += fieldtype
-
-            body_content = nodes.paragraph("", "", *content)
-            body = nodes.definition("", body_content)
-
-            return nodes.definition_list_item("", head, body)
-
-        fieldname = nodes.field_name("", self.label)
-        if len(items) == 1 and self.can_collapse:
-            fieldarg, content = items[0]
-            bodynode = handle_item(fieldarg, content)
-        else:
-            bodynode = self.list_type()
-            for fieldarg, content in items:
-                bodynode += handle_item(fieldarg, content)
-        fieldbody = nodes.field_body("", bodynode)
-        return nodes.field("", fieldname, fieldbody)
-
-
-# replace matching field types with ours
-PyObject.doc_field_types = [
-    PrettyTypedField(
-        ft.name,
-        names=ft.names,
-        typenames=ft.typenames,
-        label=ft.label,
-        rolename=ft.rolename,
-        typerolename=ft.typerolename,
-        can_collapse=ft.can_collapse,
-    )
-    if isinstance(ft, PyTypedField)
-    else ft
-    for ft in PyObject.doc_field_types
-]
