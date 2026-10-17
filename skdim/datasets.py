@@ -80,7 +80,7 @@ def hyperBall(n, d, radius=1.0, center=[], random_state=None):
     return p
 
 
-def hyperSphere(n, d, radius=1.0, center=None, random_state=None):
+def hyperSphere(n, d, random_state=None, radius=1.0, center=None):
     """
     Generates a sample from a uniform distribution on the hypersphere
 
@@ -90,12 +90,12 @@ def hyperSphere(n, d, radius=1.0, center=None, random_state=None):
         Number of data points.
     d: int
         Dimension of the hypersphere
+    random_state: int, np.random.RandomState instance
+        Random number generator
     radius: float
         Radius of the hypersphere
     center: list, tuple, np.array, optional
         Center of the hypersphere, of length d+1. Defaults to the origin
-    random_state: int, np.random.RandomState instance
-        Random number generator
 
     Returns
     -------
