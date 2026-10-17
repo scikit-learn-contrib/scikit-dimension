@@ -15,13 +15,13 @@ class lPCA(GlobalEstimator):
     Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.\n
     Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.\n
     Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
-    Version 'Kaiser' returns the number of eigenvalues above average (the average eigenvalue is 1)\n
-    Version 'broken_stick' returns the number of eigenvalues above corresponding values of the broken stick distribution\n
+    Version 'Kaiser' returns the number of eigenvalues above their mean. For the covariance of standardized data the mean is 1, so this is the usual 'eigenvalue > 1' rule; otherwise it is not.\n
+    Version 'broken_stick' returns the number of leading eigenvalues above the corresponding values of the broken stick distribution\n
 
     Parameters
     ----------
     ver: str, default='FO'
-        Version. Possible values: 'FO', 'Fan', 'maxgap','ratio', 'Kaiser', 'broken_stick'.
+        Version. Possible values: 'FO', 'Fan', 'maxgap', 'ratio', 'participation_ratio', 'Kaiser', 'broken_stick'.
     alphaRatio: float in (0,1)
         Only for ver = 'ratio'. ID is estimated to be 
         the number of principal components needed to retain at least alphaRatio of the variance.
@@ -34,7 +34,8 @@ class lPCA(GlobalEstimator):
         Only for ver = 'Fan'. The beta parameter (total covariance threshold).
     PFan: float
         Only for ver = 'Fan'. Total covariance in non-noise.
-    verbose: bool, default=False
+    verbose: bool, default=True
+        Unused.
     center: bool, default=True
         If True, eigenvalues are computed from ``sklearn.decomposition.PCA``, which
         centers (demeans) the data. If False, they are computed as the eigenvalues of
@@ -179,7 +180,7 @@ class lPCA(GlobalEstimator):
     def _fan(self, explained_var):
         r = np.where(np.cumsum(explained_var) / sum(explained_var) > self.PFan)[0][0]
         sigma = np.mean(explained_var[r:])
-        explained_var -= sigma
+        explained_var = explained_var - sigma  # do not mutate the caller's array
         gaps = explained_var[:-1] / explained_var[1:]
         de = 1 + np.min(
             np.concatenate(
@@ -216,7 +217,7 @@ class lPCA(GlobalEstimator):
         explained_var_norm = explained_var / np.sum(explained_var)
         for i in range(len(explained_var)):
             if bs[i] > explained_var_norm[i]:
-                de = i + 1
+                de = i  # number of leading eigenvalues above the broken stick
                 break
         return de, gaps
 
