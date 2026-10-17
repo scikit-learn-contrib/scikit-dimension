@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Version 0.4.2 :small:`October 2026`
+-----------------------------------
+- Documentation: interactive plotly figures in the tutorials display again (their MathJax 2 call
+  failed under MathJax 4); "Example usage" moves to the top navigation after "Quick start".
+- Remove the unused ``.coveragerc`` and ``environment.yml``. No change to the package.
+
 Version 0.4.1 :small:`October 2026`
 -----------------------------------
 - Documentation: fix the build on Read the Docs (source links failed when skdim is installed
