@@ -2459,6 +2459,38 @@
    ]
   }
  },
+ "randomly": {
+  "edge_n256_p128": {
+   "0": {
+    "lambda_c": 5.529980556942017,
+    "n_components": 2
+   },
+   "1": {
+    "lambda_c": 5.529980556942017,
+    "n_components": 2
+   }
+  },
+  "n200_p256_r2": {
+   "0": {
+    "lambda_c": 3.249108899358409,
+    "n_components": 2
+   },
+   "1": {
+    "lambda_c": 3.249108899358409,
+    "n_components": 2
+   }
+  },
+  "n500_p128_r3": {
+   "0": {
+    "lambda_c": 7.632215513314428,
+    "n_components": 3
+   },
+   "1": {
+    "lambda_c": 7.632215513314428,
+    "n_components": 3
+   }
+  }
+ },
  "scran": {
   "edge_n256_p128": {
    "denoised_noise1": 2

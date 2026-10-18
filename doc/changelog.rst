@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Unreleased
+----------
+- ``lPCA(ver="scRMT")``: random matrix theory rank for single-cell data (Aparicio et al. 2020), following
+  the authors' randomly package and tested against its code (identical ranks and thresholds).
+- ``lPCA`` docstring reorganised: one line per version, parameters grouped by the version they apply to.
+  Parameters added in 0.4 are keyword-only; the original positional order is unchanged.
+
 Version 0.4.2 :small:`October 2026`
 -----------------------------------
 - Documentation: interactive plotly figures in the tutorials display again (their MathJax 2 call
