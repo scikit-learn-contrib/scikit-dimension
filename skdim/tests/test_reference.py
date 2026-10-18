@@ -2,7 +2,7 @@
 """Agreement with reference implementations, via outputs stored in reference/fixtures.json.
 
 Regenerate with: pixi run -e ref make-fixtures (R intrinsicDimension, ider, PCAtools, scran;
-DADApy; original MATLAB TLE/MOM and FisherSeparabilityAnalysis code run in Octave).
+DADApy, randomly; original MATLAB TLE/MOM and FisherSeparabilityAnalysis code run in Octave).
 Tolerances: integer ranks exact; closed forms rtol 1e-6; Gride rtol 1e-6 (DADApy bisects to 1e-7)."""
 import json
 import os
@@ -90,6 +90,15 @@ def test_PCAtools_scran(name):
     # different RNGs: equal only because the spikes are far from the null
     pa = skdim.id.lPCA(ver="parallel", n_permutations=100, quantile=0.95, random_state=0).fit(X)
     assert pa.dimension_ == pt["parallel_niters100_thr0.05"]
+
+
+@pytest.mark.parametrize("name", sorted(RANK))
+def test_randomly(name):
+    # same permutations as randomly for the same seed; +10 keeps all genes in randomly (see generator)
+    for seed, ref in FX["randomly"][name].items():
+        est = skdim.id.lPCA(ver="scRMT", random_state=int(seed)).fit(RANK[name] + 10)
+        assert est.dimension_ == ref["n_components"]
+        assert est.threshold_ == pytest.approx(ref["lambda_c"], rel=1e-8)
 
 
 @pytest.mark.parametrize("name", sorted(ID))

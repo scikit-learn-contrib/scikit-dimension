@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause AND MIT
 # Adapted from R package intrinsicDimension (https://cran.r-project.org/package=intrinsicDimension),
-# Copyright (c) 2017 Kerstin Johnsson, MIT License; see LICENSES_bundled.txt
+# Copyright (c) 2017 Kerstin Johnsson, MIT License. ver="scRMT" follows the randomly package
+# (https://github.com/RabadanLab/randomly), Copyright (c) 2018 Luis Aparicio, MIT License; see LICENSES_bundled.txt
 import numpy as np
 from scipy.integrate import quad
 from scipy.optimize import brentq
@@ -15,99 +16,95 @@ from .._commonfuncs import _check_X, GlobalEstimator
 # matrices", consistent with Johnstone (2001, Ann. Stat., Table 1); re-checked to 4 decimals
 # with Bornemann's (2010) Fredholm-determinant quadrature. scipy has no TW distribution.
 _TW1_UPPER = {0.1: 0.4501, 0.05: 0.9793, 0.01: 2.0234, 0.005: 2.4223, 0.001: 3.2722}
-_RANK_VERS = ("MP", "GD", "KN", "Minka", "parallel", "denoised")
+_RANK_VERS = ("MP", "GD", "KN", "Minka", "parallel", "denoised", "scRMT")
 _VERS = ("FO", "Fan", "maxgap", "ratio", "participation_ratio", "Kaiser", "broken_stick") + _RANK_VERS
 
 
 class lPCA(GlobalEstimator):
-    """Intrinsic dimension estimation using the PCA algorithm. [Cangelosi2007]_ [Fan2010]_ [Fukunaga2010]_ [IDJohnsson]_
+    """Intrinsic dimension and signal rank from the PCA eigenvalue spectrum.
 
-    Version 'FO' (Fukunaga-Olsen) returns eigenvalues larger than alphaFO times the largest eigenvalue.\n
-    Version 'Fan' is the method by Fan et al.\n
-    Version 'maxgap' returns the position of the largest relative gap in the sequence of eigenvalues.\n
-    Version 'ratio' returns the number of eigenvalues needed to retain at least alphaRatio of the variance.\n
-    Version 'participation_ratio' returns the number of eigenvalues given by PR=sum(eigenvalues)^2/sum(eigenvalues^2)\n
-    Version 'Kaiser' returns the number of eigenvalues above their mean. For the covariance of standardized data the mean is 1, so this is the usual 'eigenvalue > 1' rule; otherwise it is not.\n
-    Version 'broken_stick' returns the number of leading eigenvalues above the corresponding values of the broken stick distribution\n
+    Explained-variance rules [Fukunaga2010]_ [Fan2010]_ [Cangelosi2007]_ [IDJohnsson]_:
 
-    The versions below estimate the **linear signal rank** under iid homoscedastic noise
-    (spiked covariance model), not the manifold ID: low-variance manifold directions fall below
-    the noise edge, so they can return less than the ID. On log-normalized scRNA-seq they usually
-    overestimate (heteroscedastic noise); standardize or biwhiten first.
-    Eigenvalues are on the covariance scale (divided by n-1 when centered, by n when not).
-    With ``center=False`` a nonzero mean creates a spurious spike.
-    Their asymptotics are shaky for small neighbourhoods (n around 100), e.g. in ``fit_pw``.
+    - 'FO': eigenvalues larger than ``alphaFO`` times the largest one (Fukunaga-Olsen).
+    - 'Fan': the method of Fan et al.
+    - 'maxgap': position of the largest ratio between consecutive eigenvalues.
+    - 'ratio': number of components needed to retain ``alphaRatio`` of the variance.
+    - 'participation_ratio': sum(eigenvalues)^2 / sum(eigenvalues^2).
+    - 'Kaiser': eigenvalues above their mean ("eigenvalue > 1" for standardized data).
+    - 'broken_stick': leading eigenvalues above the broken-stick expectation.
 
-    Version 'MP' counts eigenvalues above the Marchenko-Pastur edge sigma^2 (1 + sqrt(p/n))^2 [Marchenko1967]_.\n
-    Version 'GD' is the Gavish-Donoho optimal hard threshold, omega(beta) times the median singular value [Gavish2014]_. It is MSE-optimal and drops detectable but weak spikes by design.\n
-    Version 'KN' is the Kritchman-Nadler sequential Tracy-Widom test at level alphaKN, with sigma^2 estimated jointly with the signal eigenvalues under each step's null [Kritchman2008]_.\n
-    Version 'Minka' maximizes Minka's Laplace approximation of the PPCA evidence [Minka2000]_. Also valid when n_samples < n_features. Ported from the kmyim fork of scikit-dimension (KM Yim, John Harvey).\n
-    Version 'parallel' is Horn's parallel analysis [Horn1965]_ [Buja1992]_ with a permutation (each column permuted independently) or sign-flip null: the rank is the number of leading eigenvalues above the ``quantile`` of their null distribution over ``n_permutations`` draws. Cost is n_permutations PCAs (times the number of neighbourhoods in ``fit_pw``). It can underestimate under strong factors (shadowing) and, as each eigenvalue is compared with the same-index null eigenvalue, overestimate when weak spikes are present.\n
-    Version 'denoised' is scran's denoisePCANumber/getDenoisedPCs rule [Lun2016]_: the smallest number of leading PCs such that the variance of the discarded PCs does not exceed the total technical variance (p * noise_var, or sum(noise_var) for per-feature values). To reproduce getDenoisedPCs, first drop features whose variance does not exceed their technical variance and clip the result to its min.rank/max.rank (default 5 and 50).\n
+    Signal-rank estimators, for data = low-rank signal + iid noise:
+
+    - 'MP': eigenvalues above the Marchenko-Pastur edge sigma^2 (1 + sqrt(p/n))^2 [Marchenko1967]_.
+    - 'GD': Gavish-Donoho optimal hard threshold [Gavish2014]_.
+    - 'KN': Kritchman-Nadler sequential Tracy-Widom test at level ``alphaKN`` [Kritchman2008]_.
+    - 'Minka': maximum of Minka's Laplace approximation of the PPCA evidence [Minka2000]_.
+    - 'parallel': Horn's parallel analysis, with a permutation or sign-flip null [Horn1965]_ [Buja1992]_.
+    - 'denoised': scran's rule: fewest leading components whose discarded variance does not exceed
+      the technical (noise) variance [Lun2016]_.
+    - 'scRMT': random matrix theory rule for single-cell data: eigenvalues of the standardized data
+      above the fitted Marchenko-Pastur edge plus one Tracy-Widom scale unit [Aparicio2020]_.
 
     Parameters
     ----------
     ver: str, default='FO'
-        Version. Possible values: 'FO', 'Fan', 'maxgap', 'ratio', 'participation_ratio', 'Kaiser', 'broken_stick',
-        'MP', 'GD', 'KN', 'Minka', 'parallel', 'denoised'.
-    alphaRatio: float in (0,1)
-        Only for ver = 'ratio'. ID is estimated to be 
-        the number of principal components needed to retain at least alphaRatio of the variance.
-    alphaFO: float in (0,1)
-        Only for ver = 'FO'. An eigenvalue is considered significant 
-        if it is larger than alpha times the largest eigenvalue.
-    alphaFan: float
-        Only for ver = 'Fan'. The alpha parameter (large gap threshold).
-    betaFan: float
-        Only for ver = 'Fan'. The beta parameter (total covariance threshold).
-    PFan: float
-        Only for ver = 'Fan'. Total covariance in non-noise.
+        Estimator, one of the versions listed above.
+    center: bool, default=True
+        Center the data before computing eigenvalues. If False, the eigenvalues of
+        ``X.T @ X / n`` are used. Ignored when ``fit_explained_variance`` is True.
+    fit_explained_variance: bool, default=False
+        If True, ``fit`` takes a precomputed eigenvalue vector (e.g.
+        ``sklearn.decomposition.PCA().fit(X).explained_variance_``) instead of data.
+        Not available for 'parallel' and 'scRMT'.
+    n_samples: int, default=None
+        Number of samples behind a precomputed eigenvalue vector; required by the
+        signal-rank versions when ``fit_explained_variance`` is True.
+    alphaFO: float in (0, 1), default=0.05
+        'FO': fraction of the largest eigenvalue an eigenvalue must exceed.
+    alphaFan: float, default=10
+        'Fan': large-gap threshold.
+    betaFan: float, default=0.8
+        'Fan': total-variance threshold.
+    PFan: float, default=0.95
+        'Fan': fraction of variance attributed to signal.
+    alphaRatio: float in (0, 1), default=0.05
+        'ratio': fraction of the variance to retain.
+    noise_var: float or 1d array, default=None
+        'MP', 'GD', 'KN', 'denoised': noise variance per feature. If None, it is estimated from the
+        spectrum. 'denoised' also accepts one technical variance per feature.
+    alphaKN: {0.1, 0.05, 0.01, 0.005, 0.001}, default=0.05
+        'KN': significance level.
+    n_permutations: int, default=100
+        'parallel': number of null datasets.
+    quantile: float in (0, 1], default=0.95
+        'parallel': quantile of the null eigenvalues to exceed.
+    null: {'permute', 'signflip'}, default='permute'
+        'parallel': permute each feature independently, or flip the sign of each centered entry.
+    random_state: int, RandomState instance or None, default=None
+        'parallel', 'scRMT': random number generator (permutation nulls).
     verbose: bool, default=True
         Unused.
-    center: bool, default=True
-        If True, eigenvalues are computed from ``sklearn.decomposition.PCA``, which
-        centers (demeans) the data. If False, they are computed as the eigenvalues of
-        ``X.T @ X`` without centering, so for ver='participation_ratio' the estimate is
-        ``sum(eigenvalues) ** 2 / sum(eigenvalues ** 2)`` of ``X.T @ X``.
-        Ignored when ``fit_explained_variance`` is True.
-    fit_explained_variance: bool, default=False
-        If True, lPCA.fit(X) expects as input 
-        a precomputed explained_variance vector: X = sklearn.decomposition.PCA().fit(X).explained_variance_
-        For 'MP', 'GD', 'KN' and 'Minka' it must be of length n_features (pad with zeros if
-        n_samples < n_features) and ``n_samples`` must be given. Not possible for 'parallel',
-        which needs X.
-    n_samples: int, default=None
-        Number of samples the explained variance was computed from. Required for 'MP', 'GD', 'KN'
-        and 'Minka' when ``fit_explained_variance`` is True; ignored otherwise.
-    noise_var: float or 1d array, default=None
-        Known noise variance sigma^2 for 'MP', 'GD', 'KN' and 'denoised' ('denoised' also accepts
-        per-feature technical variances, e.g. from a mean-variance trend). If None, it is estimated:
-        from the median eigenvalue matched to the Marchenko-Pastur median ('MP', 'GD', 'denoised'),
-        or jointly with the signal eigenvalues ('KN').
-    alphaKN: float, default=0.05
-        Only for ver = 'KN'. Significance level, one of 0.1, 0.05, 0.01, 0.005, 0.001
-        (tabulated Tracy-Widom quantiles).
-    n_permutations: int, default=100
-        Only for ver = 'parallel'. Number of null draws. 19 with quantile=1.0 gives an exact
-        alpha=0.05 test of each successive eigenvalue against the null maximum.
-    quantile: float in (0, 1], default=0.95
-        Only for ver = 'parallel'. Quantile of the null eigenvalue distribution to exceed.
-    null: {'permute', 'signflip'}, default='permute'
-        Only for ver = 'parallel'. Null: permute each column independently, or flip the sign of
-        each (centered) entry independently.
-    random_state: int, RandomState instance or None, default=None
-        Only for ver = 'parallel'.
-    
+
+    Notes
+    -----
+    The signal-rank versions estimate the rank of a linear signal, not a manifold dimension: curved
+    manifold directions with little variance fall below the noise level. They assume iid noise, so
+    heteroscedastic data (e.g. log-normalized counts) should be standardized or biwhitened first.
+
     Attributes
     ----------
-    gap_:
-        Ratio of each PC's explained variance (except the last) 
-        with the following PC's explained variance
+    dimension_: int
+        Estimated dimension or signal rank.
+    gap_: 1d array
+        Ratio of each eigenvalue (except the last) to the next one.
+    threshold_: float
+        'scRMT' only: eigenvalue threshold (Marchenko-Pastur edge plus one Tracy-Widom unit).
 
     References
     ----------
     .. [Marchenko1967] Marchenko, V. A., Pastur, L. A. (1967). Distribution of eigenvalues for some sets of random matrices. Math. USSR Sb. 1, 457-483. doi:10.1070/SM1967v001n04ABEH001994
     .. [Lun2016] Lun, A. T. L., McCarthy, D. J., Marioni, J. C. (2016). A step-by-step workflow for low-level analysis of single-cell RNA-seq data with Bioconductor. F1000Research 5, 2122. doi:10.12688/f1000research.9501.2
+    .. [Aparicio2020] Aparicio, L., Bordyuh, M., Blumberg, A. J., Rabadan, R. (2020). A random matrix theory approach to denoise single-cell data. Patterns 1, 100035. doi:10.1016/j.patter.2020.100035
     .. [Gavish2014] Gavish, M., Donoho, D. L. (2014). The optimal hard threshold for singular values is 4/sqrt(3). IEEE Trans. Inf. Theory 60, 5040-5053. doi:10.1109/TIT.2014.2323359
     .. [Kritchman2008] Kritchman, S., Nadler, B. (2008). Determining the number of components in a factor model from limited noisy data. Chemom. Intell. Lab. Syst. 94, 19-32. doi:10.1016/j.chemolab.2008.06.002
     .. [Minka2000] Minka, T. P. (2000). Automatic choice of dimensionality for PCA. NeurIPS 13.
@@ -126,6 +123,7 @@ class lPCA(GlobalEstimator):
         verbose=True,
         center=True,
         fit_explained_variance=False,
+        *,
         n_samples=None,
         noise_var=None,
         alphaKN=0.05,
@@ -201,7 +199,7 @@ class lPCA(GlobalEstimator):
     def _check_params(self):
         if self.ver not in _VERS:
             raise ValueError(f"ver must be one of {_VERS}, got {self.ver!r}")
-        if self.fit_explained_variance and self.ver == "parallel":
+        if self.fit_explained_variance and self.ver in ("parallel", "scRMT"):
             raise ValueError(f"ver={self.ver!r} needs X; it cannot be used with fit_explained_variance=True")
         if self.fit_explained_variance and self.ver in _RANK_VERS and self.n_samples is None:
             raise ValueError(f"ver={self.ver!r} with fit_explained_variance=True requires n_samples")
@@ -264,6 +262,8 @@ class lPCA(GlobalEstimator):
             return self._minka(ev, n)
         if self.ver == "parallel":
             return self._parallel(X, explained_var)
+        if self.ver == "scRMT":
+            return self._scrmt(X)
 
         # nonzero eigenvalues: at most min(n_eff, p), and drop numerical zeros
         nz = ev[: min(n_eff, p)]
@@ -329,6 +329,36 @@ class lPCA(GlobalEstimator):
                      + np.log(2 * np.pi) * (m + k) / 2 - pa / 2 - k * np.log(n) / 2)
         self.log_evidence_ = ll
         return int(np.argmax(ll)) + 1
+
+    def _scrmt(self, X):
+        """Aparicio et al. (2020) rank, following the randomly package: eigenvalues of the sample
+        Wishart matrix of standardized features, Marchenko-Pastur bulk fitted by moment matching
+        from a permuted copy, threshold at the bulk edge plus one Tracy-Widom scale unit."""
+        X = np.asarray(X, dtype=float)
+        sd = X.std(axis=0)
+        X = (X[:, sd > 0] - X[:, sd > 0].mean(axis=0)) / sd[sd > 0]  # constant features carry no signal
+        rng = check_random_state(self.random_state)
+        Xr = np.column_stack([rng.permutation(col) for col in X.T])
+        L = np.linalg.eigvalsh(X @ X.T / X.shape[1])
+        Lr = np.linalg.eigvalsh(Xr @ Xr.T / X.shape[1])
+
+        def mp(S):  # moment-matched Marchenko-Pastur parameters
+            m1, m2 = S.mean(), np.mean(S ** 2)
+            g = m2 / m1 ** 2 - 1
+            return g, m1 * (1 + np.sqrt(g)) ** 2, m1 * (1 - np.sqrt(g)) ** 2
+
+        _, b_plus, _ = mp(Lr)
+        _, new_b_plus, new_b_minus = mp(L[(L > mp(Lr)[2]) & (L < b_plus)])
+        for _ in range(1000):  # fixed point of the bulk edges
+            if (1 - new_b_plus / b_plus) ** 2 <= 1e-6:
+                break
+            b_plus = new_b_plus
+            _, new_b_plus, new_b_minus = mp(L[(L > new_b_minus) & (L < new_b_plus)])
+        bulk = L[(L > new_b_minus) & (L < new_b_plus)]
+        gamma = mp(bulk)[0]
+        tw = (len(L) / gamma) ** (-2 / 3) * gamma ** (5 / 6) * (1 + np.sqrt(gamma)) ** (4 / 3)
+        self.threshold_ = bulk.mean() * (1 + np.sqrt(gamma)) ** 2 + tw
+        return int(np.sum(L > self.threshold_))
 
     def _parallel(self, X, explained_var):
         rng = check_random_state(self.random_state)

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Regenerate fixtures.json from reference implementations: pixi run -e ref make-fixtures
 
-R: intrinsicDimension, ider, PCAtools, scran (reference.R). Python: DADApy.
+R: intrinsicDimension, ider, PCAtools, scran (reference.R). Python: DADApy, randomly.
 Octave: the original MATLAB TLE/MOM scripts and FisherSeparabilityAnalysis (reference.m),
 downloaded at pinned commits.
 Only their outputs are stored; no code is taken from them."""
@@ -66,6 +66,37 @@ def octave_reference(n_neighbors=20):
     return res
 
 
+# randomly (Aparicio et al. 2020), MIT; its plotting/clustering modules need packages that no
+# longer build (MulticoreTSNE), so they are replaced by empty stand-ins. The model code is unchanged.
+RANDOMLY_URL = "https://raw.githubusercontent.com/RabadanLab/randomly/e8730f8041bfd42da33e09f422c0e94378430a06/randomly/randomly.py"
+
+
+def randomly_reference(seeds=(0, 1)):
+    import importlib
+    import pandas as pd
+
+    res = {}
+    with tempfile.TemporaryDirectory() as tmp:
+        pkg = os.path.join(tmp, "randomly")
+        os.mkdir(pkg)
+        urllib.request.urlretrieve(RANDOMLY_URL, os.path.join(pkg, "randomly.py"))
+        for mod, cls in (("__init__", None), ("visualization", "Visualize"), ("clustering", "Cluster")):
+            with open(os.path.join(pkg, mod + ".py"), "w") as f:
+                f.write(f"class {cls}:\n    pass\n" if cls else "")
+        sys.path.insert(0, tmp)
+        rm = importlib.import_module("randomly.randomly")
+        for name, X in rank_datasets().items():
+            out = {}
+            for seed in seeds:
+                np.random.seed(seed)  # randomly permutes with numpy's global generator
+                m = rm.Rm()
+                m.fit(pd.DataFrame(X + 10))  # it drops genes with non-positive sums (raw counts)
+                out[str(seed)] = {"n_components": int(m.n_components), "lambda_c": float(m.lambda_c)}
+            res[name] = out
+        sys.path.remove(tmp)
+    return res
+
+
 def dadapy_reference():
     import dadapy
 
@@ -90,6 +121,7 @@ def main():
     fx["versions"]["numpy"] = np.__version__
     fx["dadapy"] = dadapy_reference()
     fx["matlab"] = octave_reference()
+    fx["randomly"] = randomly_reference()
     fx["versions"]["octave"] = subprocess.run(["octave-cli", "--version"], capture_output=True, text=True).stdout.split("\n")[0]
     with open(os.path.join(HERE, "fixtures.json"), "w") as f:
         json.dump(fx, f, indent=1, sort_keys=True)
