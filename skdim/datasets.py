@@ -663,8 +663,10 @@ def stiefel_matrix(n, p, k, random_state=None):
 
     Notes
     -----
-    Frames follow the invariant probability measure. Positive-diagonal QR
-    sign correction is required: the raw QR output does not have this law.
+    Frames use NumPy's raw Gaussian QR convention, without diagonal sign
+    correction, as in the HomID research scripts. They are orthonormal, but
+    this convention does not give invariant sampling on the full Stiefel
+    manifold.
     Generation writes no files; see the HomID guide for optional local caching.
 
     Examples
@@ -677,7 +679,9 @@ def stiefel_matrix(n, p, k, random_state=None):
     data = _homid_empty(n, p * k)
     for block in _homid_blocks(n, 3 * p * k + k * k):
         batch = block.stop - block.start
-        frames = _homid_orthonormalize(random_state.normal(size=(batch, p, k)))
+        frames, _ = np.linalg.qr(
+            random_state.normal(size=(batch, p, k)), mode="reduced"
+        )
         data[block] = frames.reshape(batch, p * k)
     return data
 
@@ -700,7 +704,7 @@ def stiefel_vector(n, p, k, random_state=None):
     Returns
     -------
     data: np.array, (n, binom(p, k) + k * k)
-        A minor vector concatenated with a row-major SO(k) matrix.
+        A minor vector concatenated with a row-major O(k) matrix.
         Intrinsic dimension p*k-k*(k+1)/2.
 
     Warns
@@ -711,11 +715,14 @@ def stiefel_vector(n, p, k, random_state=None):
 
     Notes
     -----
-    This implements the independent-factor recipe in equation (17): an
-    oriented Grassmannian minor vector and an independent Haar SO(k) matrix.
+    This follows the HomID research implementation: an oriented Grassmannian
+    minor vector and an independent Haar O(k) matrix. Both determinant
+    components are included, rather than only the SO(k) factor in the
+    paper's theoretical recipe.
     Its support is a product with the same local dimension as the Stiefel
     manifold; this recipe is not generally a global Stiefel embedding.
-    For k=1 the SO(1) factor is the constant 1. The squared norm is 1+k.
+    For k=1 the O(1) factor is equally likely to be -1 or 1. The squared norm
+    is 1+k.
     See the HomID guide for optional local caching.
 
     Examples
@@ -735,8 +742,6 @@ def stiefel_vector(n, p, k, random_state=None):
         rotations = _homid_orthonormalize(
             normals[:, p * k:].reshape(batch, k, k)
         )
-        orientation = np.where(np.linalg.det(rotations) < 0, -1, 1)
-        rotations[:, :, -1] *= orientation[:, None]
         _homid_minors(frames, data[block, :n_minors])
         data[block, n_minors:] = rotations.reshape(batch, k * k)
     return data
@@ -753,8 +758,8 @@ def flag_vector(n, p, k1, k2, random_state=None):
     p: int
         Dimension of the underlying real vector space. Must be at least 2.
     k1, k2: int
-        Sizes of two disjoint orthogonal column blocks. Both must be positive
-        and k1+k2 must not exceed p. They are block sizes, not nested ranks.
+        Ranks of two nested column prefixes. Both must be positive and must
+        not exceed p. They may coincide; their sum is not constrained.
     random_state: int, np.random.RandomState instance or None, optional
         Random number generator, as in the other dataset functions.
 
@@ -762,7 +767,8 @@ def flag_vector(n, p, k1, k2, random_state=None):
     -------
     data: np.array, (n, binom(p, k1) * binom(p, k2))
         Row-major flattened outer products of the two minor vectors.
-        Intrinsic dimension p*(k1+k2)-k1**2-k2**2-k1*k2.
+        Intrinsic dimension r*(p-r)+s*(r-s), where r=max(k1, k2) and
+        s=min(k1, k2).
 
     Warns
     -----
@@ -772,11 +778,11 @@ def flag_vector(n, p, k1, k2, random_state=None):
 
     Notes
     -----
-    The first factor uses columns [:k1] of a Haar O(p) matrix and the second
-    uses columns [k1:k1+k2], as in equation (22). Minor indices within each
-    factor are lexicographically ordered. Simultaneous orientation reversals
-    of the two factors give the same tensor, a finite identification that
-    preserves the intrinsic dimension. Full-width blocks k1+k2=p are allowed.
+    The factors use columns [:k1] and [:k2] of the same Haar O(p) matrix,
+    following the nested-prefix convention in the HomID research scripts.
+    Minor indices within each factor are lexicographically ordered. For
+    equal ranks, the output is the self-outer product of a unit minor vector,
+    with intrinsic dimension k1*(p-k1).
     Each minor is computed once before forming the outer product. Temporary
     arrays are chunked, but the dense output can still be large. See the
     HomID guide for optional local caching.
@@ -790,21 +796,23 @@ def flag_vector(n, p, k1, k2, random_state=None):
     p = _homid_integer(p, "p", 2)
     k1 = _homid_integer(k1, "k1", 1)
     k2 = _homid_integer(k2, "k2", 1)
-    if k1 + k2 > p:
-        raise ValueError("k1+k2 must not exceed p.")
+    if k1 > p or k2 > p:
+        raise ValueError("k1 and k2 must not exceed p.")
     random_state = check_random_state(random_state)
     dim1, dim2 = comb(p, k1), comb(p, k2)
     data = _homid_empty(n, dim1 * dim2)
-    width = k1 + k2
+    width = max(k1, k2)
     row_size = 3 * p * width + width * width + dim1 + dim2
     for block in _homid_blocks(n, row_size):
         batch = block.stop - block.start
         frames = _homid_orthonormalize(
             random_state.normal(size=(batch, p, width))
         )
-        first, second = np.empty((batch, dim1)), np.empty((batch, dim2))
+        first = np.empty((batch, dim1))
+        second = first if k1 == k2 else np.empty((batch, dim2))
         _homid_minors(frames[:, :, :k1], first)
-        _homid_minors(frames[:, :, k1:], second)
+        if k1 != k2:
+            _homid_minors(frames[:, :, :k2], second)
         np.multiply(
             first[:, :, None], second[:, None, :],
             out=data[block].reshape(batch, dim1, dim2),

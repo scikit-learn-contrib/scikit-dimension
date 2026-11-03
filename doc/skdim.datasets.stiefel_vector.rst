@@ -1,4 +1,4 @@
-﻿:github_url: https://github.com/scikit-learn-contrib/scikit-dimension/tree/master/skdim/datasets.py#L685-L742
+﻿:github_url: https://github.com/scikit-learn-contrib/scikit-dimension/tree/master/skdim/datasets.py#L689-L747
 
 
 

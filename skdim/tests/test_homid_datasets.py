@@ -146,18 +146,16 @@ def test_stiefel_matrix_geometry():
     np.testing.assert_allclose(np.sum(frames**2, axis=(1, 2)), k, atol=ATOL)
 
 
-def test_stiefel_sampling_has_no_raw_qr_hemisphere_bias():
-    # A Haar frame's first column is uniform on the sphere. At N=100 the
-    # 20%-80% sign bounds are broad (six binomial standard deviations).
-    # Uncorrected LAPACK QR instead gives Q[0, 0] <= 0 at every point.
+def test_stiefel_matrix_preserves_raw_qr_sign_convention():
+    # Preserve the archived LAPACK QR convention instead of applying a
+    # column-sign correction. Its first frame coordinate is nonpositive.
     points = ds.stiefel_matrix(N, 5, 1, random_state=42)
-    positive_count = np.count_nonzero(points[:, 0] > 0)
-    assert 20 <= positive_count <= 80
-    np.testing.assert_allclose(np.mean(points, axis=0), 0, atol=0.2)
+    assert np.all(points[:, 0] <= 0)
+    assert np.all(points[:, 0] < -1e-10)
 
 
 @pytest.mark.parametrize("p,k", [(5, 2), (5, 4), (2, 1)])
-def test_stiefel_vector_special_orthogonal_factor(p, k):
+def test_stiefel_vector_orthogonal_factor(p, k):
     points = ds.stiefel_vector(N, p, k, random_state=42)
     split = comb(p, k)
     plane = points[:, :split]
@@ -167,16 +165,30 @@ def test_stiefel_vector_special_orthogonal_factor(p, k):
     np.testing.assert_allclose(
         gram, np.broadcast_to(np.eye(k), gram.shape), atol=ATOL
     )
-    np.testing.assert_allclose(np.linalg.det(rotations), 1, atol=ATOL)
+    determinants = np.linalg.det(rotations)
+    np.testing.assert_allclose(np.abs(determinants), 1, atol=ATOL)
+    # O(k), including O(1), retains both determinant components.
+    assert 20 <= np.count_nonzero(determinants > 0) <= 80
     np.testing.assert_allclose(np.sum(points**2, axis=1), 1 + k, atol=ATOL)
     if k == 1:
-        np.testing.assert_array_equal(rotations, np.ones((N, 1, 1)))
+        np.testing.assert_array_equal(np.abs(rotations), np.ones((N, 1, 1)))
 
 
 @pytest.mark.parametrize(
-    "p,k1,k2", [(5, 2, 2), (5, 2, 1), (4, 2, 2), (2, 1, 1)]
+    "p,k1,k2",
+    [
+        (5, 2, 2),
+        (5, 3, 2),
+        (5, 2, 3),
+        (5, 4, 3),
+        (4, 2, 2),
+        (2, 1, 1),
+        (5, 5, 2),
+        (5, 2, 5),
+        (3, 3, 3),
+    ],
 )
-def test_flag_factors_are_disjoint_orthogonal_subspaces(p, k1, k2):
+def test_flag_factors_are_nested_subspaces(p, k1, k2):
     points = ds.flag_vector(N, p, k1, k2, random_state=42)
     tensors = points.reshape(N, comb(p, k1), comb(p, k2))
     left, singular_values, right = np.linalg.svd(tensors, full_matrices=False)
@@ -192,29 +204,33 @@ def test_flag_factors_are_disjoint_orthogonal_subspaces(p, k1, k2):
     np.testing.assert_allclose(
         np.trace(second, axis1=1, axis2=2), k2, atol=ATOL
     )
-    # Reusing leading prefixes produces nested planes and fails this test.
-    np.testing.assert_allclose(first @ second, 0, atol=ATOL)
-    if k1 + k2 == p:
+    smaller = first if k1 <= k2 else second
+    np.testing.assert_allclose(first @ second, smaller, atol=ATOL)
+    # The two prefix ranks may sum to more than p. Full rank is also valid.
+    if max(k1, k2) == p:
+        larger = first if k1 >= k2 else second
         np.testing.assert_allclose(
-            first + second, np.broadcast_to(np.eye(p), first.shape), atol=ATOL
+            larger, np.broadcast_to(np.eye(p), larger.shape), atol=ATOL
         )
 
 
-def test_full_width_flag_uses_both_components_of_orthogonal_group():
-    p, k1, k2 = 4, 2, 2
-    tensors = ds.flag_vector(N, p, k1, k2, random_state=42).reshape(
-        N, comb(p, k1), comb(p, k2)
+@pytest.mark.parametrize("p,k", [(4, 2), (5, 2), (3, 3)])
+def test_equal_rank_flag_is_a_self_tensor(p, k):
+    tensors = ds.flag_vector(N, p, k, k, random_state=42).reshape(
+        N, comb(p, k), comb(p, k)
     )
-    rows = list(combinations(range(p), k1))
-    columns = {row: i for i, row in enumerate(combinations(range(p), k2))}
-    orientation = np.zeros(N)
-    for i, first in enumerate(rows):
-        second = tuple(j for j in range(p) if j not in first)
-        inversions = sum(a > b for a in first for b in second)
-        orientation += (-1) ** inversions * tensors[:, i, columns[second]]
-    # Laplace expansion: this is det(Q), not a new independently sampled sign.
-    np.testing.assert_allclose(np.abs(orientation), 1, atol=ATOL)
-    assert 20 <= np.count_nonzero(orientation > 0) <= 80
+    np.testing.assert_allclose(tensors, tensors.swapaxes(-1, -2), atol=ATOL)
+    np.testing.assert_allclose(tensors @ tensors, tensors, atol=ATOL)
+    np.testing.assert_allclose(
+        np.trace(tensors, axis1=1, axis2=2), 1, atol=ATOL
+    )
+    assert np.all(np.diagonal(tensors, axis1=1, axis2=2) >= -ATOL)
+
+
+def test_full_rank_equal_flag_is_constant():
+    # Both minors are det(Q), so their product is identically one.
+    points = ds.flag_vector(N, 5, 5, 5, random_state=42)
+    np.testing.assert_allclose(points, np.ones((N, 1)), atol=ATOL)
 
 
 @pytest.mark.parametrize("name", FRAME_GENERATORS)
@@ -265,15 +281,15 @@ def test_invalid_frame_width(name, bad):
 @pytest.mark.parametrize(
     "bad", [-1, 0, True, np.bool_(True), 1.5, 2.0, "2", None]
 )
-def test_invalid_flag_block_width(parameter, bad):
+def test_invalid_flag_prefix_rank(parameter, bad):
     parameters = dict(k1=2, k2=1)
     parameters[parameter] = bad
     with pytest.raises((TypeError, ValueError)):
         ds.flag_vector(1, 5, **parameters, random_state=42)
 
 
-@pytest.mark.parametrize("k1,k2", [(3, 3), (5, 1), (1, 5)])
-def test_flag_blocks_must_fit_ambient_space(k1, k2):
+@pytest.mark.parametrize("k1,k2", [(6, 1), (1, 6), (6, 6)])
+def test_flag_prefix_ranks_must_not_exceed_ambient_dimension(k1, k2):
     with pytest.raises(ValueError):
         ds.flag_vector(1, 5, k1, k2, random_state=42)
 
@@ -340,3 +356,87 @@ def test_generation_creates_no_automatic_files(
     points = getattr(ds, name)(N, **kwargs, random_state=42)
     assert points.shape == (N, width)
     assert list(tmp_path.iterdir()) == []
+
+
+def _serial_minor_vector(frame):
+    p, k = frame.shape
+    return np.array(
+        [
+            np.linalg.det(frame[list(rows), :])
+            for rows in combinations(range(p), k)
+        ]
+    )
+
+
+def _serial_qr_frame(gaussians, correct_signs=True):
+    frame, triangular = np.linalg.qr(gaussians, mode="reduced")
+    if correct_signs:
+        for j in range(frame.shape[1]):
+            if triangular[j, j] < 0:
+                frame[:, j] *= -1
+    return frame
+
+
+def _serial_reference(name, n, p, random_state, **parameters):
+    """Use scalar draws and determinants to check the archived formulas."""
+    rng = np.random.RandomState(random_state)
+    points = []
+    for _ in range(n):
+        if name == "flag_vector":
+            k1, k2 = parameters["k1"], parameters["k2"]
+            width = max(k1, k2)
+        else:
+            width = parameters["k"]
+        frame = _serial_qr_frame(
+            rng.normal(size=(p, width)),
+            correct_signs=name != "stiefel_matrix",
+        )
+        if name == "grassmannian_projector":
+            point = (frame @ frame.T).ravel()
+        elif name == "grassmannian_vector":
+            point = _serial_minor_vector(frame)
+        elif name == "stiefel_matrix":
+            point = frame.ravel()
+        elif name == "stiefel_vector":
+            rotation = _serial_qr_frame(rng.normal(size=(width, width)))
+            point = np.concatenate(
+                [_serial_minor_vector(frame), rotation.ravel()]
+            )
+        else:
+            first = _serial_minor_vector(frame[:, :k1])
+            second = _serial_minor_vector(frame[:, :k2])
+            point = np.outer(first, second).ravel()
+        points.append(point)
+    return np.asarray(points)
+
+
+@pytest.mark.parametrize(
+    "name,kwargs,width",
+    CASES
+    + [
+        pytest.param("stiefel_vector", {"p": 2, "k": 1}, 3, id="stiefel-O1"),
+        pytest.param(
+            "flag_vector",
+            {"p": 5, "k1": 1, "k2": 3},
+            50,
+            id="flag-reversed-ranks",
+        ),
+        pytest.param(
+            "flag_vector",
+            {"p": 5, "k1": 5, "k2": 2},
+            10,
+            id="flag-full-prefix",
+        ),
+        pytest.param(
+            "flag_vector",
+            {"p": 5, "k1": 5, "k2": 5},
+            1,
+            id="flag-full-equal-prefixes",
+        ),
+    ],
+)
+def test_matches_independent_serial_reference(name, kwargs, width):
+    expected = _serial_reference(name, N, random_state=42, **kwargs)
+    actual = getattr(ds, name)(N, **kwargs, random_state=42)
+    assert actual.shape == (N, width)
+    np.testing.assert_allclose(actual, expected, rtol=0, atol=ATOL)

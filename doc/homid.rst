@@ -44,6 +44,7 @@ Constructions and dimensions
 
 Let :math:`C(p,k)=\binom{p}{k}`. The dimensions below describe the support
 of the noise-free samples. Each output shape includes the sample count ``n``.
+For flags, let :math:`r=\max(k_1,k_2)` and :math:`s=\min(k_1,k_2)`.
 
 .. list-table::
    :header-rows: 1
@@ -66,23 +67,23 @@ of the noise-free samples. Each output shape includes the sample count ``n``.
      - :math:`(n,pk)`
      - :math:`pk-k(k+1)/2`
    * - :func:`~skdim.datasets.stiefel_vector`
-     - Plücker vector concatenated with an :math:`SO(k)` matrix
+     - Plücker vector concatenated with an :math:`O(k)` matrix
      - :math:`(n,C(p,k)+k^2)`
      - :math:`pk-k(k+1)/2`
    * - :func:`~skdim.datasets.flag_vector`
-     - Tensor product of Plücker vectors from disjoint blocks
+     - Tensor product of Plücker vectors from nested prefixes
      - :math:`(n,C(p,k_1)C(p,k_2))`
-     - :math:`(k_1+k_2)p-k_1^2-k_2^2-k_1k_2`
+     - :math:`r(p-r)+s(r-s)`
 
 All generators accept integer ``n >= 0`` and ``p >= 2``. The first four require
-``1 <= k < p``. The flag generator requires positive integer block sizes
-``k1`` and ``k2`` with ``k1 + k2 <= p``. Equal block sizes are allowed. The
-remaining block may have size zero. With ``n=0``, the output has zero rows and
-the same feature count.
+``1 <= k < p``. The flag generator requires integer ranks
+``1 <= k1 <= p`` and ``1 <= k2 <= p``. Equal ranks are allowed. There is no
+constraint on their sum. With ``n=0``, the output has zero rows and the same
+feature count.
 
 Matrix-valued constructions are flattened in row-major order. For example,
 ``stiefel_matrix(n, p, k)`` can be reshaped to ``(n, p, k)``. For the flag
-construction, the block ranks are disjoint sizes, not nested subspace ranks.
+construction, ``k1`` and ``k2`` are nested subspace ranks.
 
 .. code-block:: python
 
@@ -100,34 +101,42 @@ The vector Grassmannian construction retains the sign of the unit Plücker
 vector. It represents an oriented Grassmannian. The projector construction
 forgets this orientation. Their local intrinsic dimensions agree.
 
-``stiefel_vector`` follows the paper's product construction. Its support is an
-oriented Grassmannian times :math:`SO(k)`. It has the Stiefel local dimension,
-but it is not generally globally the Stiefel manifold. For example, at
-``p=3, k=2`` its support is :math:`S^2\times S^1`, whereas the Stiefel frame
-space is :math:`SO(3)`. At ``k=1``, :math:`SO(1)=\{1\}` is the constant factor.
+``stiefel_matrix`` retains NumPy's raw Gaussian QR sign convention. It returns
+orthonormal frames, but these are not generally Haar-distributed on the full
+Stiefel manifold. The column signs cancel in ``grassmannian_projector``.
 
-``flag_vector`` uses the same orthogonal frame for its two disjoint blocks.
-The outer product identifies :math:`(a,b)` and :math:`(-a,-b)`, where ``a``
-and ``b`` are the block Plücker vectors. Thus it represents a finite quotient
-of the separately oriented block configurations. This identification does
-not change the local intrinsic dimension. The map should not be interpreted
-as an injective embedding of the full separately oriented flag space.
+``stiefel_vector`` follows the original HomID product construction. Its
+support is an oriented Grassmannian times :math:`O(k)`. It has the Stiefel
+local dimension, but it is not generally globally the Stiefel manifold.
+The two determinant components of :math:`O(k)` are isometric to
+:math:`SO(k)`. For example, at ``p=3, k=2`` each component of the support is
+:math:`S^2\times S^1`, whereas the Stiefel frame space is :math:`SO(3)`.
+At ``k=1``, the extra factor is :math:`O(1)=\{-1,1\}`.
 
-Differences from the archived HomID code
-----------------------------------------
+``flag_vector`` uses the first ``k1`` and first ``k2`` columns of the same
+Haar orthogonal frame. These prefixes describe nested subspaces. The outer
+product identifies :math:`(a,b)` and :math:`(-a,-b)`, where ``a`` and ``b``
+are their Plücker vectors. This finite identification does not change the
+local intrinsic dimension. At equal ranks, the tensor is :math:`a\otimes a`
+and the dimension is :math:`r(p-r)`. If both ranks equal ``p``, the tensor is
+the constant 1.
 
-These functions implement the paper definitions. They are not a promise of
-sample-by-sample agreement with the archived research scripts.
+Taking a Hodge dual of the rank-:math:`r` factor represents its orthogonal
+complement, of rank :math:`p-r`. This relates nested ranks to disjoint
+subspace blocks through a linear isometry. The function returns the prefix
+tensor above without applying a Hodge transformation.
 
-* Gaussian QR factors receive the diagonal sign correction needed for Haar
-  sampling. Projectors are unchanged by column-sign choices. Frame-valued
-  samples are sensitive to those choices.
-* The additional rotation in ``stiefel_vector`` is drawn from :math:`SO(k)`.
-  The archived implementation used :math:`O(k)`.
-* ``flag_vector`` uses disjoint frame blocks. The archived implementation used
-  overlapping prefixes. These are different constructions in general.
-* The functions use one ``random_state`` stream per call. They do not use the
-  archived per-sample global reseeding scheme.
+Relation to the archived HomID code
+-----------------------------------
+
+These functions preserve the original constructions and sampling
+conventions. St (Matrix) uses raw Gaussian QR, St (Vec) uses the additional
+:math:`O(k)` factor, and Flag (Vec) uses nested prefixes. The Grassmannian
+projector is invariant under QR column-sign choices.
+
+The functions use one ``random_state`` stream per call. They do not replay
+the archived per-sample global reseeding scheme. Thus the same integer seed
+need not reproduce the archived samples point for point.
 
 The original HomID repository and its archived results are unchanged.
 
