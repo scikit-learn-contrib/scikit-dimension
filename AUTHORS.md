@@ -27,11 +27,10 @@ Binnie, Dłotko, Harvey, Malinowski, Yim, "A Survey of Dimension Estimation Meth
 
 ### HomID generators
 
-The HomID generators are adapted from [HomID](https://github.com/a-writes-code/homid).
-The original code was written by Aritra Das ([@a-writes-code](https://github.com/a-writes-code)).
-The paper is by Aritra Das, Joseph T. Iosue, and Victor V. Albert:
-*HomID: Benchmarking Intrinsic Dimension Estimators on Homogeneous Manifolds with
-Anisotropic Embeddings* (arXiv:2510.01335v2).
+The HomID generators are adapted from [HomID](https://github.com/a-writes-code/homid), based on
+Aritra Das, Joseph T. Iosue, and Victor V. Albert:
+"HomID: Benchmarking Intrinsic Dimension Estimators on Homogeneous Manifolds with
+Anisotropic Embeddings" (arXiv:2510.01335v2).
 
 ## Original implementations
 
@@ -46,7 +45,7 @@ scikit-dimension builds on the following implementations. Licences and notices a
 | `TwoNN` | Python [TWO-NN](https://github.com/fmottes/TWO-NN) | Francesco Mottes | MIT |
 | `FisherS` | [FisherSeparabilityAnalysis](https://github.com/auranic/FisherSeparabilityAnalysis) | Andrei Zinovyev, Evgeny Mirkes, Luca Albergante, Jonathan Bac | none stated (BSD-3 with permission) |
 | `lPCA(ver="scRMT")` | Python [randomly](https://github.com/RabadanLab/randomly) | Luis Aparicio, Mykola Bordyuh | MIT |
-| `grassmannian_projector`, `grassmannian_vector`, `stiefel_matrix`, `stiefel_vector`, `flag_vector` | [HomID](https://github.com/a-writes-code/homid) | Aritra Das | MIT |
+| `grassmannian_projector`, `grassmannian_vector`, `stiefel_matrix`, `stiefel_vector`, `flag_vector` | [HomID](https://github.com/a-writes-code/homid) | Aritra Das, Joseph Iosue, Victor Albert | MIT |
 | `BenchmarkManifolds` | [GeoMLE](https://github.com/stat-ml/GeoMLE) | Mokrov Nikita, Marina Gomtsyan, Maxim Panov, Yury Yanovich | MIT |
 | `lorenz_attractor` | [scipython-maths](https://github.com/scipython/scipython-maths) | Christian Hill | MIT |
 | `PH`, `lPCA(ver="Minka")`, fork datasets, `embeddings` | [kmyim/scikit-dimension](https://github.com/kmyim/scikit-dimension) | Ka Man Yim, John Harvey | BSD-3 |
