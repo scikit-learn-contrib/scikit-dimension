@@ -174,7 +174,8 @@ SOFTWARE.
 ===============================================================================
 HomID
 Source: https://github.com/a-writes-code/homid
-Used in: skdim/datasets.py (grassmannian_projector, grassmannian_vector, stiefel_matrix, stiefel_vector, flag_vector)
+Used in: skdim/datasets.py (grassmannian_projector, grassmannian_vector, stiefel_matrix, stiefel_vector, flag_vector);
+  skdim/tests/_homid_reference.py (frozen original generators for parity tests)
 
 MIT License
 

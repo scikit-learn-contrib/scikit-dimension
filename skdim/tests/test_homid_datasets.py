@@ -10,6 +10,7 @@ import pytest
 from joblib import Memory
 
 from skdim import datasets as ds
+from skdim.tests import _homid_reference as legacy
 
 
 # One percent of the original HomID generator's 10,000-point sample count.
@@ -358,85 +359,220 @@ def test_generation_creates_no_automatic_files(
     assert list(tmp_path.iterdir()) == []
 
 
-def _serial_minor_vector(frame):
-    p, k = frame.shape
-    return np.array(
-        [
-            np.linalg.det(frame[list(rows), :])
-            for rows in combinations(range(p), k)
-        ]
+LEGACY_GENERATORS = {
+    "grassmannian_projector": "data_gen_gman_proj",
+    "grassmannian_vector": "data_gen_gman_vec",
+    "stiefel_matrix": "data_gen_steifel_proj",
+    "stiefel_vector": "data_gen_steifel_vec1",
+    "flag_vector": "data_gen_flag_vec",
+}
+VECTOR_GENERATORS = ["grassmannian_vector", "stiefel_vector", "flag_vector"]
+UINT32_MAX = int(np.iinfo(np.uint32).max)
+LEGACY_CASES = [
+    pytest.param(
+        "grassmannian_projector",
+        {"p": 6, "k": 3},
+        id="projector-original-default",
+    ),
+    pytest.param(
+        "grassmannian_projector",
+        {"p": 5, "k": 2},
+        id="projector-representative",
+    ),
+    pytest.param(
+        "grassmannian_vector",
+        {"p": 6, "k": 3},
+        id="grassmann-vector-original-default",
+    ),
+    pytest.param(
+        "grassmannian_vector",
+        {"p": 5, "k": 2},
+        id="grassmann-vector-representative",
+    ),
+    pytest.param(
+        "stiefel_matrix",
+        {"p": 6, "k": 3},
+        id="stiefel-matrix-original-default",
+    ),
+    pytest.param(
+        "stiefel_matrix",
+        {"p": 5, "k": 2},
+        id="stiefel-matrix-representative",
+    ),
+    pytest.param(
+        "stiefel_vector",
+        {"p": 10, "k": 5},
+        id="stiefel-vector-original-default",
+    ),
+    pytest.param(
+        "stiefel_vector",
+        {"p": 5, "k": 2},
+        id="stiefel-vector-representative",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 4, "k1": 3, "k2": 2},
+        id="flag-original-default",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 6, "k1": 3, "k2": 2},
+        id="flag-representative",
+    ),
+]
+LEGACY_BOUNDARIES = [
+    pytest.param(
+        "grassmannian_projector",
+        {"p": 2, "k": 1},
+        id="projector-rank-one",
+    ),
+    pytest.param(
+        "grassmannian_vector",
+        {"p": 2, "k": 1},
+        id="grassmann-vector-rank-one",
+    ),
+    pytest.param(
+        "stiefel_matrix",
+        {"p": 2, "k": 1},
+        id="stiefel-matrix-rank-one",
+    ),
+    pytest.param(
+        "stiefel_vector",
+        {"p": 2, "k": 1},
+        id="stiefel-vector-O1",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 2, "k1": 1, "k2": 1},
+        id="flag-equal-rank-one",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 5, "k1": 5, "k2": 2},
+        id="flag-first-full-prefix",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 5, "k1": 2, "k2": 5},
+        id="flag-second-full-prefix",
+    ),
+    pytest.param(
+        "flag_vector",
+        {"p": 3, "k1": 3, "k2": 3},
+        id="flag-full-equal-prefixes",
+    ),
+]
+
+
+def _parameters_for(name):
+    if name == "flag_vector":
+        return {"p": 5, "k1": 2, "k2": 1}
+    return {"p": 5, "k": 2}
+
+
+def _legacy_samples(name, n, parameters, seed):
+    """Call the frozen original without leaking its global RNG changes."""
+    if name == "flag_vector":
+        params = (parameters["p"], parameters["k1"], parameters["k2"], seed)
+    else:
+        params = (parameters["p"], parameters["k"], seed)
+    before = np.random.get_state()
+    try:
+        original = getattr(legacy, LEGACY_GENERATORS[name])(
+            N=n, params=params
+        )["samples"]
+    finally:
+        np.random.set_state(before)
+    width = int(np.prod(original.shape[1:]))
+    return original.reshape(n, width)
+
+
+def _assert_bitwise_equal(actual, expected):
+    assert actual.shape == expected.shape
+    assert actual.dtype == expected.dtype == np.dtype(np.float64)
+    # Comparing IEEE-754 words includes signed zeros and every rounding bit.
+    np.testing.assert_array_equal(
+        actual.view(np.uint64), expected.view(np.uint64)
     )
+    assert actual.tobytes() == expected.tobytes()
 
 
-def _serial_qr_frame(gaussians, correct_signs=True):
-    frame, triangular = np.linalg.qr(gaussians, mode="reduced")
-    if correct_signs:
-        for j in range(frame.shape[1]):
-            if triangular[j, j] < 0:
-                frame[:, j] *= -1
-    return frame
+@pytest.mark.parametrize("name,parameters", LEGACY_CASES)
+@pytest.mark.parametrize("n", [1, 7, N])
+@pytest.mark.parametrize("seed", [0, 42, 84, 126])
+def test_exact_original_samples(name, parameters, n, seed):
+    expected = _legacy_samples(name, n, parameters, seed)
+    actual = getattr(ds, name)(n, **parameters, random_state=seed)
+    _assert_bitwise_equal(actual, expected)
 
 
-def _serial_reference(name, n, p, random_state, **parameters):
-    """Use scalar draws and determinants to check the archived formulas."""
-    rng = np.random.RandomState(random_state)
-    points = []
-    for _ in range(n):
-        if name == "flag_vector":
-            k1, k2 = parameters["k1"], parameters["k2"]
-            width = max(k1, k2)
+@pytest.mark.parametrize("name,parameters", LEGACY_BOUNDARIES)
+@pytest.mark.parametrize("n", [1, 7, N])
+def test_exact_original_boundary_samples(name, parameters, n):
+    expected = _legacy_samples(name, n, parameters, 42)
+    actual = getattr(ds, name)(n, **parameters, random_state=42)
+    _assert_bitwise_equal(actual, expected)
+
+
+@pytest.mark.parametrize("name", VECTOR_GENERATORS)
+@pytest.mark.parametrize("n", [1, 7])
+def test_largest_valid_consecutive_seed_matches_original(name, n):
+    parameters = _parameters_for(name)
+    seed = UINT32_MAX - n + 1
+    expected = _legacy_samples(name, n, parameters, seed)
+    actual = getattr(ds, name)(n, **parameters, random_state=seed)
+    _assert_bitwise_equal(actual, expected)
+
+
+@pytest.mark.parametrize("name", VECTOR_GENERATORS)
+@pytest.mark.parametrize("n,seed", [(2, UINT32_MAX), (7, UINT32_MAX - 5)])
+def test_vector_consecutive_seed_overflow_is_rejected(name, n, seed):
+    with pytest.raises(ValueError):
+        getattr(ds, name)(n, **_parameters_for(name), random_state=seed)
+
+
+@pytest.mark.parametrize("name", VECTOR_GENERATORS)
+@pytest.mark.parametrize("n", [1, 7, N])
+@pytest.mark.parametrize("kind", ["instance", "global"])
+def test_vector_random_stream_selects_one_exact_legacy_seed(name, n, kind):
+    parameters = _parameters_for(name)
+    control = np.random.RandomState(1234)
+    seed = int(control.randint(0, 2**32 - n + 1, dtype=np.uint32))
+    original_global = np.random.get_state()
+    try:
+        if kind == "global":
+            np.random.seed(1234)
+            state = None
         else:
-            width = parameters["k"]
-        frame = _serial_qr_frame(
-            rng.normal(size=(p, width)),
-            correct_signs=name != "stiefel_matrix",
+            state = np.random.RandomState(1234)
+        actual = getattr(ds, name)(n, **parameters, random_state=state)
+        consumed = (
+            np.random.get_state() if state is None else state.get_state()
         )
-        if name == "grassmannian_projector":
-            point = (frame @ frame.T).ravel()
-        elif name == "grassmannian_vector":
-            point = _serial_minor_vector(frame)
-        elif name == "stiefel_matrix":
-            point = frame.ravel()
-        elif name == "stiefel_vector":
-            rotation = _serial_qr_frame(rng.normal(size=(width, width)))
-            point = np.concatenate(
-                [_serial_minor_vector(frame), rotation.ravel()]
-            )
+        _assert_same_state(consumed, control.get_state())
+        expected = _legacy_samples(name, n, parameters, seed)
+        _assert_bitwise_equal(actual, expected)
+    finally:
+        np.random.set_state(original_global)
+
+
+@pytest.mark.parametrize("name,parameters,width", CASES)
+@pytest.mark.parametrize("kind", ["instance", "global"])
+def test_empty_dataset_does_not_consume_random_stream(
+    name, parameters, width, kind
+):
+    original_global = np.random.get_state()
+    try:
+        if kind == "global":
+            np.random.seed(1234)
+            state = None
+            before = np.random.get_state()
         else:
-            first = _serial_minor_vector(frame[:, :k1])
-            second = _serial_minor_vector(frame[:, :k2])
-            point = np.outer(first, second).ravel()
-        points.append(point)
-    return np.asarray(points)
-
-
-@pytest.mark.parametrize(
-    "name,kwargs,width",
-    CASES
-    + [
-        pytest.param("stiefel_vector", {"p": 2, "k": 1}, 3, id="stiefel-O1"),
-        pytest.param(
-            "flag_vector",
-            {"p": 5, "k1": 1, "k2": 3},
-            50,
-            id="flag-reversed-ranks",
-        ),
-        pytest.param(
-            "flag_vector",
-            {"p": 5, "k1": 5, "k2": 2},
-            10,
-            id="flag-full-prefix",
-        ),
-        pytest.param(
-            "flag_vector",
-            {"p": 5, "k1": 5, "k2": 5},
-            1,
-            id="flag-full-equal-prefixes",
-        ),
-    ],
-)
-def test_matches_independent_serial_reference(name, kwargs, width):
-    expected = _serial_reference(name, N, random_state=42, **kwargs)
-    actual = getattr(ds, name)(N, **kwargs, random_state=42)
-    assert actual.shape == (N, width)
-    np.testing.assert_allclose(actual, expected, rtol=0, atol=ATOL)
+            state = np.random.RandomState(1234)
+            before = state.get_state()
+        actual = getattr(ds, name)(0, **parameters, random_state=state)
+        after = np.random.get_state() if state is None else state.get_state()
+        _assert_same_state(before, after)
+        assert actual.shape == (0, width)
+    finally:
+        np.random.set_state(original_global)

@@ -34,10 +34,23 @@ different ambient representation:
    vectors = datasets.grassmannian_vector(n=100, p=4, k=2, random_state=0)
    assert vectors.shape == (100, 6)
 
-Pass an integer seed for repeatable calls. A ``numpy.random.RandomState``
-instance is consumed as a random stream. With ``random_state=None``, the
-functions use the NumPy random stream selected by scikit-learn's
-``check_random_state`` convention. They do not reset the global seed.
+Pass an integer seed for repeatable calls and original-seed replay.
+``grassmannian_projector`` and ``stiefel_matrix`` consume a supplied
+``numpy.random.RandomState`` directly. With ``random_state=None``, they use
+the NumPy global random stream.
+
+The three vector generators use one seed per point. An integer
+``random_state`` is the original base seed. For a ``RandomState`` instance
+or ``None`` and ``n > 0``, they first draw one base seed uniformly from the
+inclusive range :math:`[0,2^{32}-n]` using the supplied or global stream.
+Point ``i`` then uses ``base_seed + i``. Thus an integer and a
+``RandomState`` initialized with that integer need not give the same vector
+samples.
+
+Integer seeds must lie in :math:`[0,2^{32}-1]`. Nonempty vector requests also
+require :math:`\mathrm{seed}+n-1\leq 2^{32}-1`; otherwise they raise
+``ValueError``. Seeds are not wrapped modulo :math:`2^{32}`. Empty requests
+consume no random draws. The functions do not reset the global seed.
 
 Constructions and dimensions
 ----------------------------
@@ -134,9 +147,19 @@ conventions. St (Matrix) uses raw Gaussian QR, St (Vec) uses the additional
 :math:`O(k)` factor, and Flag (Vec) uses nested prefixes. The Grassmannian
 projector is invariant under QR column-sign choices.
 
-The functions use one ``random_state`` stream per call. They do not replay
-the archived per-sample global reseeding scheme. Thus the same integer seed
-need not reproduce the archived samples point for point.
+On the shared parameter domain, integer seeds reproduce the original
+samples bit for bit in the same numerical environment. Matrix-valued
+samples are returned in flattened row-major form. This agreement requires
+matching NumPy, SciPy and BLAS/LAPACK versions. It is not a cross-version
+guarantee for historical saved datasets.
+
+The matrix generators retain the original full ``p``-by-``p`` Gaussian draws
+and QR factorizations. The projector retains the original ``Q @ D @ Q.T``
+multiplication order. For each vector point, SciPy's orthogonal-matrix draw
+uses a local ``RandomState(base_seed + i)``. In ``stiefel_vector``, the extra
+:math:`O(k)` draw continues that same point's stream after the
+:math:`O(p)` draw. The ``RandomState`` and ``None`` rules above provide the
+scikit-dimension API without replaying the original global RNG side effects.
 
 The original HomID repository and its archived results are unchanged.
 
