@@ -24,6 +24,9 @@ Articles
 .. [Ceruti2012] Ceruti, C. *et al.* (2012) 
    *DANCo: Dimensionality from Angle and Norm Concentration.*,
    `arXiv preprint 1206.3881`. 
+.. [Das2025] Das, A., Iosue, J. T. and Albert, V. V. (2025),
+   *HomID: Benchmarking Intrinsic Dimension Estimators on Homogeneous Manifolds with Anisotropic Embeddings.*
+   `arXiv:2510.01335v2 <https://arxiv.org/abs/2510.01335v2>`__.
 .. [Denti2022] Denti, F., Doimo, D., Laio, A. and Mira, A. (2022),
    *The generalized ratios intrinsic dimension estimator.*,
    `Scientific Reports, 12, 20005. doi:10.1038/s41598-022-20991-1`.
