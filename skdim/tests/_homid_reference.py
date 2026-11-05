@@ -14,6 +14,8 @@ from itertools import combinations
 import numpy as np
 from scipy.stats import ortho_group
 
+from skdim.datasets import _homid_orthogonal
+
 
 MAX_SAMPLE = 10_000
 
@@ -120,7 +122,9 @@ def data_gen_steifel_vec1(N=MAX_SAMPLE, params=(10, 5, 42)):
     vectors = np.zeros((N, dim + d2**2))
     for i in range(N):
         vectors[i, :dim] = random_Grassmannian_vector(n=d1, k=d2, seed=seed + i)
-        m = np.reshape(ortho_group.rvs(dim=d2), -1)
+        # Deviation from the original: O(1) via the package helper, as SciPy < 1.16
+        # rejects ortho_group(dim=1); identical draws on newer SciPy.
+        m = np.reshape(_homid_orthogonal(d2, np.random.mtrand._rand), -1)
         vectors[i, dim:] = m
 
     return {

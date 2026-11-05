@@ -541,6 +541,14 @@ def _homid_minors(frames, out):
         start = stop
 
 
+def _homid_orthogonal(dim, random_state):
+    # SciPy < 1.16 rejects ortho_group(dim=1); newer SciPy returns sign(z) for
+    # one normal draw z. Replicate that so O(1) samples match on every version.
+    if dim == 1:
+        return np.sign(random_state.normal(size=(1, 1)))
+    return ortho_group.rvs(dim=dim, random_state=random_state)
+
+
 def grassmannian_projector(n, p, k, random_state=None):
     """
     Generate the HomID Grassmannian projector dataset [Das2025]_.
@@ -757,7 +765,7 @@ def stiefel_vector(n, p, k, random_state=None):
         for j, i in enumerate(range(block.start, block.stop)):
             point_state = np.random.RandomState(seed + i)
             frames[j] = ortho_group.rvs(dim=p, random_state=point_state)[:, :k]
-            rotations[j] = ortho_group.rvs(dim=k, random_state=point_state)
+            rotations[j] = _homid_orthogonal(k, point_state)
         _homid_minors(frames, data[block, :n_minors])
         data[block, n_minors:] = rotations.reshape(batch, k * k)
     return data
