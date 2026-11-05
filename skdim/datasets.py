@@ -580,7 +580,6 @@ def grassmannian_projector(n, p, k, random_state=None):
     Integer seeds replay the original HomID samples in the same numerical
     environment. Sampling uses full p-by-p Gaussian matrices and raw QR.
     The original Q @ D @ Q.T arithmetic is retained for rank-k diagonal D.
-    Generation writes no files; see the HomID guide for optional local caching.
 
     Examples
     --------
@@ -635,8 +634,7 @@ def grassmannian_vector(n, p, k, random_state=None):
     draw one valid base seed. Empty requests consume no random draws. Exact replay requires the same
     NumPy, SciPy, and numerical backend as the original call.
     Determinants are batched and temporary arrays are chunked. The dense
-    output still requires 8*n*binom(p, k) bytes. See the HomID guide for
-    optional local caching.
+    output still requires 8*n*binom(p, k) bytes.
 
     Examples
     --------
@@ -690,7 +688,6 @@ def stiefel_matrix(n, p, k, random_state=None):
     this convention does not give invariant sampling on the full Stiefel
     manifold.
     Full p-by-p Gaussian draws retain the original integer-seed sequence.
-    Generation writes no files; see the HomID guide for optional local caching.
 
     Examples
     --------
@@ -747,7 +744,6 @@ def stiefel_vector(n, p, k, random_state=None):
     the same point's stream after the full O(p) draw. RandomState instances
     and None draw one valid base seed. Empty requests consume no random draws.
     Exact replay requires the same numerical environment as the original.
-    See the HomID guide for optional local caching.
 
     Examples
     --------
@@ -812,8 +808,7 @@ def flag_vector(n, p, k1, k2, random_state=None):
     requests consume no random draws. Exact replay requires the same
     numerical environment as the original call.
     Each minor is computed once before forming the outer product. Temporary
-    arrays are chunked, but the dense output can still be large. See the
-    HomID guide for optional local caching.
+    arrays are chunked, but the dense output can still be large.
 
     Examples
     --------

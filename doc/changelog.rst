@@ -12,7 +12,7 @@ Version 0.6.0 :small:`November 2026`
 ------------------------------------
 - HomID datasets (Das, Iosue and Albert 2025; contributed by Aritra Das): ``grassmannian_projector``,
   ``grassmannian_vector``, ``stiefel_matrix``, ``stiefel_vector``, ``flag_vector``. Integer seeds
-  replay the original HomID samples; see the HomID guide.
+  replay the original HomID samples; see Example usage.
 - ``surface_of_revolution(n, func, how, xmin, xmax, random_state)`` replaces the
   ``SurfaceOfRevolution`` class, for consistency with the other dataset functions; same samples
   for the same seed. **Breaking:** ``SurfaceOfRevolution(...).generate(n)`` is removed.
