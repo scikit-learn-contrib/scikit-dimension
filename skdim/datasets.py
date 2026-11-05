@@ -5,11 +5,19 @@
 # lorenz_attractor: adapted from https://github.com/scipython/scipython-maths, Copyright (c) 2021 Christian Hill, MIT.
 # lineDiskBall: adapted from R package ider by Hideitsu Hino, originally GPL-2.
 # product, torus, toroidal_spiral, dumbbell, ...: from the kmyim/scikit-dimension fork (John Harvey, Ka Man Yim).
+# HomID generators: adapted from https://github.com/a-writes-code/homid,
+#   Copyright (c) 2026 a-writes-code, MIT.
 # See LICENSES_bundled.txt and AUTHORS.md
+from itertools import combinations, islice
+from math import comb
+from numbers import Integral
+import warnings
+
 import numpy as np
 from sklearn.utils.validation import check_random_state
 from scipy.special import gammainc
 from scipy.integrate import solve_ivp
+from scipy.stats import ortho_group
 
 
 def product(n, sample_1, sample_1_kwargs=None, sample_2=None, sample_2_kwargs=None):
@@ -454,6 +462,384 @@ def dumbbell(n, connecting_radius=0.1, random_state=None):
         )
 
     return SurfaceOfRevolution(profile_function, random_state=random_state).generate(n=n)
+
+
+_HOMID_TEMP_BYTES = 16 * 1024**2
+
+
+def _homid_integer(value, name, minimum):
+    if (
+        isinstance(value, (bool, np.bool_))
+        or not isinstance(value, Integral)
+        or value < minimum
+    ):
+        raise ValueError(
+            f"{name} must be an integer greater than or equal to {minimum}."
+        )
+    return int(value)
+
+
+def _homid_parameters(n, p, k):
+    n = _homid_integer(n, "n", 0)
+    p = _homid_integer(p, "p", 2)
+    k = _homid_integer(k, "k", 1)
+    if k >= p:
+        raise ValueError("k must be smaller than p.")
+    return n, p, k
+
+
+def _homid_empty(n, n_features):
+    max_size = np.iinfo(np.intp).max
+    if n_features > max_size or (n and n_features > max_size // 8 // n):
+        raise ValueError(
+            "The requested dataset is too large for a NumPy array."
+        )
+    if n and (n_features >= 10_000 or n * n_features * 8 >= 256 * 1024**2):
+        warnings.warn(
+            "Large HomID dataset: generation may be slow and the dense output "
+            f"requires {n * n_features * 8 / 1024**2:.1f} MiB. "
+            "Vector feature counts grow combinatorially. Consider smaller "
+            "parameters and cache repeated requests locally.",
+            UserWarning,
+            stacklevel=3,
+        )
+    return np.empty((n, n_features), dtype=float)
+
+
+def _homid_blocks(n, row_size):
+    batch_size = max(1, min(256, _HOMID_TEMP_BYTES // (8 * row_size)))
+    for start in range(0, n, batch_size):
+        yield slice(start, min(start + batch_size, n))
+
+
+def _homid_replay_seed(random_state, n):
+    random_state_instance = check_random_state(random_state)
+    if n > 2**32:
+        raise ValueError("The per-point seed sequence exceeds uint32 range.")
+    if isinstance(random_state, Integral):
+        seed = int(random_state)
+    elif n:
+        seed = int(random_state_instance.randint(
+            0, 2**32 - n + 1, dtype=np.uint32
+        ))
+    else:
+        return 0
+    if n and seed + n - 1 >= 2**32:
+        raise ValueError("The per-point seed sequence exceeds uint32 range.")
+    return seed
+
+
+def _homid_minors(frames, out):
+    batch, p, k = frames.shape
+    # Bound the temporary (batch, n_minors, k, k) array, not just samples.
+    block_size = max(1, _HOMID_TEMP_BYTES // (8 * batch * k * k))
+    rows = combinations(range(p), k)
+    start = 0
+    while indices := list(islice(rows, block_size)):
+        stop = start + len(indices)
+        out[:, start:stop] = np.linalg.det(frames[:, np.asarray(indices), :])
+        start = stop
+
+
+def grassmannian_projector(n, p, k, random_state=None):
+    """
+    Generate the HomID Grassmannian projector dataset [Das2025]_.
+
+    Parameters
+    ----------
+    n: int
+        Number of data points. Must be nonnegative.
+    p: int
+        Dimension of the underlying real vector space. Must be at least 2.
+    k: int
+        Subspace dimension, with 1 <= k < p.
+    random_state: int, np.random.RandomState instance or None, optional
+        Random number generator, as in the other dataset functions.
+
+    Returns
+    -------
+    data: np.array, (n, p * p)
+        Projectors flattened in row-major order. Intrinsic dimension k*(p-k).
+
+    Warns
+    -----
+    UserWarning
+        For nonempty output with at least 10000 features or 256 MiB of data.
+        Large requests may be slow and require substantial memory.
+
+    Notes
+    -----
+    Integer seeds replay the original HomID samples in the same numerical
+    environment. Sampling uses full p-by-p Gaussian matrices and raw QR.
+    The original Q @ D @ Q.T arithmetic is retained for rank-k diagonal D.
+    Generation writes no files; see the HomID guide for optional local caching.
+
+    Examples
+    --------
+    >>> grassmannian_projector(100, 4, 2, random_state=0).shape
+    (100, 16)
+    """
+    n, p, k = _homid_parameters(n, p, k)
+    random_state = check_random_state(random_state)
+    data = _homid_empty(n, p * p)
+    diagonal = np.zeros((p, p))
+    np.fill_diagonal(diagonal[:k, :k], 1)
+    for i in range(n):
+        frame, _ = np.linalg.qr(random_state.randn(p, p))
+        data[i] = (frame @ diagonal @ frame.T).ravel()
+    return data
+
+
+def grassmannian_vector(n, p, k, random_state=None):
+    """
+    Generate the HomID Grassmannian minor-vector dataset [Das2025]_.
+
+    Parameters
+    ----------
+    n: int
+        Number of data points. Must be nonnegative.
+    p: int
+        Dimension of the underlying real vector space. Must be at least 2.
+    k: int
+        Subspace dimension, with 1 <= k < p.
+    random_state: int, np.random.RandomState instance or None, optional
+        Random number generator, as in the other dataset functions.
+
+    Returns
+    -------
+    data: np.array, (n, binom(p, k))
+        Signed minor vectors. Intrinsic dimension k*(p-k).
+
+    Warns
+    -----
+    UserWarning
+        For nonempty output with at least 10000 features or 256 MiB of data.
+        The feature count grows combinatorially with p and k.
+
+    Notes
+    -----
+    Coordinates are the k-by-k minors of a Haar orthonormal p-by-k frame.
+    Row-index combinations are lexicographically ordered. Signs are retained:
+    these unit decomposable vectors describe oriented subspaces.
+    An integer seed uses the original per-point seeds seed+i and full O(p)
+    draws. RandomState instances and None instead draw one valid base seed.
+    Empty requests consume no random draws. Exact replay requires the same
+    NumPy, SciPy, and numerical backend as the original call.
+    Determinants are batched and temporary arrays are chunked. The dense
+    output still requires 8*n*binom(p, k) bytes. See the HomID guide for
+    optional local caching.
+
+    Examples
+    --------
+    >>> grassmannian_vector(100, 4, 2, random_state=0).shape
+    (100, 6)
+    """
+    n, p, k = _homid_parameters(n, p, k)
+    seed = _homid_replay_seed(random_state, n)
+    data = _homid_empty(n, comb(p, k))
+    for block in _homid_blocks(n, 3 * p * k + k * k):
+        batch = block.stop - block.start
+        frames = np.empty((batch, p, k))
+        for j, i in enumerate(range(block.start, block.stop)):
+            point_state = np.random.RandomState(seed + i)
+            frames[j] = ortho_group.rvs(dim=p, random_state=point_state)[:, :k]
+        _homid_minors(frames, data[block])
+    return data
+
+
+def stiefel_matrix(n, p, k, random_state=None):
+    """
+    Generate the HomID Stiefel matrix dataset [Das2025]_.
+
+    Parameters
+    ----------
+    n: int
+        Number of data points. Must be nonnegative.
+    p: int
+        Dimension of the underlying real vector space. Must be at least 2.
+    k: int
+        Number of orthonormal columns, with 1 <= k < p.
+    random_state: int, np.random.RandomState instance or None, optional
+        Random number generator, as in the other dataset functions.
+
+    Returns
+    -------
+    data: np.array, (n, p * k)
+        Frames flattened in row-major order. Intrinsic dimension
+        p*k-k*(k+1)/2.
+
+    Warns
+    -----
+    UserWarning
+        For nonempty output with at least 10000 features or 256 MiB of data.
+        Large requests may be slow and require substantial memory.
+
+    Notes
+    -----
+    Frames use NumPy's raw Gaussian QR convention, without diagonal sign
+    correction, as in the HomID research scripts. They are orthonormal, but
+    this convention does not give invariant sampling on the full Stiefel
+    manifold.
+    Full p-by-p Gaussian draws retain the original integer-seed sequence.
+    Generation writes no files; see the HomID guide for optional local caching.
+
+    Examples
+    --------
+    >>> stiefel_matrix(100, 4, 2, random_state=0).shape
+    (100, 8)
+    """
+    n, p, k = _homid_parameters(n, p, k)
+    random_state = check_random_state(random_state)
+    data = _homid_empty(n, p * k)
+    for i in range(n):
+        frame, _ = np.linalg.qr(random_state.randn(p, p))
+        data[i] = frame[:, :k].ravel()
+    return data
+
+
+def stiefel_vector(n, p, k, random_state=None):
+    """
+    Generate the HomID Stiefel vector construction [Das2025]_.
+
+    Parameters
+    ----------
+    n: int
+        Number of data points. Must be nonnegative.
+    p: int
+        Dimension of the underlying real vector space. Must be at least 2.
+    k: int
+        Subspace dimension, with 1 <= k < p.
+    random_state: int, np.random.RandomState instance or None, optional
+        Random number generator, as in the other dataset functions.
+
+    Returns
+    -------
+    data: np.array, (n, binom(p, k) + k * k)
+        A minor vector concatenated with a row-major O(k) matrix.
+        Intrinsic dimension p*k-k*(k+1)/2.
+
+    Warns
+    -----
+    UserWarning
+        For nonempty output with at least 10000 features or 256 MiB of data.
+        The minor-vector feature count grows combinatorially with p and k.
+
+    Notes
+    -----
+    This follows the HomID research implementation: an oriented Grassmannian
+    minor vector and an independent Haar O(k) matrix. Both determinant
+    components are included, rather than only the SO(k) factor in the
+    paper's theoretical recipe.
+    Its support is a product with the same local dimension as the Stiefel
+    manifold; this recipe is not generally a global Stiefel embedding.
+    For k=1 the O(1) factor is equally likely to be -1 or 1. The squared norm
+    is 1+k.
+    An integer seed replays per-point seeds seed+i. Each O(k) draw continues
+    the same point's stream after the full O(p) draw. RandomState instances
+    and None draw one valid base seed. Empty requests consume no random draws.
+    Exact replay requires the same numerical environment as the original.
+    See the HomID guide for optional local caching.
+
+    Examples
+    --------
+    >>> stiefel_vector(100, 4, 2, random_state=0).shape
+    (100, 10)
+    """
+    n, p, k = _homid_parameters(n, p, k)
+    seed = _homid_replay_seed(random_state, n)
+    n_minors = comb(p, k)
+    data = _homid_empty(n, n_minors + k * k)
+    for block in _homid_blocks(n, 4 * p * k + 6 * k * k):
+        batch = block.stop - block.start
+        frames = np.empty((batch, p, k))
+        rotations = np.empty((batch, k, k))
+        for j, i in enumerate(range(block.start, block.stop)):
+            point_state = np.random.RandomState(seed + i)
+            frames[j] = ortho_group.rvs(dim=p, random_state=point_state)[:, :k]
+            rotations[j] = ortho_group.rvs(dim=k, random_state=point_state)
+        _homid_minors(frames, data[block, :n_minors])
+        data[block, n_minors:] = rotations.reshape(batch, k * k)
+    return data
+
+
+def flag_vector(n, p, k1, k2, random_state=None):
+    """
+    Generate the HomID flag minor-tensor dataset [Das2025]_.
+
+    Parameters
+    ----------
+    n: int
+        Number of data points. Must be nonnegative.
+    p: int
+        Dimension of the underlying real vector space. Must be at least 2.
+    k1, k2: int
+        Ranks of two nested column prefixes. Both must be positive and must
+        not exceed p. They may coincide; their sum is not constrained.
+    random_state: int, np.random.RandomState instance or None, optional
+        Random number generator, as in the other dataset functions.
+
+    Returns
+    -------
+    data: np.array, (n, binom(p, k1) * binom(p, k2))
+        Row-major flattened outer products of the two minor vectors.
+        Intrinsic dimension r*(p-r)+s*(r-s), where r=max(k1, k2) and
+        s=min(k1, k2).
+
+    Warns
+    -----
+    UserWarning
+        For nonempty output with at least 10000 features or 256 MiB of data.
+        The feature count grows as a product of two binomial coefficients.
+
+    Notes
+    -----
+    The factors use columns [:k1] and [:k2] of the same Haar O(p) matrix,
+    following the nested-prefix convention in the HomID research scripts.
+    Minor indices within each factor are lexicographically ordered. For
+    equal ranks, the output is the self-outer product of a unit minor vector,
+    with intrinsic dimension k1*(p-k1).
+    An integer seed uses per-point seeds seed+i and full O(p) draws, as in
+    HomID. RandomState instances and None draw one valid base seed. Empty
+    requests consume no random draws. Exact replay requires the same
+    numerical environment as the original call.
+    Each minor is computed once before forming the outer product. Temporary
+    arrays are chunked, but the dense output can still be large. See the
+    HomID guide for optional local caching.
+
+    Examples
+    --------
+    >>> flag_vector(100, 4, 2, 2, random_state=0).shape
+    (100, 36)
+    """
+    n = _homid_integer(n, "n", 0)
+    p = _homid_integer(p, "p", 2)
+    k1 = _homid_integer(k1, "k1", 1)
+    k2 = _homid_integer(k2, "k2", 1)
+    if k1 > p or k2 > p:
+        raise ValueError("k1 and k2 must not exceed p.")
+    seed = _homid_replay_seed(random_state, n)
+    dim1, dim2 = comb(p, k1), comb(p, k2)
+    data = _homid_empty(n, dim1 * dim2)
+    width = max(k1, k2)
+    row_size = 3 * p * width + width * width + dim1 + dim2
+    for block in _homid_blocks(n, row_size):
+        batch = block.stop - block.start
+        frames = np.empty((batch, p, width))
+        for j, i in enumerate(range(block.start, block.stop)):
+            point_state = np.random.RandomState(seed + i)
+            frames[j] = ortho_group.rvs(
+                dim=p, random_state=point_state
+            )[:, :width]
+        first = np.empty((batch, dim1))
+        second = first if k1 == k2 else np.empty((batch, dim2))
+        _homid_minors(frames[:, :, :k1], first)
+        if k1 != k2:
+            _homid_minors(frames[:, :, :k2], second)
+        np.multiply(
+            first[:, :, None], second[:, None, :],
+            out=data[block].reshape(batch, dim1, dim2),
+        )
+    return data
 
 
 class BenchmarkManifolds:

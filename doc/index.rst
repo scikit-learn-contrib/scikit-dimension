@@ -76,6 +76,7 @@ Feel free to report an `issue <https://github.com/scikit-learn-contrib/scikit-di
    installation
    quick_start
    basics
+   homid
    api
    changelog
    references

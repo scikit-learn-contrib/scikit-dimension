@@ -48,6 +48,11 @@ Datasets
    datasets.lorenz_attractor
    datasets.dumbbell
    datasets.SurfaceOfRevolution
+   datasets.grassmannian_projector
+   datasets.grassmannian_vector
+   datasets.stiefel_matrix
+   datasets.stiefel_vector
+   datasets.flag_vector
 
 
 Embeddings
