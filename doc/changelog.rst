@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Version 0.6.1 :small:`November 2026`
+------------------------------------
+- ``stiefel_vector(k=1)`` failed with SciPy < 1.16 (``ortho_group`` rejected ``dim=1``); it now
+  works on all versions, with the same samples as SciPy >= 1.16.
+
 Version 0.6.0 :small:`November 2026`
 ------------------------------------
 - HomID datasets (Das, Iosue and Albert 2025; contributed by Aritra Das): ``grassmannian_projector``,
