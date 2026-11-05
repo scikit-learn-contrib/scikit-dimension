@@ -3,6 +3,15 @@
 Changelog
 =========
 
+Version 0.6.0 :small:`November 2026`
+------------------------------------
+- HomID datasets (Das, Iosue and Albert 2025; contributed by Aritra Das): ``grassmannian_projector``,
+  ``grassmannian_vector``, ``stiefel_matrix``, ``stiefel_vector``, ``flag_vector``. Integer seeds
+  replay the original HomID samples; see the HomID guide.
+- ``surface_of_revolution(n, func, how, xmin, xmax, random_state)`` replaces the
+  ``SurfaceOfRevolution`` class, for consistency with the other dataset functions; same samples
+  for the same seed. **Breaking:** ``SurfaceOfRevolution(...).generate(n)`` is removed.
+
 Version 0.5.0 :small:`October 2026`
 -----------------------------------
 - ``lPCA(ver="scRMT")``: random matrix theory rank for single-cell data (Aparicio et al. 2020), following
