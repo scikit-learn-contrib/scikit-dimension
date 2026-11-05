@@ -32,6 +32,8 @@ dimensions.
 Pass an integer ``random_state`` to reproduce the original HomID samples
 with matching parameters and NumPy, SciPy and BLAS/LAPACK versions. The
 vector generators retain the original per-point seeds ``random_state + i``.
+Seeds ``s`` and ``s + 1`` therefore share ``n - 1`` points; use seeds at least
+``n`` apart for independent replicates.
 For these generators, a ``RandomState`` instance or ``None`` selects one
 base seed first. The matrix generators consume the supplied random stream
 directly. See the function notes for details.

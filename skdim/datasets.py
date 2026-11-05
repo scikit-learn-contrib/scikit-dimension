@@ -461,7 +461,7 @@ def dumbbell(n, connecting_radius=0.1, random_state=None):
             [0.0, 0.5, connecting_radius, connecting_radius, 0.5, 0.0],
         )
 
-    return SurfaceOfRevolution(profile_function, random_state=random_state).generate(n=n)
+    return surface_of_revolution(n, profile_function, random_state=random_state)
 
 
 _HOMID_TEMP_BYTES = 16 * 1024**2
@@ -622,8 +622,9 @@ def grassmannian_vector(n, p, k, random_state=None):
     Row-index combinations are lexicographically ordered. Signs are retained:
     these unit decomposable vectors describe oriented subspaces.
     An integer seed uses the original per-point seeds seed+i and full O(p)
-    draws. RandomState instances and None instead draw one valid base seed.
-    Empty requests consume no random draws. Exact replay requires the same
+    draws, so seeds s and s+1 share n-1 points: use seeds at least n apart
+    for independent replicates. RandomState instances and None instead
+    draw one valid base seed. Empty requests consume no random draws. Exact replay requires the same
     NumPy, SciPy, and numerical backend as the original call.
     Determinants are batched and temporary arrays are chunked. The dense
     output still requires 8*n*binom(p, k) bytes. See the HomID guide for
@@ -1261,7 +1262,9 @@ class BenchmarkManifolds:
         return data
 
 
-class SurfaceOfRevolution:
+def surface_of_revolution(
+    n, func=lambda x: np.sin(x * np.pi), how="x", xmin=-1.0, xmax=1.0, random_state=None
+):
     """
     Generates a uniform sample from the surface obtained by rotating the graph of y = func(x),
     x in [xmin, xmax], around the x-axis (how="x") or the y-axis (how="y"), by rejection sampling
@@ -1270,6 +1273,8 @@ class SurfaceOfRevolution:
 
     Parameters
     ----------
+    n: int
+        Number of data points.
     func: callable
         Vectorised real-valued function defining the profile curve y = func(x)
     how: str, 'x' or 'y'
@@ -1280,51 +1285,32 @@ class SurfaceOfRevolution:
         Right boundary of the profile curve
     random_state: int, np.random.RandomState instance
         Random number generator
+
+    Returns
+    -------
+    data: np.array, (npoints x 3)
+        Generated data
     """
+    if not xmin < xmax:
+        raise ValueError("The variable xmin must be less than xmax")
+    if how not in ["x", "y"]:
+        raise ValueError("The variable how must be 'x' or 'y'.")
+    rs = check_random_state(random_state)
+    xvals = np.linspace(xmin, xmax, 20001)
+    fvals = np.asarray(func(xvals), dtype=float)
+    # area element per dx dtheta: |rotation radius| * sqrt(1 + f'(x)^2)
+    radius = fvals if how == "x" else xvals
+    jacobian_vals = np.abs(radius) * np.sqrt(1 + np.gradient(fvals, xvals) ** 2)
+    jac_max = np.max(jacobian_vals)
+    x = np.empty(0)
+    while x.shape[0] < n:
+        u = rs.uniform(xmin, xmax, n)
+        jac = np.interp(u, xvals, jacobian_vals)
+        x = np.concatenate((x, u[rs.uniform(0, jac_max, n) < jac]))
+    x = x[:n]
+    theta = rs.uniform(0, 2 * np.pi, n)
+    f = np.interp(x, xvals, fvals)
+    if how == "x":
+        return np.stack((x, f * np.cos(theta), f * np.sin(theta)), axis=1)
+    return np.stack((x * np.cos(theta), f, x * np.sin(theta)), axis=1)
 
-    def __init__(
-        self, func=lambda x: np.sin(x * np.pi), how="x", xmin=-1.0, xmax=1.0, random_state=None
-    ):
-        if not xmin < xmax:
-            raise ValueError("The variable xmin must be less than xmax")
-        if how not in ["x", "y"]:
-            raise ValueError("The variable how must be 'x' or 'y'.")
-        self.func = func
-        self.how = how
-        self.xmin = xmin
-        self.xmax = xmax
-        self.random_state = check_random_state(random_state)
-
-        self.xvals = np.linspace(xmin, xmax, 20001)
-        self.fvals = np.asarray(func(self.xvals), dtype=float)
-        # area element per dx dtheta: |rotation radius| * sqrt(1 + f'(x)^2)
-        radius = self.fvals if how == "x" else self.xvals
-        self.jacobian_vals = np.abs(radius) * np.sqrt(1 + np.gradient(self.fvals, self.xvals) ** 2)
-
-    def generate(self, n=10000):
-        """
-        Generates n points from the surface of revolution.
-
-        Parameters
-        ----------
-        n: int
-            Number of data points.
-
-        Returns
-        -------
-        data: np.array, (npoints x 3)
-            Generated data
-        """
-        rs = self.random_state
-        jac_max = np.max(self.jacobian_vals)
-        x = np.empty(0)
-        while x.shape[0] < n:
-            u = rs.uniform(self.xmin, self.xmax, n)
-            jac = np.interp(u, self.xvals, self.jacobian_vals)
-            x = np.concatenate((x, u[rs.uniform(0, jac_max, n) < jac]))
-        x = x[:n]
-        theta = rs.uniform(0, 2 * np.pi, n)
-        f = np.interp(x, self.xvals, self.fvals)
-        if self.how == "x":
-            return np.stack((x, f * np.cos(theta), f * np.sin(theta)), axis=1)
-        return np.stack((x * np.cos(theta), f, x * np.sin(theta)), axis=1)

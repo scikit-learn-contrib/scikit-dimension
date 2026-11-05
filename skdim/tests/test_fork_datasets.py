@@ -16,7 +16,7 @@ GENERATORS = [
     (lambda rs: ds.toroidal_spiral(100, random_state=rs), (100, 3)),
     (lambda rs: ds.torus(100, random_state=rs), (100, 3)),
     (lambda rs: ds.dumbbell(100, random_state=rs), (100, 3)),
-    (lambda rs: ds.SurfaceOfRevolution(random_state=rs).generate(100), (100, 3)),
+    (lambda rs: ds.surface_of_revolution(100, random_state=rs), (100, 3)),
     (
         lambda rs: ds.product(
             100, ds.hyperSphere, {"d": 1, "random_state": rs}, ds.hyperBall, {"d": 2, "random_state": rs + 1}
@@ -79,11 +79,10 @@ def test_toroidal_spiral_on_torus():
 
 
 def test_surface_of_revolution():
-    s = ds.SurfaceOfRevolution(random_state=0)
-    x = s.generate(1000)
+    x = ds.surface_of_revolution(1000, random_state=0)
     np.testing.assert_allclose(np.hypot(x[:, 1], x[:, 2]), np.abs(np.sin(np.pi * x[:, 0])), atol=1e-6)
     # rotating y = x, x in [0, 1], around the y-axis: area element ~ x, so E[x] = 2/3
-    y = ds.SurfaceOfRevolution(lambda t: t, how="y", xmin=0.0, xmax=1.0, random_state=0).generate(N)
+    y = ds.surface_of_revolution(N, lambda t: t, how="y", xmin=0.0, xmax=1.0, random_state=0)
     np.testing.assert_allclose(y[:, 1], np.hypot(y[:, 0], y[:, 2]), atol=1e-12)
     assert abs(np.mean(y[:, 1]) - 2 / 3) < 0.01
 

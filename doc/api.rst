@@ -47,7 +47,7 @@ Datasets
    datasets.torus
    datasets.lorenz_attractor
    datasets.dumbbell
-   datasets.SurfaceOfRevolution
+   datasets.surface_of_revolution
    datasets.grassmannian_projector
    datasets.grassmannian_vector
    datasets.stiefel_matrix
